@@ -73,7 +73,7 @@ Statements:: {[Statement]}
     |Statement ';' Statements { $1:$3 }-- put statement as first element of statements
 
 Statement :: {Statement}
-    :ID ':=' Exp { Assign $1 $3 }
+    : ID ':=' Exp { Assign $1 $3 }
 
     
 Defs :: {[Definition]}
