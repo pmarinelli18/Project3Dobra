@@ -14,7 +14,7 @@ module Pascal.Data
 -- Data-structure for  numeric expressions
 data Exp = 
     -- unary operator: Op name expression
-    Op1 String Exp
+    Op1 String Exp 
     -- binary operator: Op name leftExpression rightExpression
     | Op2 String Exp Exp
     -- function call: FunctionCall name ListArguments
@@ -35,6 +35,9 @@ data BoolExp =
     -- true and false constants
     | True_C
     | False_C
+    | Var_B String
+
+-- data GenExp = FloatExp Exp | BExp BoolExp;
 
 -- Data-structure for statements
 data Statement = 

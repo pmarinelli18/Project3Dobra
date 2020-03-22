@@ -40,8 +40,8 @@ tokens :-
   "//".*                                ; -- skip one line comments
   $digit+                               { tok_read     TokenInt }
   [\+]|[\-]|[\*]|[\/]|[=]               { tok_read     TokenOp }
-  [\(]|[\)]|begin|end|true|false        { tok_read     TokenK }
-  [:=]                                  { tok_read     TokenOp }
+  [\(]|[\)]|begin|end|true|false        { tok_string     TokenK }
+  [:=]                                  { tok_string     TokenOp }
   $alpha [$alpha $digit \_ \']*         { tok_string   TokenID }
 
 {
