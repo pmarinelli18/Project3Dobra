@@ -34,8 +34,11 @@ import Pascal.Lexer
         ':'             { Token _ (TokenK ":") }
         'bool'          { Token _ (TokenType "bool") }
         'real'          { Token _ (TokenType "real") }
-        'string'          { Token _ (TokenType "string") }
-        ','          { Token _ (TokenK ",") }
+        'string'        { Token _ (TokenType "string") }
+        ','             { Token _ (TokenK ",") }
+        ';'             { Token _ (TokenK ";") }
+        '.'             { Token _ (TokenK ".") }
+        'program'       { Token _ (TokenK "program") }
 
 -- associativity of operators in reverse precedence order
 %nonassoc '>' '>=' '<' '<=' '==' '!='
@@ -46,23 +49,46 @@ import Pascal.Lexer
 
 -- Entry point
 Program :: {Program}
+    : Block '.' { $1 }   
+    --: ProgramHeading Block '.' { $2 }
+
+--ProgramHeading :: {}
+    --:'program' ID '(' IdentifierList ')' ';'
+    --|'program' ID ';'
+
+IdentiferList:: {[String]}
+    :ID{[$1]}
+    |ID ',' IdentiferList { $1:$3 }
+
+
+Block:: {[Statement]}
+    :CompoundStatement { $1 }
+
+CompoundStatement:: {[Statement]}
     : 'begin' Statements 'end' { $2 }
 
+Statements:: {[Statement]}
+    : { [] } -- nothing; make empty list
+    |Statement{ [$1] }
+    |Statement ';' Statements { $1:$3 }-- put statement as first element of statements
+
+Statement :: {Statement}
+    :ID ':=' Exp { Assign $1 $3 }
+
+    
 Defs :: {[Definition]}
     : { [] } -- nothing; make empty list
     | Definition Defs { $1:$2 } -- put statement as first element of statements
 
 Definition :: {Definition}
-    : 'var' ID_List ':' Type { VarDef $2 $4 }  
+    : 'var' IdentiferList ':' Type { VarDef $2 $4 }  
 
 Type :: {VType}
     : 'bool' { BOOL }
     | 'real' { REAL }
     | 'string' { STRING }
 
-ID_List :: {[String]}
-    : ID {[$1]}
-    | ID ',' ID_List { $1:$3 }
+
 
 -- Expressions
 Exp :: {Exp}
@@ -78,14 +104,5 @@ BoolExp :: {BoolExp}
     | 'not' BoolExp { Not $2 }
     | BoolExp 'and' BoolExp { OpB "and" $1 $3 }
     | ID { Var_B $1 }
-
-Statements :: {[Statement]}
-    : { [] } -- nothing; make empty list
-    | Statement Statements { $1:$2 } -- put statement as first element of statements
-
-
-
-Statement :: {Statement}
-    : ID ':=' Exp { Assign $1 $3 }
 
 {}
