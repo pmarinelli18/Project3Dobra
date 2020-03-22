@@ -110,7 +110,7 @@ happyAdjustOffset :: Happy_GHC_Exts.Int# -> Happy_GHC_Exts.Int#
 happyAdjustOffset off = off
 
 happyDefActions :: HappyAddr
-happyDefActions = HappyA# "\x00\x00\x00\x00\xec\xff\x00\x00\x00\x00\xec\xff\x00\x00\x00\x00\xeb\xff\xfe\xff\xea\xff\x00\x00\x00\x00\x00\x00\x00\x00\xf4\xff\xf5\xff\x00\x00\x00\x00\xf2\xff\xf3\xff\xf1\xff"#
+happyDefActions = HappyA# "\x00\x00\x00\x00\xeb\xff\x00\x00\x00\x00\xeb\xff\x00\x00\x00\x00\xea\xff\xfe\xff\xe9\xff\x00\x00\x00\x00\x00\x00\x00\x00\xf4\xff\xf5\xff\x00\x00\x00\x00\xf2\xff\xf3\xff\xf1\xff"#
 
 happyCheck :: HappyAddr
 happyCheck = HappyA# "\xff\xff\x03\x00\x0a\x00\x05\x00\x03\x00\x04\x00\x03\x00\x09\x00\x05\x00\x08\x00\x02\x00\x07\x00\x08\x00\x07\x00\x08\x00\x02\x00\x17\x00\x0c\x00\x0b\x00\x05\x00\x00\x00\x05\x00\x05\x00\x05\x00\x05\x00\xff\xff\x05\x00\x05\x00\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff"#
@@ -118,7 +118,7 @@ happyCheck = HappyA# "\xff\xff\x03\x00\x0a\x00\x05\x00\x03\x00\x04\x00\x03\x00\x
 happyTable :: HappyAddr
 happyTable = HappyA# "\x00\x00\x12\x00\x03\x00\x13\x00\x0c\x00\x0d\x00\x12\x00\x16\x00\x13\x00\x0e\x00\x07\x00\x04\x00\x05\x00\x08\x00\x05\x00\x07\x00\xff\xff\x08\x00\x0a\x00\x13\x00\x03\x00\x0a\x00\x10\x00\x0f\x00\x0e\x00\x00\x00\x14\x00\x13\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00"#
 
-happyReduceArr = Happy_Data_Array.array (1, 21) [
+happyReduceArr = Happy_Data_Array.array (1, 22) [
 	(1 , happyReduce_1),
 	(2 , happyReduce_2),
 	(3 , happyReduce_3),
@@ -139,7 +139,8 @@ happyReduceArr = Happy_Data_Array.array (1, 21) [
 	(18 , happyReduce_18),
 	(19 , happyReduce_19),
 	(20 , happyReduce_20),
-	(21 , happyReduce_21)
+	(21 , happyReduce_21),
+	(22 , happyReduce_22)
 	]
 
 happy_n_terms = 24 :: Int
@@ -309,14 +310,22 @@ happyReduction_18 happy_x_3
 	)}}
 
 happyReduce_19 :: () => Happy_GHC_Exts.Int# -> Token -> Happy_GHC_Exts.Int# -> Happy_IntList -> HappyStk (HappyAbsSyn ) -> Parser (HappyAbsSyn )
-happyReduce_19 = happySpecReduce_0  7# happyReduction_19
-happyReduction_19  =  happyIn11
+happyReduce_19 = happySpecReduce_1  6# happyReduction_19
+happyReduction_19 happy_x_1
+	 =  case happyOutTok happy_x_1 of { (Token _ (TokenID happy_var_1)) -> 
+	happyIn10
+		 (Var_B happy_var_1
+	)}
+
+happyReduce_20 :: () => Happy_GHC_Exts.Int# -> Token -> Happy_GHC_Exts.Int# -> Happy_IntList -> HappyStk (HappyAbsSyn ) -> Parser (HappyAbsSyn )
+happyReduce_20 = happySpecReduce_0  7# happyReduction_20
+happyReduction_20  =  happyIn11
 		 ([]
 	)
 
-happyReduce_20 :: () => Happy_GHC_Exts.Int# -> Token -> Happy_GHC_Exts.Int# -> Happy_IntList -> HappyStk (HappyAbsSyn ) -> Parser (HappyAbsSyn )
-happyReduce_20 = happySpecReduce_2  7# happyReduction_20
-happyReduction_20 happy_x_2
+happyReduce_21 :: () => Happy_GHC_Exts.Int# -> Token -> Happy_GHC_Exts.Int# -> Happy_IntList -> HappyStk (HappyAbsSyn ) -> Parser (HappyAbsSyn )
+happyReduce_21 = happySpecReduce_2  7# happyReduction_21
+happyReduction_21 happy_x_2
 	happy_x_1
 	 =  case happyOut12 happy_x_1 of { happy_var_1 -> 
 	case happyOut11 happy_x_2 of { happy_var_2 -> 
@@ -324,9 +333,9 @@ happyReduction_20 happy_x_2
 		 (happy_var_1:happy_var_2
 	)}}
 
-happyReduce_21 :: () => Happy_GHC_Exts.Int# -> Token -> Happy_GHC_Exts.Int# -> Happy_IntList -> HappyStk (HappyAbsSyn ) -> Parser (HappyAbsSyn )
-happyReduce_21 = happySpecReduce_3  8# happyReduction_21
-happyReduction_21 happy_x_3
+happyReduce_22 :: () => Happy_GHC_Exts.Int# -> Token -> Happy_GHC_Exts.Int# -> Happy_IntList -> HappyStk (HappyAbsSyn ) -> Parser (HappyAbsSyn )
+happyReduce_22 = happySpecReduce_3  8# happyReduction_22
+happyReduction_22 happy_x_3
 	happy_x_2
 	happy_x_1
 	 =  case happyOutTok happy_x_1 of { (Token _ (TokenID happy_var_1)) -> 
@@ -359,8 +368,8 @@ happyNewToken action sts stk
 	Token _ (TokenK "var") -> cont 17#;
 	Token _ (TokenK ":") -> cont 18#;
 	Token _ (TokenType "bool") -> cont 19#;
-	Token _ (TokenType "bool") -> cont 20#;
-	Token _ (TokenType "bool") -> cont 21#;
+	Token _ (TokenType "real") -> cont 20#;
+	Token _ (TokenType "string") -> cont 21#;
 	Token _ (TokenK ",") -> cont 22#;
 	_ -> happyError' (tk, [])
 	})

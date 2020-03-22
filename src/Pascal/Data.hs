@@ -24,6 +24,7 @@ data Exp =
     -- variable: e.g. Var "x"
     | Var String
 
+
 -- Data-structure for boolean expressions
 data BoolExp = 
     -- binary operator on boolean expressions
@@ -35,6 +36,7 @@ data BoolExp =
     -- true and false constants
     | True_C
     | False_C
+    |Var_B String
 
 -- Data-structure for statements
 data Statement = 

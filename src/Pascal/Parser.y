@@ -33,8 +33,8 @@ import Pascal.Lexer
         'var'           { Token _ (TokenK "var") }
         ':'             { Token _ (TokenK ":") }
         'bool'          { Token _ (TokenType "bool") }
-        'real'          { Token _ (TokenType "bool") }
-        'string'          { Token _ (TokenType "bool") }
+        'real'          { Token _ (TokenType "real") }
+        'string'          { Token _ (TokenType "string") }
         ','          { Token _ (TokenK ",") }
 
 -- associativity of operators in reverse precedence order
@@ -77,10 +77,13 @@ BoolExp :: {BoolExp}
     | 'false' { False_C }
     | 'not' BoolExp { Not $2 }
     | BoolExp 'and' BoolExp { OpB "and" $1 $3 }
+    | ID { Var_B $1 }
 
 Statements :: {[Statement]}
     : { [] } -- nothing; make empty list
     | Statement Statements { $1:$2 } -- put statement as first element of statements
+
+
 
 Statement :: {Statement}
     : ID ':=' Exp { Assign $1 $3 }

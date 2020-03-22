@@ -650,9 +650,9 @@ type AlexUserState = ()
 alexInitUserState = ()
 
 alex_action_2 =  tok_read     TokenInt 
-alex_action_3 =  tok_read     TokenOp 
-alex_action_4 =  tok_read     TokenK 
-alex_action_5 =  tok_read     TokenOp 
+alex_action_3 =  tok_string     TokenOp 
+alex_action_4 =  tok_string     TokenK 
+alex_action_5 =  tok_string     TokenOp 
 alex_action_6 =  tok_string   TokenID 
 {-# LINE 1 "templates/GenericTemplate.hs" #-}
 -- -----------------------------------------------------------------------------
