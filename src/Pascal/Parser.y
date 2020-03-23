@@ -34,17 +34,17 @@ import Pascal.Lexer
         '.)'             { Token _ (TokenK  ".)")   }
         'begin'         { Token _ (TokenK "begin") }
         'end'           { Token _ (TokenK "end")  }
-        ':='            { Token _ (TokenK ":=")   }
+        ':='            { Token _ (TokenOp ":=")   }
+        ':'             { Token _ (TokenOp ":") }
         'true'          { Token _ (TokenK "true") }
         'false'         { Token _ (TokenK "false") }
         'and'           { Token _ (TokenK "and") }
         'or'           { Token _ (TokenK "or") }
         'not'           { Token _ (TokenK "not") }
         'var'           { Token _ (TokenK "var") }
-        ':'             { Token _ (TokenK ":") }
-        'bool'          { Token _ (TokenType "bool") }
-        'real'          { Token _ (TokenType "real") }
-        'string'        { Token _ (TokenType "string") }
+        'bool'          { Token _ (TokenK "bool") }
+        'real'          { Token _ (TokenK "real") }
+        'string'        { Token _ (TokenK "string") }
         ','             { Token _ (TokenK ",") }
         ';'             { Token _ (TokenK ";") }
         '.'             { Token _ (TokenK ".") }
@@ -63,7 +63,8 @@ import Pascal.Lexer
 -- Entry point
 Program :: {Program}
     --: Block '.' { $1 }   
-    : ProgramHeading Block '.' {ProgramBlock $2 }
+    : ProgramHeading Block '.' {ProgramBlock $1 $2 }
+    
 
 ProgramHeading :: {ProgramHeading}
     :'program' Identifier '(' IdentifierList ')' ';' {ProgramHeadingWithList $2 $4}
@@ -76,8 +77,23 @@ IdentifierList:: {[String]}
 Identifier::  {String}
     : ID { $1 }
 
-Block:: {[Statement]}
-    :CompoundStatement { $1 }
+Block:: {Block}
+    :CompoundStatement {BlockCopoundStatement $1 }
+    | BlockOptions CompoundStatement {BlockVariableDeclarationPart $1 $2}
+
+BlockOptions:: {BlockOptions}
+    :VariableDeclarationPart {BlockOptionsVariableDeclarationPart $1}
+
+VariableDeclarationPart:: {VariableDeclarationPart}
+    : 'var' VariableDeclaration ';' {VariableDeclarationPartSingle $2 }
+    | 'var' VariableDeclaration VariableDeclarationPartMultiple ';' {VariableDeclarationPartMultiple $2 $3 }
+
+VariableDeclarationPartMultiple:: {VariableDeclarationPartMultiple}
+    :';' VariableDeclaration {VariableDeclarationPartMultipleSingle $2}
+    |';' VariableDeclaration VariableDeclarationPartMultiple {VariableDeclarationPartMultipleMultiple $2 $3}
+
+VariableDeclaration:: {VariableDeclaration}
+    : IdentifierList ':' VType {VariableDeclarationMain $1 }
 
 
 CompoundStatement:: {[Statement]}
@@ -209,10 +225,10 @@ Bool :: {Bool}
 --Definition :: {Definition}
    -- : 'var' IdentiferList ':' Type { VarDef $2 $4 }  
 
---Type :: {VType-}
-    --: 'bool' { BOOL }
-    -- | 'real' { REAL }
-    -- | 'string' { STRING }
+VType :: {VType}
+    : 'bool' { BOOL }
+    | 'real' { REAL }
+    | 'string' { STRING }
 
 
 

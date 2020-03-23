@@ -28,12 +28,35 @@ module Pascal.Data
 
         --Exp(..),
         --BoolExp(..),
-        --VType(..),
+        VType(..),
        -- Definition(..),
+        Block(..),
+        BlockOptions(..),
+        VariableDeclarationPart(..),
+        VariableDeclarationPartMultiple(..),
+        VariableDeclaration(..),
         Statement(..),
         Program(..)
     ) where
 
+
+data VariableDeclarationPart =
+    VariableDeclarationPartSingle VariableDeclaration
+    |VariableDeclarationPartMultiple VariableDeclaration VariableDeclarationPartMultiple
+
+data VariableDeclarationPartMultiple =
+    VariableDeclarationPartMultipleSingle VariableDeclaration
+    |VariableDeclarationPartMultipleMultiple VariableDeclaration VariableDeclarationPartMultiple
+
+data VariableDeclaration = 
+    VariableDeclarationMain [String]
+
+data Block =
+    BlockCopoundStatement [Statement]
+    | BlockVariableDeclarationPart BlockOptions [Statement]
+
+data BlockOptions =
+    BlockOptionsVariableDeclarationPart VariableDeclarationPart
 
 data UsignedNumber =
     UI Int
@@ -131,11 +154,16 @@ data ProcedureStatement =
     | MultiProcedureStatement String ParameterList
 
 data Program = 
-    ProgramBlock [Statement]
+    ProgramBlock ProgramHeading Block
 
 data ProgramHeading =
     ProgramHeadingWithList String [String]
     | ProgramHeadingWithoutList String
+
+data VType = 
+    REAL 
+    | BOOL 
+    | STRING;
 
 
         -- Data-structure for  numeric expressions
@@ -179,7 +207,7 @@ data ProgramHeading =
 
 
 --added from dobra
--- data VType = REAL | BOOL | STRING;
+
 
 -- data Definition = 
             -- Variable definition, list of var, type
