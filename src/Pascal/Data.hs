@@ -24,13 +24,14 @@ module Pascal.Data
         Element(..),
         ElementList(..),
         Set(..),
+        ProgramHeading(..),
 
         --Exp(..),
         --BoolExp(..),
         --VType(..),
        -- Definition(..),
         Statement(..),
-        Program
+        Program(..)
     ) where
 
 
@@ -127,9 +128,14 @@ data Statement =
 
 data ProcedureStatement =
     SingleProcedureStatement String
-    |MultiProcedureStatement String ParameterList
+    | MultiProcedureStatement String ParameterList
 
+data Program = 
+    ProgramBlock [Statement]
 
+data ProgramHeading =
+    ProgramHeadingWithList String [String]
+    | ProgramHeadingWithoutList String
 
 
         -- Data-structure for  numeric expressions
@@ -187,4 +193,3 @@ data ProcedureStatement =
 -- Data-structure for hole program
 -- TODO: add declarations and other useful stuff
 -- Hint: make a tuple containing the other ingredients
-type Program = [Statement]

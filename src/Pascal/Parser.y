@@ -62,16 +62,16 @@ import Pascal.Lexer
 
 -- Entry point
 Program :: {Program}
-    : Block '.' { $1 }   
-    --: ProgramHeading Block '.' { $2 }
+    --: Block '.' { $1 }   
+    : ProgramHeading Block '.' {ProgramBlock $2 }
 
---ProgramHeading :: {}
-    --:'program' Identifier '(' IdentifierList ')' ';'
-    --|'program' Identifier ';'
+ProgramHeading :: {ProgramHeading}
+    :'program' Identifier '(' IdentifierList ')' ';' {ProgramHeadingWithList $2 $4}
+    |'program' Identifier ';'{ProgramHeadingWithoutList $2}
 
-IdentiferList:: {[String]}
+IdentifierList:: {[String]}
     :Identifier{[$1]}
-    |Identifier ',' IdentiferList { $1:$3 }
+    |Identifier ',' IdentifierList { $1:$3 }
 
 Identifier::  {String}
     : ID { $1 }
