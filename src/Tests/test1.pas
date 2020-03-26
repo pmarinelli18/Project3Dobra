@@ -1,5 +1,4 @@
     program hi;
-    var alta : bool;
 
     begin 
 

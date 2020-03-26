@@ -49,7 +49,7 @@ data VariableDeclarationPartMultiple =
     |VariableDeclarationPartMultipleMultiple VariableDeclaration VariableDeclarationPartMultiple
 
 data VariableDeclaration = 
-    VariableDeclarationMain [String]
+    VariableDeclarationMain [String] VType
 
 data Block =
     BlockCopoundStatement [Statement]

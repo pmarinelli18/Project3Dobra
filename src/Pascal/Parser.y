@@ -85,15 +85,15 @@ BlockOptions:: {BlockOptions}
     :VariableDeclarationPart {BlockOptionsVariableDeclarationPart $1}
 
 VariableDeclarationPart:: {VariableDeclarationPart}
-    : 'var' VariableDeclaration ';' {VariableDeclarationPartSingle $2 }
-    | 'var' VariableDeclaration VariableDeclarationPartMultiple ';' {VariableDeclarationPartMultiple $2 $3 }
+    : 'var' VariableDeclaration VariableDeclarationPartMultiple  {VariableDeclarationPartMultiple $2 $3 }
+    | 'var' VariableDeclaration  {VariableDeclarationPartSingle $2 }
 
 VariableDeclarationPartMultiple:: {VariableDeclarationPartMultiple}
-    :';' VariableDeclaration {VariableDeclarationPartMultipleSingle $2}
-    |';' VariableDeclaration VariableDeclarationPartMultiple {VariableDeclarationPartMultipleMultiple $2 $3}
+    : VariableDeclaration VariableDeclarationPartMultiple {VariableDeclarationPartMultipleMultiple $1 $2}
+    | VariableDeclaration {VariableDeclarationPartMultipleSingle $1}
 
 VariableDeclaration:: {VariableDeclaration}
-    : IdentifierList ':' VType {VariableDeclarationMain $1 }
+    : IdentifierList ':' VType ';'{VariableDeclarationMain $1 $3 }
 
 
 CompoundStatement:: {[Statement]}
