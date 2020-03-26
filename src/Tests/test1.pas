@@ -1,4 +1,6 @@
+    program hi;
+
     begin 
-    
+
     end 
     .
