@@ -1,5 +1,6 @@
 module Pascal.Interpret 
 (
+    writeln,
     numToString,
     interpret
 )
@@ -21,9 +22,22 @@ import Pascal.Data
 --expNum (Op2 "+" x y) = ( expNum x + expNum y)
 --expNum (Op2 "*" x y) = ( expNum x * expNum y)
 
+writeln :: ProcedureStatement -> String
+writeln (MultiProcedureStatement "writeln" x) = (show x)
+
 numToString :: Float -> String
 numToString (x) = (show x)
 
+factor :: Factor -> Val    --Add boolean to Val in Val.hs
+factor (FactorVariable variable) =      --convert the input to a value and try to get it to procedure statement
+factor (FactorExpression expression) =  --Do expression eval here and return Val, Should copy how Project 2 didt it
+factor (FactorFD functionDesignator) =  --can comment things out to make things work
+factor (FactorUC unsignedConstant) =     
+factor (FactorSe set) =
+factor (FactorNot factor) =
+factor (FactorBool bool) =
+
 interpret :: Program -> String
 -- TODO: write the interpreter
+interpret (ProgramBlock programheading block) = (show block)
 interpret _ = "Not implemented"
