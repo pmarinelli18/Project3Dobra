@@ -1,8 +1,6 @@
 
     program hi;
     var 
-        alta : bool;
-        sum : real;
         number : real;
 
     begin 

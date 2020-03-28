@@ -29,15 +29,20 @@ import Pascal.Val
 --numToString :: Float -> String
 --numToString (x) = (show x)
 
+
+
 unsignedNumberEval :: UnsignedNumber -> Val
 unsignedNumberEval (UI int) = Integer int
 unsignedNumberEval (UR float) = Real float
  
+
+
 unsignedConstantEval :: UnsignedConstant -> Val
 unsignedConstantEval    (UN unsignedNumber) = unsignedNumberEval unsignedNumber
-
 unsignedConstantEval    (Str str) = Id str
 unsignedConstantEval    (Nil) = Id ("Nil")
+
+
 
 functionDesignatorEval :: FunctionDesignator -> Val
 functionDesignatorEval (FDesignate "cos" parameterList) = Real (cos(toFloat(parameterListEval parameterList)))
@@ -47,21 +52,28 @@ functionDesignatorEval (FDesignate "ln" parameterList) = Real (log(toFloat(param
 functionDesignatorEval (FDesignate "dopower" parameterList) = Real (cos(toFloat(parameterListEval parameterList)))
 ---------------------------------------------DID NOT ADD FUNCTIONALITY TO "Dopower" YET Maybe havnt tested it yet ---------------------------------------------------
 
+
+
+
 factorEval :: Factor -> Val    --Add boolean to Val in Val.hs
 factorEval (FactorVariable variable) =     Real (1.0)
 factorEval (FactorExpression expression) =  Real (2.0)
 factorEval (FactorFD functionDesignator) =  functionDesignatorEval functionDesignator
-
 factorEval (FactorUC unsignedConstant) =  unsignedConstantEval unsignedConstant
 factorEval (FactorSe set) = Real (5.0)
 factorEval (FactorNot factor) = Real (6.0)
 factorEval (FactorBool bool) = Real (7.0)
 
 
+
+
 signedFactorEval :: SignedFactor -> Val
 signedFactorEval (SignedFactorDefault factor) = factorEval factor
 signedFactorEval (SignedFactorPlus factor) = factorEval factor
 signedFactorEval (SignedFactorMinus factor) = factorEval factor
+
+
+
 
 termEval :: Term -> Val
 termEval (TermSingle signedFactor) = signedFactorEval signedFactor
