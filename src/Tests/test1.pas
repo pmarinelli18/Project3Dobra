@@ -5,6 +5,8 @@
         number : real;
 
     begin 
-        writeln(2);
+        writeln(2);    
+        writeln(5 + 4);  
     end 
+
     .

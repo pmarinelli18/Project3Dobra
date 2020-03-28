@@ -19,6 +19,11 @@ strToVal s = case readMaybe s :: Maybe Int of
         Just f -> Real f 
         Nothing -> Id s
 
+valToStr :: Val -> String
+valToStr (Real x) = show x
+valToStr (Integer x) = show x
+valToStr (Id x) = show x
+
 
 -- converts to Float if Real or Integer, error otherwise
 -- used to deal with arguments of operators

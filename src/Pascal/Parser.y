@@ -78,8 +78,8 @@ Identifier::  {String}
     : ID { $1 }
 
 Block:: {Block}
-    :CompoundStatement {BlockCopoundStatement $1 }
-    | BlockOptions CompoundStatement {BlockVariableDeclarationPart $1 $2}
+    :CompoundStatement {BlockCopoundStatement $1}
+    | BlockOptions CompoundStatement{BlockVariableDeclarationPart $1 $2}
 
 BlockOptions:: {BlockOptions}
     :VariableDeclarationPart {BlockOptionsVariableDeclarationPart $1}
@@ -116,7 +116,6 @@ SimpleStatement :: {SimpleStatement}
     : ProcedureStatement {PS $1}
     --| AssignmentStatement
     --| GotoStatement
-    |  {ES}
 
 
 ProcedureStatement :: {ProcedureStatement}
@@ -137,7 +136,9 @@ Expression :: {Expression}
 
 SimpleExpression :: {SimpleExpression}
     : Term {SingleExpressionTermSingle $1}
-    | Term Additiveoperator SimpleExpression {SingleExpressionTermMultiple $1 $2 $3}
+    | Term '+' SimpleExpression {SingleExpressionTermMultipleAdd $1 $3}
+    | Term '-' SimpleExpression {SingleExpressionTermMultipleSub $1 $3}
+    | Term 'or' SimpleExpression {SingleExpressionTermMultipleOr $1 $3}
 
 Relationaloperator :: {Relationaloperator}
    : '=' {RelationaloperatorE}
@@ -151,11 +152,6 @@ Relationaloperator :: {Relationaloperator}
 Term :: {Term}
     : SignedFactor {TermSingle $1}
     | SignedFactor Multiplicativeoperator Term {TermMultiple $1 $2 $3}
-
-Additiveoperator :: {Additiveoperator}
-    : '+' {Plus}
-    | '-' {Minus}
-    | 'or' {Or}
 
 SignedFactor :: {SignedFactor}
 : Factor {SignedFactorDefault $1}
@@ -188,7 +184,7 @@ UnsignedConstant :: {UnsignedConstant}
     : UnsignedNumber {UN $1}
     | 'nil' {Nil}
 
-UnsignedNumber :: {UsignedNumber}
+UnsignedNumber :: {UnsignedNumber}
     : UnsignedInteger {UI $1}
     | UnsignedReal {UR $1}
 
