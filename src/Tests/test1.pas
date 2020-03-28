@@ -1,3 +1,4 @@
+
     program hi;
     var 
         alta : bool;
@@ -11,7 +12,8 @@
         writeln(2 >= 2);
         writeln(2 < 3);
         writeln((2 <= 3));
-         
-    end 
 
-    .
+
+        writeln( 'hello2' );
+
+    end .

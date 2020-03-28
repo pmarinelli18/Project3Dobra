@@ -35,7 +35,8 @@ unsignedNumberEval (UR float) = Real float
  
 unsignedConstantEval :: UnsignedConstant -> Val
 unsignedConstantEval    (UN unsignedNumber) = unsignedNumberEval unsignedNumber
-unsignedConstantEval    (St str) = Id str
+
+unsignedConstantEval    (Str str) = Id str
 unsignedConstantEval    (Nil) = Id ("Nil")
 
 functionDesignatorEval :: FunctionDesignator -> Val
@@ -50,6 +51,7 @@ factorEval :: Factor -> Val    --Add boolean to Val in Val.hs
 factorEval (FactorVariable variable) =     Real (1.0)
 factorEval (FactorExpression expression) =  Real (2.0)
 factorEval (FactorFD functionDesignator) =  functionDesignatorEval functionDesignator
+
 factorEval (FactorUC unsignedConstant) =  unsignedConstantEval unsignedConstant
 factorEval (FactorSe set) = Real (5.0)
 factorEval (FactorNot factor) = Real (6.0)
@@ -127,4 +129,5 @@ blockEval (BlockVariableDeclarationPart b s) = statementsEval s
 interpret :: Program -> String
 -- TODO: write the interpreter
 interpret (ProgramBlock programheading block) = (valToStr (blockEval block))
+
 interpret _ = "Not implemented"

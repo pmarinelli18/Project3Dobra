@@ -63,7 +63,7 @@ data UnsignedNumber =
 
 data UnsignedConstant = 
     UN UnsignedNumber
-    | St String
+    | Str String
     | Nil
 
 data FunctionDesignator =

@@ -31,7 +31,7 @@ import qualified Data.ByteString.Lazy.Char8 as B
 %wrapper "monadUserState-bytestring"
 
 $digit = 0-9                    -- digits
-$alpha = [a-zA-Z]               -- alphabetic characters
+$alpha = [a-zA-Z]               -- alphabetic charactersTokenSt
 
 
 -- TODO: Map symbols into token types (with or without parameters)
@@ -49,6 +49,7 @@ tokens :-
   and|or|not|var                        { tok_string     TokenK }
   [\,]|[\;]|[\.]|program                { tok_string     TokenK }
   $alpha [$alpha $digit \_ \']*         { tok_string     TokenID }
+  ['] [$alpha $digit \= ]* [']         { tok_string     TokenSt }
 
 {
 
@@ -74,6 +75,7 @@ data TokenClass
  | TokenInt    Int
  | TokenFloat  Float
  | TokenID     String
+ | TokenSt     String
  | TokenEOF
  deriving (Eq, Show)
 

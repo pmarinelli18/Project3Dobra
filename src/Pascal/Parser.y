@@ -17,6 +17,7 @@ import Pascal.Lexer
         int             { Token _ (TokenInt $$) }
         float           { Token _ (TokenFloat $$) }
         ID              { Token _ (TokenID $$)  }
+        st              { Token _ (TokenSt $$) }
         '+'             { Token _ (TokenOp "+")   }
         '-'             { Token _ (TokenOp "-")   }
         '*'             { Token _ (TokenOp "*")   }
@@ -155,6 +156,7 @@ Term :: {Term}
     | SignedFactor 'mod' Term {TermMultipleMod $1 $3}
     | SignedFactor 'and' Term {TermMultipleAnd $1 $3}
 
+
 SignedFactor :: {SignedFactor}
 : Factor {SignedFactorDefault $1}
 | '+' Factor {SignedFactorPlus $2}
@@ -170,26 +172,25 @@ Factor :: {Factor}
     | Bool {FactorBool $1}
 
 Variable :: {Variable}
-    : Identifier {Var $1} --(LBRACK expression (COMMA expression)* RBRACK | LBRACK2 expression (COMMA expression)* RBRACK2 | DOT identifier | POINTER)*
-
+    : Identifier {Var $1} --(LBRACK expression (COMMA expression)* RBRACK | LBRACK2 expression (COMMA expression)* RBRACK2 | DOT identifier | POINT
+    
 FunctionDesignator :: {FunctionDesignator}
     : Identifier '(' ParameterList ')' { FDesignate $1 $3 }
 
 UnsignedConstant :: {UnsignedConstant}
     : UnsignedNumber {UN $1}
+    | st { Str $1}
     | 'nil' {Nil}
-
+    
 UnsignedNumber :: {UnsignedNumber}
     : UnsignedInteger {UI $1}
     | UnsignedReal {UR $1}
 
-UnsignedInteger :: {int} --may need to be something else
+UnsignedInteger :: {Int} --may need to be something else
     : int {$1}
 
-UnsignedReal :: {float} --may need to be something else
+UnsignedReal :: {Float} --may need to be something else
     : float {$1}
-
-
 
 Set :: {Set}
     : '(' ElementList ')' {SetElement $2 }
@@ -220,8 +221,6 @@ VType :: {VType}
     : 'bool' { BOOL }
     | 'real' { REAL }
     | 'string' { STRING }
-
-
 
 -- Expressions
 --Exp :: {Exp}
