@@ -15,27 +15,45 @@ import Pascal.Lexer
 
 %token
         int             { Token _ (TokenInt $$) }
+        float           { Token _ (TokenFloat $$) }
         ID              { Token _ (TokenID $$)  }
+        st              { Token _ (TokenSt $$) }
         '+'             { Token _ (TokenOp "+")   }
         '-'             { Token _ (TokenOp "-")   }
         '*'             { Token _ (TokenOp "*")   }
         '/'             { Token _ (TokenOp "/")   }
         '='             { Token _ (TokenOp "=")   }
+        '<>'             { Token _ (TokenOp "<>")   }
+        '<'             { Token _ (TokenOp "<")   }
+        '<='             { Token _ (TokenOp "<=")   }
+        '>'             { Token _ (TokenOp ">")   }
+        '>='             { Token _ (TokenOp ">=")   }
+        'in'             { Token _ (TokenOp "in")   }
         '('             { Token _ (TokenK  "(")   }
         ')'             { Token _ (TokenK  ")")   }
+        '(.'             { Token _ (TokenK  "(.")   }
+        '.)'             { Token _ (TokenK  ".)")   }
         'begin'         { Token _ (TokenK "begin") }
         'end'           { Token _ (TokenK "end")  }
-        ':='            { Token _ (TokenK ":=")   }
+        ':='            { Token _ (TokenOp ":=")   }
+        ':'             { Token _ (TokenOp ":") }
         'true'          { Token _ (TokenK "true") }
         'false'         { Token _ (TokenK "false") }
         'and'           { Token _ (TokenK "and") }
+        'or'           { Token _ (TokenK "or") }
         'not'           { Token _ (TokenK "not") }
         'var'           { Token _ (TokenK "var") }
-        ':'             { Token _ (TokenK ":") }
-        'bool'          { Token _ (TokenType "bool") }
-        'real'          { Token _ (TokenType "bool") }
-        'string'          { Token _ (TokenType "bool") }
-        ','          { Token _ (TokenK ",") }
+        'bool'          { Token _ (TokenK "bool") }
+        'real'          { Token _ (TokenK "real") }
+        'string'        { Token _ (TokenK "string") }
+        ','             { Token _ (TokenK ",") }
+        ';'             { Token _ (TokenK ";") }
+        '.'             { Token _ (TokenK ".") }
+        'program'       { Token _ (TokenK "program") }
+        'div'           { Token _ (TokenK "div") }
+        'mod'           { Token _ (TokenK "mod") }
+        'nil'           { Token _ (TokenK "nil") }
+        
 
 -- associativity of operators in reverse precedence order
 %nonassoc '>' '>=' '<' '<=' '==' '!='
@@ -46,43 +64,183 @@ import Pascal.Lexer
 
 -- Entry point
 Program :: {Program}
+    --: Block '.' { $1 }   
+    : ProgramHeading Block '.' {ProgramBlock $1 $2 }
+    
+
+ProgramHeading :: {ProgramHeading}
+    :'program' Identifier '(' IdentifierList ')' ';' {ProgramHeadingWithList $2 $4}
+    |'program' Identifier ';'{ProgramHeadingWithoutList $2}
+
+IdentifierList:: {[String]}
+    :Identifier{[$1]}
+    |Identifier ',' IdentifierList { $1:$3 }
+
+Identifier::  {String}
+    : ID { $1 }
+
+Block:: {Block}
+    :CompoundStatement {BlockCopoundStatement $1}
+    | BlockOptions CompoundStatement{BlockVariableDeclarationPart $1 $2}
+
+BlockOptions:: {BlockOptions}
+    :VariableDeclarationPart {BlockOptionsVariableDeclarationPart $1}
+
+VariableDeclarationPart:: {VariableDeclarationPart}
+    : 'var' VariableDeclaration VariableDeclarationPartMultiple  {VariableDeclarationPartMultiple $2 $3 }
+    | 'var' VariableDeclaration  {VariableDeclarationPartSingle $2 }
+
+VariableDeclarationPartMultiple:: {VariableDeclarationPartMultiple}
+    : VariableDeclaration VariableDeclarationPartMultiple {VariableDeclarationPartMultipleMultiple $1 $2}
+    | VariableDeclaration {VariableDeclarationPartMultipleSingle $1}
+
+VariableDeclaration:: {VariableDeclaration}
+    : IdentifierList ':' VType ';'{VariableDeclarationMain $1 $3 }
+
+
+CompoundStatement:: {[Statement]}
     : 'begin' Statements 'end' { $2 }
 
-Defs :: {[Definition]}
+Statements:: {[Statement]}
     : { [] } -- nothing; make empty list
-    | Definition Defs { $1:$2 } -- put statement as first element of statements
+    |Statement{ [$1] }
+    |Statement ';' Statements { $1:$3 }-- put statement as first element of statements
 
-Definition :: {Definition}
-    : 'var' ID_List ':' Type { VarDef $2 $4 }  
+Statement :: {Statement}
+    :UnlabelledStatement {StatementUnlabelledStatement $1}
+    --| label COLON unlabelledStatement
 
-Type :: {VType}
+UnlabelledStatement :: {UnlabelledStatement}
+    : SimpleStatement {UnlabelledStatementSimpleStatement $1}
+    --| StructuredStatement
+
+SimpleStatement :: {SimpleStatement}
+    : ProcedureStatement {PS $1}
+    --| AssignmentStatement
+    --| GotoStatement
+
+
+ProcedureStatement :: {ProcedureStatement}
+    : Identifier {SingleProcedureStatement $1 }
+    |Identifier '(' ParameterList ')' { MultiProcedureStatement $1 $3 }
+
+ParameterList :: {ParameterList}
+    : ActualParameter { ParameterListSingle $1}
+    | ParameterList ',' ActualParameter{ParameterListMulitiple $1 $3}
+
+ActualParameter :: {ActualParameter}
+    : Expression {ActualParameterSingle $1 }
+    | ActualParameter ':' Expression { ActualParameterMultiple $1 $3 }
+
+Expression :: {Expression}
+    : SimpleExpression {ExpressionSingle $1 }
+    | SimpleExpression '<>' Expression {ExpressionMultipleNE $1 $3 }
+    | SimpleExpression '=' Expression {ExpressionMultipleE $1 $3 }
+    | SimpleExpression '<' Expression {ExpressionMultipleLT $1 $3 }
+    | SimpleExpression '<=' Expression {ExpressionMultipleLTE $1 $3 }
+    | SimpleExpression '>' Expression {ExpressionMultipleGT $1 $3 }
+    | SimpleExpression '>=' Expression {ExpressionMultipleGTE $1 $3 }
+    | SimpleExpression 'in' Expression {ExpressionMultipleIN $1 $3 }
+
+SimpleExpression :: {SimpleExpression}
+    : Term {SingleExpressionTermSingle $1}
+    | Term '+' SimpleExpression {SingleExpressionTermMultipleAdd $1 $3}
+    | Term '-' SimpleExpression {SingleExpressionTermMultipleSub $1 $3}
+    | Term 'or' SimpleExpression {SingleExpressionTermMultipleOr $1 $3}
+
+
+Term :: {Term}
+    : SignedFactor {TermSingle $1}
+    | SignedFactor '*' Term {TermMultipleMult $1 $3}
+    | SignedFactor '/' Term {TermMultipleDivision $1 $3}
+    | SignedFactor 'div' Term {TermMultipleDiv $1 $3}
+    | SignedFactor 'mod' Term {TermMultipleMod $1 $3}
+    | SignedFactor 'and' Term {TermMultipleAnd $1 $3}
+
+SignedFactor :: {SignedFactor}
+: Factor {SignedFactorDefault $1}
+| '+' Factor {SignedFactorPlus $2}
+| '-' Factor {SignedFactorMinus $2}
+
+Factor :: {Factor}
+    : Variable{FactorVariable $1}
+    | '(' Expression ')'{FactorExpression $2}
+    | FunctionDesignator{FactorFD $1}
+    | UnsignedConstant{FactorUC $1}
+    | Set {FactorSe $1}
+    | 'not' Factor{FactorNot $2}
+    | Bool {FactorBool $1}
+
+Variable :: {Variable}
+    : Identifier {Var $1} --(LBRACK expression (COMMA expression)* RBRACK | LBRACK2 expression (COMMA expression)* RBRACK2 | DOT identifier | POINTER)*
+
+FunctionDesignator :: {FunctionDesignator}
+    : Identifier '(' ParameterList ')' { FDesignate $1 $3 }
+
+UnsignedConstant :: {UnsignedConstant}
+    : UnsignedNumber {UN $1}
+    | st { Str $1}
+    | 'nil' {Nil}
+
+
+
+UnsignedNumber :: {UnsignedNumber}
+    : UnsignedInteger {UI $1}
+    | UnsignedReal {UR $1}
+
+UnsignedInteger :: {Int} --may need to be something else
+    : int {$1}
+
+UnsignedReal :: {Float} --may need to be something else
+    : float {$1}
+
+
+
+Set :: {Set}
+    : '(' ElementList ')' {SetElement $2 }
+    | '(.' ElementList '.)' {SetElement2 $2 }
+
+ElementList :: {ElementList}
+    : Element {ElementListElemntSingle [$1]}
+    --| Element ',' ElementList {ElementListElemntMultiple $1:$3} --IDK
+
+Element :: {Element}
+    : Expression {ElementExpression $1}
+    --| Expression '..' Expression
+
+Bool :: {Bool}
+    : 'true' {True}
+    | 'false' {False}
+    --ID ':=' Exp { Assign $1 $3 }
+
+    
+--Defs :: {[Definition]}
+   -- : { [] } -- nothing; make empty list
+    -- | Definition Defs { $1:$2 } -- put statement as first element of statements
+
+--Definition :: {Definition}
+   -- : 'var' IdentiferList ':' Type { VarDef $2 $4 }  
+
+VType :: {VType}
     : 'bool' { BOOL }
     | 'real' { REAL }
     | 'string' { STRING }
 
-ID_List :: {[String]}
-    : ID {[$1]}
-    | ID ',' ID_List { $1:$3 }
+
 
 -- Expressions
-Exp :: {Exp}
-    : '+' Exp { $2 } -- ignore Plus
-    | '-' Exp { Op1 "-" $2}
-    | Exp '+' Exp { Op2 "+" $1 $3 }
-    | Exp '*' Exp { Op2 "*" $1 $3 }
-    | '(' Exp ')' { $2 } -- ignore brackets
+--Exp :: {Exp}
+    -- : '+' Exp { $2 } -- ignore Plus
+    -- | '-' Exp { Op1 "-" $2}
+    -- | Exp '+' Exp { Op2 "+" $1 $3 }
+    -- | Exp '*' Exp { Op2 "*" $1 $3 }
+    -- | '(' Exp ')' { $2 } -- ignore brackets
 
-BoolExp :: {BoolExp}
-    : 'true' { True_C }
-    | 'false' { False_C }
-    | 'not' BoolExp { Not $2 }
-    | BoolExp 'and' BoolExp { OpB "and" $1 $3 }
-
-Statements :: {[Statement]}
-    : { [] } -- nothing; make empty list
-    | Statement Statements { $1:$2 } -- put statement as first element of statements
-
-Statement :: {Statement}
-    : ID ':=' Exp { Assign $1 $3 }
+--BoolExp :: {BoolExp}
+    -- : 'true' { True_C }
+    -- | 'false' { False_C }
+    -- | 'not' BoolExp { Not $2 }
+    -- | BoolExp 'and' BoolExp { OpB "and" $1 $3 }
+    -- | Identifier { Var_B $1 }
 
 {}

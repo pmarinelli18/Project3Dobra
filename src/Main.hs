@@ -9,9 +9,7 @@ main = do
     contents <- readFile fileName
     case parseString contents of 
         Left err -> print $ show err
-        Right ast -> do
-            -- Show ast
-            putStrLn $ interpret ast 
+        Right ast -> putStrLn $ interpret ast 
         
         
 --Cabal run Pascal src/Tests/test1.pas
