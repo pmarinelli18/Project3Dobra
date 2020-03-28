@@ -53,6 +53,20 @@ import Pascal.Lexer
         'div'           { Token _ (TokenK "div") }
         'mod'           { Token _ (TokenK "mod") }
         'nil'           { Token _ (TokenK "nil") }
+        'if'            { Token _ (TokenK "if") }
+        'then'          { Token _ (TokenK "then") }
+        'else'          { Token _ (TokenK "else") } 
+        'case'          { Token _ (TokenK "case") }
+        'of'            { Token _ (TokenK "of") }
+        'while'         { Token _ (TokenK "while") }
+        'do'            { Token _ (TokenK "do") }
+        'repeat'        { Token _ (TokenK "repeat") }
+        'until'         { Token _ (TokenK "until") }
+        'for'           { Token _ (TokenK "for") }
+        'assign'        { Token _ (TokenK "assign") }
+        'to'            { Token _ (TokenK "to") }
+        'downto'        { Token _ (TokenK "downto") }
+        'with'          { Token _ (TokenK "with") }
 
 -- associativity of operators in reverse precedence order
 %nonassoc '>' '>=' '<' '<=' '==' '!='
@@ -109,9 +123,78 @@ Statement :: {Statement}
     :UnlabelledStatement {StatementUnlabelledStatement $1}
     --| label COLON unlabelledStatement
 
+IfStatement :: {IfStatement}
+    : 'if' Expression 'then' Statement {If $2 $4}
+    | 'if' Expression 'then' Statement 'else' Statement {IfElse $2 $4 $6}
+
+ConstList :: {ConstList}
+    : Constant {ConstListSingle $1}
+    | Constant ',' ConstList {ConstListMultiple $1 $3}
+
+Sign :: {Sign}
+    : '+' {SignPos}
+    | '-' {SignNeg}
+
+
+Constant :: {Constant}
+    : UnsignedNumber {ConstantUN $1}
+    | Sign UnsignedNumber {ConstantSUN $1 $2}
+    | Identifier {ConstantI $1} 
+    | Sign Identifier {ConstantSI $1 $2}
+    | st {ConstantS $1}
+
+CaseListElement :: {CaseListElement}
+    : ConstList ':' Statement {CaseListElementSingle $1 $3}
+
+CaseListElements :: {CaseListElements}
+    : CaseListElement {CaseListElementsSingle $1}
+    | CaseListElement ';' CaseListElements {CaseListElementsMultiple $1 $3}
+
+CaseStatement :: {CaseStatement}
+    : 'case' Expression 'of' CaseListElements 'end' {Case $2 $4}
+    | 'case' Expression 'of' CaseListElements ';' 'else' Statements 'end' {CaseElse $2 $4 $7}
+
+ConditionalStatement :: {ConditionalStatement}
+    : IfStatement {ConditionalStatementIf $1} 
+    | CaseStatement {ConditionalStatementCase $1}
+
+WhileStatement :: {WhileStatement}
+    : 'while' Expression 'do' Statement {WhileS $2 $4}
+
+RepeatStatement :: {RepeatStatement}
+    : 'repeat' Statements 'until' Expression {Repeat $2 $4}
+
+ForStatement :: {ForStatement}
+    : 'for' Identifier 'assign' ForList 'do' Statement {For $2 $4 $6}
+
+ForList :: {ForList}
+    : Expression 'to' Expression {ForListTo $1 $3}
+    | Expression 'downto' Expression {ForListDownTo $1 $3}
+
+RepetetiveStatement :: {RepetetiveStatement}
+    : WhileStatement {RepetetiveStatementWhile $1}
+    | RepeatStatement {RepetetiveStatementRepeat $1}
+    | ForStatement {RepetetiveStatementFor $1}
+
+Variable :: {Variable}
+    :  Identifier {Var $1 }--(LBRACK expression (COMMA expression)* RBRACK | LBRACK2 expression (COMMA expression)* RBRACK2 | DOT identifier | POINTER)*
+
+RecordVariableList :: {RecordVariableList}
+    : Variable {RecordVariableListSingle $1}
+    | Variable ',' RecordVariableList {RecordVariableListMultiple $1 $3}
+
+WithStatement :: {WithStatement}
+    : 'with' RecordVariableList 'do' Statement {With $2 $4}
+
+StructuredStatement :: {StructuredStatement}
+    : CompoundStatement {StructuredStatementCompoundStatement $1}
+    | ConditionalStatement {StructuredStatementConditionalStatement $1}
+    | RepetetiveStatement {StructuredStatementRepetetiveStatement $1}
+    | WithStatement {StructuredStatementWithStatement $1}
+
 UnlabelledStatement :: {UnlabelledStatement}
     : SimpleStatement {UnlabelledStatementSimpleStatement $1}
-    --| StructuredStatement
+    | StructuredStatement {UnlabelledStatementStructuredStatement $1}
 
 SimpleStatement :: {SimpleStatement}
     : ProcedureStatement {PS $1}
@@ -170,9 +253,6 @@ Factor :: {Factor}
     | Set {FactorSe $1}
     | 'not' Factor{FactorNot $2}
     | Bool {FactorBool $1}
-
-Variable :: {Variable}
-    : Identifier {Var $1} --(LBRACK expression (COMMA expression)* RBRACK | LBRACK2 expression (COMMA expression)* RBRACK2 | DOT identifier | POINT
     
 FunctionDesignator :: {FunctionDesignator}
     : Identifier '(' ParameterList ')' { FDesignate $1 $3 }

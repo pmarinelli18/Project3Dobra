@@ -24,17 +24,30 @@ module Pascal.Data
         ElementList(..),
         Set(..),
         ProgramHeading(..),
-
-        --Exp(..),
-        --BoolExp(..),
         VType(..),
-       -- Definition(..),
         Block(..),
         BlockOptions(..),
         VariableDeclarationPart(..),
         VariableDeclarationPartMultiple(..),
         VariableDeclaration(..),
         Statement(..),
+        IfStatement(..),
+        ConstList(..),
+        Sign(..),
+        Constant(..),
+        CaseListElement(..),
+        CaseListElements(..),
+        CaseStatement(..),
+        ConditionalStatement(..),
+        RepeatStatement(..),
+        ForStatement(..),
+        ForList(..),
+        RepetetiveStatement(..),
+        RecordVariableList(..),
+        WithStatement(..),
+        WhileStatement(..),
+        StructuredStatement(..),
+
         Program(..)
     ) where
 
@@ -68,9 +81,6 @@ data UnsignedConstant =
 
 data FunctionDesignator =
     FDesignate String ParameterList
-
-data Variable =
-    Var String
 
 data Factor =
     FactorVariable Variable
@@ -148,8 +158,78 @@ data ParameterList =
 data SimpleStatement =
     PS ProcedureStatement
 
+data IfStatement =
+    If Expression Statement
+    |IfElse Expression Statement Statement
+
+data Sign =
+    SignPos 
+    | SignNeg
+
+data Constant =
+    ConstantUN UnsignedNumber
+    |ConstantSUN Sign UnsignedNumber
+    |ConstantI  String
+    |ConstantSI Sign String
+    |ConstantS String
+
+data ConstList =
+    ConstListSingle Constant
+    |ConstListMultiple Constant ConstList
+
+data CaseListElement =
+    CaseListElementSingle ConstList Statement
+
+data CaseListElements =
+    CaseListElementsSingle CaseListElement 
+    |CaseListElementsMultiple CaseListElement CaseListElements
+
+data CaseStatement =
+    Case Expression CaseListElements
+    |CaseElse Expression CaseListElements [Statement]
+
+
+data ConditionalStatement =
+    ConditionalStatementIf IfStatement
+    | ConditionalStatementCase CaseStatement
+
+data WhileStatement =
+    WhileS Expression Statement
+
+data RepeatStatement =
+    Repeat [Statement] Expression
+
+data ForStatement =
+    For String ForList Statement
+
+data ForList =
+    ForListTo Expression Expression
+    | ForListDownTo Expression Expression
+
+data RepetetiveStatement =
+    RepetetiveStatementWhile WhileStatement
+    | RepetetiveStatementRepeat RepeatStatement
+    | RepetetiveStatementFor ForStatement
+
+data Variable = 
+    Var String
+
+data RecordVariableList =
+    RecordVariableListSingle Variable
+    | RecordVariableListMultiple Variable RecordVariableList
+
+data WithStatement =
+    With RecordVariableList Statement
+
+data StructuredStatement =
+    StructuredStatementCompoundStatement [Statement]
+    | StructuredStatementConditionalStatement ConditionalStatement
+    | StructuredStatementRepetetiveStatement RepetetiveStatement
+    | StructuredStatementWithStatement WithStatement
+
 data UnlabelledStatement =
     UnlabelledStatementSimpleStatement SimpleStatement
+    | UnlabelledStatementStructuredStatement StructuredStatement
 
 data Statement = 
     StatementUnlabelledStatement UnlabelledStatement
