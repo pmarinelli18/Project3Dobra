@@ -132,7 +132,13 @@ ActualParameter :: {ActualParameter}
 
 Expression :: {Expression}
     : SimpleExpression {ExpressionSingle $1 }
-    | SimpleExpression Relationaloperator Expression {ExpressionMultiple $1 $2 $3 }
+    | SimpleExpression '<>' Expression {ExpressionMultipleNE $1 $3 }
+    | SimpleExpression '=' Expression {ExpressionMultipleE $1 $3 }
+    | SimpleExpression '<' Expression {ExpressionMultipleLT $1 $3 }
+    | SimpleExpression '<=' Expression {ExpressionMultipleLTE $1 $3 }
+    | SimpleExpression '>' Expression {ExpressionMultipleGT $1 $3 }
+    | SimpleExpression '>=' Expression {ExpressionMultipleGTE $1 $3 }
+    | SimpleExpression 'in' Expression {ExpressionMultipleIN $1 $3 }
 
 SimpleExpression :: {SimpleExpression}
     : Term {SingleExpressionTermSingle $1}
@@ -140,30 +146,19 @@ SimpleExpression :: {SimpleExpression}
     | Term '-' SimpleExpression {SingleExpressionTermMultipleSub $1 $3}
     | Term 'or' SimpleExpression {SingleExpressionTermMultipleOr $1 $3}
 
-Relationaloperator :: {Relationaloperator}
-   : '=' {RelationaloperatorE}
-   | '<>' {RelationaloperatorNE}
-   | '<' {RelationaloperatorLT } 
-   | '<=' {RelationaloperatorLTE}
-   | '>' {RelationaloperatorGT }
-   | '>=' {RelationaloperatorGTE}
-   | 'in' {RelationaloperatorIN}
 
 Term :: {Term}
     : SignedFactor {TermSingle $1}
-    | SignedFactor Multiplicativeoperator Term {TermMultiple $1 $2 $3}
+    | SignedFactor '*' Term {TermMultipleMult $1 $3}
+    | SignedFactor '/' Term {TermMultipleDivision $1 $3}
+    | SignedFactor 'div' Term {TermMultipleDiv $1 $3}
+    | SignedFactor 'mod' Term {TermMultipleMod $1 $3}
+    | SignedFactor 'and' Term {TermMultipleAnd $1 $3}
 
 SignedFactor :: {SignedFactor}
 : Factor {SignedFactorDefault $1}
 | '+' Factor {SignedFactorPlus $2}
 | '-' Factor {SignedFactorMinus $2}
-
-Multiplicativeoperator :: {Multiplicativeoperator}
-    : '*' {MultiplicativeoperatorMultiplication}
-    | '/'{MultiplicativeoperatorDivision}
-    | 'div'{MultiplicativeoperatorDiv}
-    | 'mod'{MultiplicativeoperatorMod}
-    | 'and'{MultiplicativeoperatorAnd}
 
 Factor :: {Factor}
     : Variable{FactorVariable $1}
