@@ -106,7 +106,11 @@ data SignedFactor =
 
 data Term =
     TermSingle SignedFactor
-    | TermMultiple SignedFactor Multiplicativeoperator Term
+    | TermMultipleMult SignedFactor Term
+    | TermMultipleDivision SignedFactor Term
+    | TermMultipleDiv SignedFactor Term
+    | TermMultipleMod SignedFactor Term
+    | TermMultipleAnd SignedFactor Term
 
 data Relationaloperator =
     RelationaloperatorE
@@ -125,7 +129,13 @@ data SimpleExpression =
 
 data Expression =
     ExpressionSingle SimpleExpression 
-    | ExpressionMultiple SimpleExpression Relationaloperator Expression
+    | ExpressionMultipleNE SimpleExpression Expression
+    | ExpressionMultipleE SimpleExpression Expression
+    | ExpressionMultipleLT SimpleExpression Expression
+    | ExpressionMultipleLTE SimpleExpression Expression
+    | ExpressionMultipleGT SimpleExpression Expression
+    | ExpressionMultipleGTE SimpleExpression Expression
+    | ExpressionMultipleIN SimpleExpression Expression
 
 data ActualParameter =
     ActualParameterSingle Expression 

@@ -55,7 +55,13 @@ signedFactorEval (SignedFactorMinus factor) = factorEval factor
 
 termEval :: Term -> Val
 termEval (TermSingle signedFactor) = signedFactorEval signedFactor
-termEval (TermMultiple signedFactor multiplicativeoperator term) = Real(1.1)
+termEval (TermMultipleMult signedFactor term) = Real((toFloat (signedFactorEval signedFactor)) * (toFloat(termEval term)))
+termEval (TermMultipleDivision signedFactor term) = Real((toFloat (signedFactorEval signedFactor)) / (toFloat(termEval term)))
+termEval (TermMultipleDiv signedFactor term) = Real((toFloat (signedFactorEval signedFactor)) / (toFloat(termEval term)))
+termEval (TermMultipleMod signedFactor term) = Real((toFloat (signedFactorEval signedFactor)) * (toFloat(termEval term)))--Integer((toInt(signedFactorEval signedFactor)) `mod` (toInt(termEval term)))
+termEval (TermMultipleAnd signedFactor term) = Boolean((toBool (signedFactorEval signedFactor)) && (toBool(termEval term)))
+---------------------------------------------DID NOT ADD FUNCTIONALITY TO "mod" YET Maybe havnt tested it yet ---------------------------------------------------
+
 
 
 
@@ -63,10 +69,20 @@ simpleExpressionEval :: SimpleExpression ->Val
 simpleExpressionEval (SingleExpressionTermSingle term)  = termEval term
 simpleExpressionEval (SingleExpressionTermMultipleAdd term simpleExpression) = Real((toFloat (termEval term)) + (toFloat(simpleExpressionEval simpleExpression)))
 simpleExpressionEval (SingleExpressionTermMultipleSub term simpleExpression) = Real((toFloat (termEval term)) - (toFloat(simpleExpressionEval simpleExpression)))
-simpleExpressionEval (SingleExpressionTermMultipleOr term simpleExpression) = Real((toFloat (termEval term)) + (toFloat (simpleExpressionEval simpleExpression)))
+simpleExpressionEval (SingleExpressionTermMultipleOr term simpleExpression) = Boolean((toBool (termEval term)) || (toBool (simpleExpressionEval simpleExpression)))
+---------------------------------------------DID NOT ADD FUNCTIONALITY TO "Or" YET Maybe havnt tested it yet ---------------------------------------------------
+
+
 expressionEval :: Expression -> Val
 expressionEval (ExpressionSingle simpleExpression ) = simpleExpressionEval simpleExpression
-expressionEval (ExpressionMultiple simpleExpression relationaloperator expression) = Real(1.3)
+expressionEval (ExpressionMultipleE simpleExpression expression) = Boolean ((simpleExpressionEval simpleExpression) == (expressionEval expression))
+expressionEval (ExpressionMultipleNE simpleExpression expression) = Boolean ((simpleExpressionEval simpleExpression) /= (expressionEval expression))
+expressionEval (ExpressionMultipleLT simpleExpression expression) = Boolean ((toFloat(simpleExpressionEval simpleExpression)) > (toFloat(expressionEval expression)))
+expressionEval (ExpressionMultipleLTE simpleExpression expression) = Boolean ((toFloat(simpleExpressionEval simpleExpression)) >= (toFloat(expressionEval expression)))
+expressionEval (ExpressionMultipleGT simpleExpression expression) = Boolean ((toFloat(simpleExpressionEval simpleExpression)) < (toFloat(expressionEval expression)))
+expressionEval (ExpressionMultipleGTE simpleExpression expression) = Boolean ((toFloat(simpleExpressionEval simpleExpression)) <= (toFloat(expressionEval expression)))
+expressionEval (ExpressionMultipleIN simpleExpression expression) = Boolean ((simpleExpressionEval simpleExpression) == (expressionEval expression))
+---------------------------------------------DID NOT ADD FUNCTIONALITY TO "In" YET ---------------------------------------------------
 
 actualParameterEval :: ActualParameter -> Val
 actualParameterEval (ActualParameterSingle expression ) = expressionEval expression

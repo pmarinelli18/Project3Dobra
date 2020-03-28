@@ -8,6 +8,7 @@ import Text.Read (readMaybe)
 data Val = Integer Int 
     | Real Float
     | Id String
+    | Boolean Bool
     deriving (Show, Eq)
 
 -- converts string to Val 
@@ -23,6 +24,7 @@ valToStr :: Val -> String
 valToStr (Real x) = show x
 valToStr (Integer x) = show x
 valToStr (Id x) = show x
+valToStr (Boolean x) = show x
 
 
 -- converts to Float if Real or Integer, error otherwise
@@ -31,6 +33,7 @@ toFloat :: Val -> Float
 toFloat (Real x) = x
 toFloat (Integer i) = fromIntegral i     
 toFloat (Id _) = error "Not convertible to float"
+toFloat (Boolean _) = error "Not convertible to float"
 
 -- converts to Float if Real or Integer, error otherwise
 -- used to deal with arguments of operators
@@ -38,5 +41,12 @@ toInt :: Val -> Integer
 toInt (Real x) = floor x
 toInt (Integer i) = toInteger i     
 toInt (Id _) = error "Not convertible to Integer"
+toInt (Boolean _) = error "Not convertible to float"
+
+toBool :: Val -> Bool
+toBool (Real _) = error "Not convertible to Integer"
+toBool (Integer _) = error "Not convertible to Integer"
+toBool (Id _) = error "Not convertible to Integer"
+toBool (Boolean b) = b
 
 
