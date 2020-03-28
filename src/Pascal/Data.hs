@@ -4,14 +4,13 @@
 module Pascal.Data
     (
         Bool(..),
-        UsignedNumber(..),
+        UnsignedNumber(..),
         UnsignedConstant(..),
         FunctionDesignator(..),
         Variable(..),
         Factor(..),
         Multiplicativeoperator(..),
         SignedFactor(..),
-        Additiveoperator(..),
         Term(..),
         Relationaloperator(..),
         SimpleExpression(..),
@@ -58,12 +57,12 @@ data Block =
 data BlockOptions =
     BlockOptionsVariableDeclarationPart VariableDeclarationPart
 
-data UsignedNumber =
+data UnsignedNumber =
     UI Int
     |UR Float
 
 data UnsignedConstant = 
-    UN UsignedNumber
+    UN UnsignedNumber
     | St String
     | Nil
 
@@ -105,11 +104,6 @@ data SignedFactor =
     | SignedFactorPlus Factor
     | SignedFactorMinus  Factor
 
-data Additiveoperator =
-    Plus
-    |Minus
-    |Or
-
 data Term =
     TermSingle SignedFactor
     | TermMultiple SignedFactor Multiplicativeoperator Term
@@ -125,7 +119,9 @@ data Relationaloperator =
 
 data SimpleExpression = 
     SingleExpressionTermSingle Term
-    | SingleExpressionTermMultiple Term Additiveoperator SimpleExpression
+    | SingleExpressionTermMultipleAdd Term SimpleExpression
+    | SingleExpressionTermMultipleSub Term SimpleExpression
+    | SingleExpressionTermMultipleOr Term SimpleExpression
 
 data Expression =
     ExpressionSingle SimpleExpression 
@@ -141,7 +137,6 @@ data ParameterList =
 
 data SimpleStatement =
     PS ProcedureStatement
-    | ES 
 
 data UnlabelledStatement =
     UnlabelledStatementSimpleStatement SimpleStatement
