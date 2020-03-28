@@ -72,9 +72,6 @@ termEval (TermMultipleMod signedFactor term) = Real((toFloat (signedFactorEval s
 termEval (TermMultipleAnd signedFactor term) = Boolean((toBool (signedFactorEval signedFactor)) && (toBool(termEval term)))
 ---------------------------------------------DID NOT ADD FUNCTIONALITY TO "mod" YET Maybe havnt tested it yet ---------------------------------------------------
 
-
-
-
 simpleExpressionEval :: SimpleExpression ->Val
 simpleExpressionEval (SingleExpressionTermSingle term)  = termEval term
 simpleExpressionEval (SingleExpressionTermMultipleAdd term simpleExpression) = Real((toFloat (termEval term)) + (toFloat(simpleExpressionEval simpleExpression)))
@@ -87,10 +84,10 @@ expressionEval :: Expression -> Val
 expressionEval (ExpressionSingle simpleExpression ) = simpleExpressionEval simpleExpression
 expressionEval (ExpressionMultipleE simpleExpression expression) = Boolean ((simpleExpressionEval simpleExpression) == (expressionEval expression))
 expressionEval (ExpressionMultipleNE simpleExpression expression) = Boolean ((simpleExpressionEval simpleExpression) /= (expressionEval expression))
-expressionEval (ExpressionMultipleLT simpleExpression expression) = Boolean ((toFloat(simpleExpressionEval simpleExpression)) > (toFloat(expressionEval expression)))
-expressionEval (ExpressionMultipleLTE simpleExpression expression) = Boolean ((toFloat(simpleExpressionEval simpleExpression)) >= (toFloat(expressionEval expression)))
-expressionEval (ExpressionMultipleGT simpleExpression expression) = Boolean ((toFloat(simpleExpressionEval simpleExpression)) < (toFloat(expressionEval expression)))
-expressionEval (ExpressionMultipleGTE simpleExpression expression) = Boolean ((toFloat(simpleExpressionEval simpleExpression)) <= (toFloat(expressionEval expression)))
+expressionEval (ExpressionMultipleLT simpleExpression expression) = Boolean ((toFloat(simpleExpressionEval simpleExpression)) < (toFloat(expressionEval expression)))
+expressionEval (ExpressionMultipleLTE simpleExpression expression) = Boolean ((toFloat(simpleExpressionEval simpleExpression)) <= (toFloat(expressionEval expression)))
+expressionEval (ExpressionMultipleGT simpleExpression expression) = Boolean ((toFloat(simpleExpressionEval simpleExpression)) > (toFloat(expressionEval expression)))
+expressionEval (ExpressionMultipleGTE simpleExpression expression) = Boolean ((toFloat(simpleExpressionEval simpleExpression)) >= (toFloat(expressionEval expression)))
 expressionEval (ExpressionMultipleIN simpleExpression expression) = Boolean ((simpleExpressionEval simpleExpression) == (expressionEval expression))
 ---------------------------------------------DID NOT ADD FUNCTIONALITY TO "In" YET ---------------------------------------------------
 
@@ -109,9 +106,27 @@ procedureStatementEval (MultiProcedureStatement "writeln" x) = parameterListEval
 simpleStatementEval :: SimpleStatement -> Val
 simpleStatementEval (PS ps) = procedureStatementEval ps
 
+ifStatementEval :: IfStatement -> String
+ifStatementEval (IfState expression statement) = if (toBool(expressionEval expression)) then (statementEval statement) else ""
+ifStatementEval (IfStateElse expression statement1 statement2) = if (toBool(expressionEval expression)) then (statementEval statement1) else (statementEval statement2)
+
+conditionalStatementEval :: ConditionalStatement -> Val
+conditionalStatementEval (ConditionalStatementIf ifStatement) = Id (ifStatementEval ifStatement)
+--conditionalStatementEval (ConditionalStatementCase caseStatement) = ifStatementEval caseStatement
+
+--repetetiveStatementEval :: RepetetiveStatement -> Val
+
+--withStatementEval :: WithStatement -> Val
+
+structuredStatementEval :: StructuredStatement ->Val
+--structuredStatementEval (StructuredStatementCompoundStatement statementArray) =
+structuredStatementEval (  StructuredStatementConditionalStatement conditionalStatement) = conditionalStatementEval conditionalStatement
+--structuredStatementEval (StructuredStatementRepetetiveStatement repetetiveStatement) =
+--structuredStatementEval ( StructuredStatementWithStatement withStatement) =
 
 unlabelledStatementEval :: UnlabelledStatement -> Val
-unlabelledStatementEval (UnlabelledStatementSimpleStatement u) = simpleStatementEval u
+unlabelledStatementEval (UnlabelledStatementSimpleStatement simpleStatement) = simpleStatementEval simpleStatement
+unlabelledStatementEval (UnlabelledStatementStructuredStatement structuredStatement) = structuredStatementEval structuredStatement
 
 statementEval :: Statement -> String
 statementEval (StatementUnlabelledStatement us) = valToStr (unlabelledStatementEval us)

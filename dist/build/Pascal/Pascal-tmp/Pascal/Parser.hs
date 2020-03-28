@@ -664,7 +664,7 @@ happyReduction_20 (happy_x_4 `HappyStk`
 	 = case happyOut38 happy_x_2 of { happy_var_2 -> 
 	case happyOut15 happy_x_4 of { happy_var_4 -> 
 	happyIn16
-		 (If happy_var_2 happy_var_4
+		 (IfState happy_var_2 happy_var_4
 	) `HappyStk` happyRest}}
 
 happyReduce_21 :: () => Happy_GHC_Exts.Int# -> Token -> Happy_GHC_Exts.Int# -> Happy_IntList -> HappyStk (HappyAbsSyn ) -> Parser (HappyAbsSyn )
@@ -680,7 +680,7 @@ happyReduction_21 (happy_x_6 `HappyStk`
 	case happyOut15 happy_x_4 of { happy_var_4 -> 
 	case happyOut15 happy_x_6 of { happy_var_6 -> 
 	happyIn16
-		 (IfElse happy_var_2 happy_var_4 happy_var_6
+		 (IfStateElse happy_var_2 happy_var_4 happy_var_6
 	) `HappyStk` happyRest}}}
 
 happyReduce_22 :: () => Happy_GHC_Exts.Int# -> Token -> Happy_GHC_Exts.Int# -> Happy_IntList -> HappyStk (HappyAbsSyn ) -> Parser (HappyAbsSyn )

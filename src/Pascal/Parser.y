@@ -124,8 +124,8 @@ Statement :: {Statement}
     --| label COLON unlabelledStatement
 
 IfStatement :: {IfStatement}
-    : 'if' Expression 'then' Statement {If $2 $4}
-    | 'if' Expression 'then' Statement 'else' Statement {IfElse $2 $4 $6}
+    : 'if' Expression 'then' Statement {IfState $2 $4}
+    | 'if' Expression 'then' Statement 'else' Statement {IfStateElse $2 $4 $6}
 
 ConstList :: {ConstList}
     : Constant {ConstListSingle $1}

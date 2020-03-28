@@ -47,7 +47,6 @@ module Pascal.Data
         WithStatement(..),
         WhileStatement(..),
         StructuredStatement(..),
-
         Program(..)
     ) where
 
@@ -159,8 +158,8 @@ data SimpleStatement =
     PS ProcedureStatement
 
 data IfStatement =
-    If Expression Statement
-    |IfElse Expression Statement Statement
+    IfState Expression Statement
+    |IfStateElse Expression Statement Statement
 
 data Sign =
     SignPos 
