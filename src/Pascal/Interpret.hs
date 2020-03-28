@@ -38,10 +38,18 @@ unsignedConstantEval    (UN unsignedNumber) = unsignedNumberEval unsignedNumber
 unsignedConstantEval    (St str) = Id str
 unsignedConstantEval    (Nil) = Id ("Nil")
 
+functionDesignatorEval :: FunctionDesignator -> Val
+functionDesignatorEval (FDesignate "cos" parameterList) = Real (cos(toFloat(parameterListEval parameterList)))
+functionDesignatorEval (FDesignate "sin" parameterList) = Real (sin(toFloat(parameterListEval parameterList)))
+functionDesignatorEval (FDesignate "sqrt" parameterList) = Real (sqrt(toFloat(parameterListEval parameterList)))
+functionDesignatorEval (FDesignate "ln" parameterList) = Real (log(toFloat(parameterListEval parameterList)))
+functionDesignatorEval (FDesignate "dopower" parameterList) = Real (cos(toFloat(parameterListEval parameterList)))
+---------------------------------------------DID NOT ADD FUNCTIONALITY TO "Dopower" YET Maybe havnt tested it yet ---------------------------------------------------
+
 factorEval :: Factor -> Val    --Add boolean to Val in Val.hs
 factorEval (FactorVariable variable) =     Real (1.0)
 factorEval (FactorExpression expression) =  Real (2.0)
-factorEval (FactorFD functionDesignator) =  Real (3.0)
+factorEval (FactorFD functionDesignator) =  functionDesignatorEval functionDesignator
 factorEval (FactorUC unsignedConstant) =  unsignedConstantEval unsignedConstant
 factorEval (FactorSe set) = Real (5.0)
 factorEval (FactorNot factor) = Real (6.0)

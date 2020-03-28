@@ -72,8 +72,8 @@ data TokenClass
  | TokenK      String
  | TokenType   String
  | TokenInt    Int
- | TokenFloat   Float
- | TokenID    String
+ | TokenFloat  Float
+ | TokenID     String
  | TokenEOF
  deriving (Eq, Show)
 
