@@ -108,8 +108,9 @@ VariableDeclarationPartMultiple:: {VariableDeclarationPartMultiple}
     | VariableDeclaration {VariableDeclarationPartMultipleSingle $1}
 
 VariableDeclaration:: {VariableDeclaration}
-    : IdentifierList ':' VType ';'{VariableDeclarationMain $1 $3 }
-
+    : IdentifierList ':' 'bool' ';'{VariableDeclarationMainBool $1}
+    | IdentifierList ':' 'real' ';'{VariableDeclarationMainReal $1}
+    | IdentifierList ':' 'string' ';'{VariableDeclarationMainString $1}
 
 CompoundStatement:: {[Statement]}
     : 'begin' Statements 'end' { $2 }

@@ -9,6 +9,7 @@ where
 --import Pascal.Val
 import Pascal.Data
 import Pascal.Val
+import qualified Data.Map as Map
 
 -- TODO: define auxiliary functions to aid interpretation
 -- Feel free to put them here or in different modules
@@ -110,9 +111,51 @@ ifStatementEval :: IfStatement -> String
 ifStatementEval (IfState expression statement) = if (toBool(expressionEval expression)) then (statementEval statement) else ""
 ifStatementEval (IfStateElse expression statement1 statement2) = if (toBool(expressionEval expression)) then (statementEval statement1) else (statementEval statement2)
 
+--constListEval :: ConstList -> Val
+--constListEval (ConstListSingle x) = constantEval x
+
+--constantEval :: Constant -> Val
+--constantEval (ConstantUN unsignedNumber) = unsignedNumberEval unsignedNumber
+
+--caseListElementEval :: CaseListElement -> (Val,Val)
+--caseListElementEval (CaseListElementSingle const statement) = (constListEval const, Id (statementEval statement) )
+
+--caseListElementsEval :: CaseListElements -> [(Val, Val)]
+--caseListElementsEval (CaseListElementsSingle element ) = [caseListElementEval element]
+--caseListElementsEval (CaseListElementsMultiple element case_list ) = (caseListElementEval element : caseListElementsEval case_list)
+
+caseListElements_eval :: CaseListElements -> [(Val, Val)]
+caseListElements_eval (CaseListElementsSingle element ) = [caseListElement_eval element]
+caseListElements_eval (CaseListElementsMultiple element case_list ) =  (concat [caseListElement_eval element: (caseListElements_eval case_list)])
+
+caseListElement_eval :: CaseListElement -> (Val, Val)
+caseListElement_eval (CaseListElementSingle const statement) = (constList_eval const, Id (statementEval statement) )
+
+constList_eval :: ConstList -> Val
+constList_eval (ConstListSingle x) = constant_eval x
+
+constant_eval :: Constant -> Val
+constant_eval (ConstantUN unsignedNumber) = unsignedNumberEval unsignedNumber
+
+
+removeIndex :: [(Val, Val)] -> Int ->[(Val, Val)]
+removeIndex xs n = fst notGlued ++ snd notGlued
+    where notGlued = (take (n-1) xs, drop n xs)
+
+caseStatementEval :: CaseStatement -> String
+caseStatementEval (Case expression case_list) =  if  (( expressionEval expression) == (fst(head (caseListElements_eval case_list)))) 
+                                                            then (valToStr (snd(head(caseListElements_eval case_list))))
+                                                            else (caseStatementEval (CaseBreakDown expression (removeIndex (caseListElements_eval case_list) 1)))
+caseStatementEval (CaseBreakDown expression case_list) =  if  (( expressionEval expression) == (fst(head (case_list)))) 
+                                                            then (valToStr(snd(head(case_list))))
+                                                            else (caseStatementEval (CaseBreakDown expression(removeIndex case_list 1)))
+--caseStatementEval (Case expression case_list) =  case  (toFloat(expressionEval expression)) of (toFloat(fst(head(caseListElements_eval case_list)))) -> (snd(head(caseListElements_eval case_list)))
+--caseStatementEval (Case Expression CaseListElements) =
+--caseStatementEval (CaseElse Expression CaseListElements [Statement]) =
+
 conditionalStatementEval :: ConditionalStatement -> Val
 conditionalStatementEval (ConditionalStatementIf ifStatement) = Id (ifStatementEval ifStatement)
---conditionalStatementEval (ConditionalStatementCase caseStatement) = ifStatementEval caseStatement
+conditionalStatementEval (ConditionalStatementCase caseStatement) = Id (caseStatementEval caseStatement)
 
 --repetetiveStatementEval :: RepetetiveStatement -> Val
 
@@ -136,6 +179,19 @@ statementToString (x) = map statementEval (x)
 
 statementsEval :: [Statement] -> Val
 statementsEval (x) = Id (concat (statementToString x) ) --show (traverse (statementEval x)) ]
+
+
+--variableDeclarationEval :: VariableDeclaration -> [(String, String, Val)]
+--variableDeclarationEval (VariableDeclarationMainBool str) =  ( str, "Bool", Boolean True)
+--variableDeclarationEval (VariableDeclarationMainReal str) = ( str, "Bool", Boolean True)
+--variableDeclarationEval (VariableDeclarationMainString str) = ( str, "Bool", Boolean True)
+
+--variableDeclarationPartEval :: VariableDeclarationPart -> [(String, VType, Val)]
+--variableDeclarationPartEval (VariableDeclarationPartSingle variableDeclaration) = variableDeclarationEval variableDeclaration
+--variableDeclarationPartEval (VariableDeclarationPartMultiple variableDeclaration variableDeclarationPartMultiple) = variableDeclarationEval variableDeclaration
+
+--blockOptionsEval :: BlockOptions -> [(String, VType, Val)]
+--blockOptionsEval (BlockOptionsVariableDeclarationPart variableDeclarationPart) = variableDeclarationPartEval variableDeclarationPart
 
 blockEval :: Block -> Val
 blockEval (BlockCopoundStatement s ) = statementsEval s

@@ -50,6 +50,7 @@ module Pascal.Data
         Program(..)
     ) where
 
+import Pascal.Val
 
 data VariableDeclarationPart =
     VariableDeclarationPartSingle VariableDeclaration
@@ -60,7 +61,9 @@ data VariableDeclarationPartMultiple =
     |VariableDeclarationPartMultipleMultiple VariableDeclaration VariableDeclarationPartMultiple
 
 data VariableDeclaration = 
-    VariableDeclarationMain [String] VType
+    VariableDeclarationMainBool [String]
+    |VariableDeclarationMainReal [String]
+    |VariableDeclarationMainString [String]
 
 data Block =
     BlockCopoundStatement [Statement]
@@ -186,6 +189,7 @@ data CaseListElements =
 data CaseStatement =
     Case Expression CaseListElements
     |CaseElse Expression CaseListElements [Statement]
+    | CaseBreakDown Expression [(Val, Val)]
 
 
 data ConditionalStatement =
