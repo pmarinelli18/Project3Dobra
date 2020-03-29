@@ -121,14 +121,14 @@ conditionalStatementEval (ConditionalStatementCase caseStatement) =  caseStateme
 
 
 caseStatementEval :: CaseStatement -> Val
-caseStatementEval (Case expression case_list) =  if  (toFloat( expressionEval expression) == toFloat(fst(head (caseListElements_eval case_list)))) then (snd(head(caseListElements_eval case_list))) else (Id (statementEval ifelse))
+--caseStatementEval (Case expression case_list) =  if  (toFloat( expressionEval expression) == toFloat(fst(head (caseListElements_eval case_list)))) then (snd(head(caseListElements_eval case_list))) else (Id (statementEval ifelse))
 --caseStatementEval (Case expression case_list) =  case  (toFloat( expressionEval expression)) of (toFloat(fst(head(caseListElements_eval case_list)))) -> (snd(head(caseListElements_eval case_list)))  
--- caseStatementEval (Case expression case_list) = do 
---     if length case_list == 1
---         then
---             Real(19)
---         else
---             Real(25)
+caseStatementEval (Case expression case_list) = do 
+    if length( caseListElements_eval case_list) > 0 
+        then
+            Real(19)
+        else
+            Real(25)
  
  
     --case Real(150) of (fst (caseListElements_eval case_list)) -> snd(caseListElements_eval case_list) 
