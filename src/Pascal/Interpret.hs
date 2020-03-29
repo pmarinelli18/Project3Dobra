@@ -117,31 +117,30 @@ ifStatementEval (IfStateElse expression statement1 statement2) = if (toBool(expr
 
 conditionalStatementEval :: ConditionalStatement -> Val
 conditionalStatementEval (ConditionalStatementIf ifStatement) = Id (ifStatementEval ifStatement)
-conditionalStatementEval (ConditionalStatementCase caseStatement) =  caseStatementEval caseStatement
+conditionalStatementEval (ConditionalStatementCase caseStatement) = strToVal (caseStatementEval caseStatement)
 
 
-caseStatementEval :: CaseStatement -> Val
---caseStatementEval (Case expression case_list) =  if  (toFloat( expressionEval expression) == toFloat(fst(head (caseListElements_eval case_list)))) then (snd(head(caseListElements_eval case_list))) else (Id (statementEval ifelse))
+caseStatementEval :: CaseStatement -> String
+caseStatementEval (Case expression case_list) =  if  (( expressionEval expression) == (fst(head (caseListElements_eval case_list)))) then (snd(head(caseListElements_eval case_list))) else ""
 --caseStatementEval (Case expression case_list) =  case  (toFloat( expressionEval expression)) of (toFloat(fst(head(caseListElements_eval case_list)))) -> (snd(head(caseListElements_eval case_list)))  
-caseStatementEval (Case expression case_list) = do 
-    if length( caseListElements_eval case_list) > 0 
-        then
-            Real(19)
-        else
-            Real(25)
- 
+-- caseStatementEval (Case expression case_list) = do 
+--     if length( caseListElements_eval case_list) > 0 
+--         then
+--             Real(19)
+--         else
+--             Real(25)
  
     --case Real(150) of (fst (caseListElements_eval case_list)) -> snd(caseListElements_eval case_list) 
 --I am returning a tuple; to retrieve the first element of the tuple, I use fst; to retrieve the second, I use snd                                             
-caseStatementEval (CaseElse expression  case_list ifelse) =if  (toFloat( expressionEval expression) == toFloat(fst(head (caseListElements_eval case_list)))) then (snd(head(caseListElements_eval case_list))) else Real(1000)
+caseStatementEval (CaseElse expression  case_list ifelse) =if  (toFloat( expressionEval expression) == toFloat(fst(head (caseListElements_eval case_list)))) then (snd(head(caseListElements_eval case_list))) else ""
 
 
-caseListElements_eval :: CaseListElements -> [(Val, Val)]
+caseListElements_eval :: CaseListElements -> [(Val, String)]
 caseListElements_eval (CaseListElementsSingle element ) = [caseListElement_eval element]
 caseListElements_eval (CaseListElementsMultiple element case_list ) = (caseListElement_eval element : caseListElements_eval case_list)
 
-caseListElement_eval :: CaseListElement -> (Val,Val)
-caseListElement_eval (CaseListElementSingle const statement) = (constList_eval const, Id (statementEval statement) )
+caseListElement_eval :: CaseListElement -> (Val,String)
+caseListElement_eval (CaseListElementSingle const statement) = (constList_eval const,  (statementEval statement) )
 
 constList_eval :: ConstList -> Val
 constList_eval (ConstListSingle x) = constant_eval x
@@ -168,15 +167,19 @@ statementEval (StatementUnlabelledStatement us) = valToStr (unlabelledStatementE
 statementToString :: [Statement] -> [String]
 statementToString (x) = map statementEval (x)
 
-statementsEval :: [Statement] -> Val
-statementsEval (x) = Id (concat (statementToString x) ) --show (traverse (statementEval x)) ]
+-- statementsEval :: [Statement] -> Val
+-- statementsEval (x) = Id (concat (statementToString x) ) --show (traverse (statementEval x)) ]
 
-blockEval :: Block -> Val
+statementsEval :: [Statement] -> String
+statementsEval (x) =  (concat (statementToString x) ) --show (traverse (statementEval x)) ]
+
+blockEval :: Block -> String
 blockEval (BlockCopoundStatement s ) = statementsEval s
-blockEval (BlockVariableDeclarationPart b s) = statementsEval s
+blockEval (BlockVariableDeclarationPart b s) = removePunc2 (statementsEval s )
+     
 
 interpret :: Program -> String
 -- TODO: write the interpreter
-interpret (ProgramBlock programheading block) = (valToStr (blockEval block))
+interpret (ProgramBlock programheading block) = ( (blockEval block))
 
 interpret _ = "Not implemented"
