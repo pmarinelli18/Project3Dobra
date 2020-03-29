@@ -8,7 +8,9 @@
 begin 
      
     case 1 of
-      1 : writeln('Excellent!')
+      9 : writeln('Excellent!');
+      1 : writeln('Good'); 
+      4 : writeln('Good')
     end
 
 end.

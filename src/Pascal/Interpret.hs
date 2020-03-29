@@ -121,18 +121,27 @@ conditionalStatementEval (ConditionalStatementCase caseStatement) =  caseStateme
 
 
 caseStatementEval :: CaseStatement -> Val
-caseStatementEval (Case expression case_list) =  if  (toFloat( expressionEval expression) == toFloat(fst(caseListElements_eval case_list))) then (snd(caseListElements_eval case_list)) else Real(1000)
+caseStatementEval (Case expression case_list) =  if  (toFloat( expressionEval expression) == toFloat(fst(head (caseListElements_eval case_list)))) then (snd(head(caseListElements_eval case_list))) else (Id (statementEval ifelse))
+--caseStatementEval (Case expression case_list) =  case  (toFloat( expressionEval expression)) of (toFloat(fst(head(caseListElements_eval case_list)))) -> (snd(head(caseListElements_eval case_list)))  
+-- caseStatementEval (Case expression case_list) = do 
+--     if length case_list == 1
+--         then
+--             Real(19)
+--         else
+--             Real(25)
+ 
+ 
     --case Real(150) of (fst (caseListElements_eval case_list)) -> snd(caseListElements_eval case_list) 
 --I am returning a tuple; to retrieve the first element of the tuple, I use fst; to retrieve the second, I use snd                                             
-caseStatementEval (CaseElse expression  case_list ifelse) = Real(100)
+caseStatementEval (CaseElse expression  case_list ifelse) =if  (toFloat( expressionEval expression) == toFloat(fst(head (caseListElements_eval case_list)))) then (snd(head(caseListElements_eval case_list))) else Real(1000)
 
 
-caseListElements_eval :: CaseListElements -> (Val, Val)
-caseListElements_eval (CaseListElementsSingle element ) = caseListElement_eval element
---caseListElements_eval (CaseListElementsMultiple element case_list ) = Real(180)
+caseListElements_eval :: CaseListElements -> [(Val, Val)]
+caseListElements_eval (CaseListElementsSingle element ) = [caseListElement_eval element]
+caseListElements_eval (CaseListElementsMultiple element case_list ) = (caseListElement_eval element : caseListElements_eval case_list)
 
 caseListElement_eval :: CaseListElement -> (Val,Val)
-caseListElement_eval (CaseListElementSingle const statement) = (constList_eval const, )
+caseListElement_eval (CaseListElementSingle const statement) = (constList_eval const, Id (statementEval statement) )
 
 constList_eval :: ConstList -> Val
 constList_eval (ConstListSingle x) = constant_eval x
