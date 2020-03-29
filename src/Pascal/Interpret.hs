@@ -95,28 +95,53 @@ actualParameterEval :: ActualParameter -> Val
 actualParameterEval (ActualParameterSingle expression ) = expressionEval expression
 actualParameterEval (ActualParameterMultiple actualParameter expression) = Real(1.4)
 
+
 parameterListEval :: ParameterList -> Val
 parameterListEval (ParameterListSingle x) = actualParameterEval x
 parameterListEval (ParameterListMulitiple y x) = Id (concat (valToStr (parameterListEval y), valToStr (actualParameterEval x)))
+
 
 procedureStatementEval :: ProcedureStatement -> Val
 procedureStatementEval (SingleProcedureStatement str) = Real (0.11)
 procedureStatementEval (MultiProcedureStatement "writeln" x) = parameterListEval x
 
+
 simpleStatementEval :: SimpleStatement -> Val
 simpleStatementEval (PS ps) = procedureStatementEval ps
+
 
 ifStatementEval :: IfStatement -> String
 ifStatementEval (IfState expression statement) = if (toBool(expressionEval expression)) then (statementEval statement) else ""
 ifStatementEval (IfStateElse expression statement1 statement2) = if (toBool(expressionEval expression)) then (statementEval statement1) else (statementEval statement2)
 
+
 conditionalStatementEval :: ConditionalStatement -> Val
 conditionalStatementEval (ConditionalStatementIf ifStatement) = Id (ifStatementEval ifStatement)
---conditionalStatementEval (ConditionalStatementCase caseStatement) = ifStatementEval caseStatement
+conditionalStatementEval (ConditionalStatementCase caseStatement) =  caseStatementEval caseStatement
 
---repetetiveStatementEval :: RepetetiveStatement -> Val
 
---withStatementEval :: WithStatement -> Val
+caseStatementEval :: CaseStatement -> Val
+caseStatementEval (Case expression case_list) =  if  (toFloat( expressionEval expression) == toFloat(fst(caseListElements_eval case_list))) then (snd(caseListElements_eval case_list)) else Real(1000)
+    --case Real(150) of (fst (caseListElements_eval case_list)) -> snd(caseListElements_eval case_list) 
+--I am returning a tuple; to retrieve the first element of the tuple, I use fst; to retrieve the second, I use snd                                             
+caseStatementEval (CaseElse expression  case_list ifelse) = Real(100)
+
+
+caseListElements_eval :: CaseListElements -> (Val, Val)
+caseListElements_eval (CaseListElementsSingle element ) = caseListElement_eval element
+--caseListElements_eval (CaseListElementsMultiple element case_list ) = Real(180)
+
+caseListElement_eval :: CaseListElement -> (Val,Val)
+caseListElement_eval (CaseListElementSingle const statement) = (constList_eval const, )
+
+constList_eval :: ConstList -> Val
+constList_eval (ConstListSingle x) = constant_eval x
+
+constant_eval :: Constant -> Val
+constant_eval (ConstantUN unsignedNumber) = unsignedNumberEval unsignedNumber
+
+
+
 
 structuredStatementEval :: StructuredStatement ->Val
 --structuredStatementEval (StructuredStatementCompoundStatement statementArray) =

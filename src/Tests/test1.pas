@@ -5,15 +5,10 @@
         sum : real;
         number : real;
 
-    begin 
-        writeln('which one is higher 2 or 3');
-        if 2 > 3 then writeln(2) else writeln(3);
-        writeln(2 > 3);  
-        writeln(2 >= 2);
-        writeln(2 < 3);
-        writeln((2 <= 3));
+begin 
+     
+    case 1 of
+      1 : writeln('Excellent!')
+    end
 
-
-        writeln( 'hello2' );
-
-    end .
+end.
