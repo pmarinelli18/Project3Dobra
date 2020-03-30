@@ -7,16 +7,16 @@
 
 begin 
      
-    writeln('Excellent!');
+    writeln('Okey! ');
      
     case 1 of
       1 : writeln('Excellent2!');
       1 : writeln('Good'); 
       4 : writeln('Good')
-    end
+    end;
 
 
-    writeln('hello');
+    writeln('   hello 55');
 
     
 
