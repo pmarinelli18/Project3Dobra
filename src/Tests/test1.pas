@@ -3,9 +3,15 @@ var
       ad : real;
       fsd : bool;
 
+procedure display ( ) ;
+
+begin
+   writeln('val')
+end;
 
 begin 
-
+   
+   
     case 4 of
       1 : writeln('Excellent2');
       2 : writeln('Excellent3');
@@ -17,6 +23,7 @@ begin
       2 : writeln('Excellent3');
       4 : writeln('Excellent45')
 
-    end
+    end;
+    writeln(4)
 
 end.

@@ -50,6 +50,7 @@ import Pascal.Lexer
         ';'             { Token _ (TokenK ";") }
         '.'             { Token _ (TokenK ".") }
         'program'       { Token _ (TokenK "program") }
+        'procedure'     { Token _ (TokenK "procedure") }
         'div'           { Token _ (TokenK "div") }
         'mod'           { Token _ (TokenK "mod") }
         'nil'           { Token _ (TokenK "nil") }
@@ -95,6 +96,34 @@ Identifier::  {String}
 Block:: {Block}
     :CompoundStatement {BlockCopoundStatement $1}
     | BlockOptions CompoundStatement{BlockVariableDeclarationPart $1 $2}
+    | BlockOptions ProcedureAndFunctionDeclarationPart CompoundStatement {Block_Variable_Method $1 $2 $3}
+    | ProcedureAndFunctionDeclarationPart CompoundStatement {Block_Method $1 $2}
+    
+
+    ProcedureAndFunctionDeclarationPart :: {ProcedureAndFunctionDeclarationPart}
+    : ProcedureOrFunctionDeclaration ';' {Declaration $1}
+
+ProcedureOrFunctionDeclaration :: {ProcedureOrFunctionDeclaration}
+    : ProcedureDeclaration  {Procedure_method $1 }
+--  | FunctionDeclaration {Function_method $1}
+
+ProcedureDeclaration :: {ProcedureDeclaration}
+    : 'procedure' Identifier '('   ')'  ';'  Block {Procedure_no_identifier $2 $6}
+    | 'procedure' Identifier '(' FormalParameterList ')'  ';'  Block {Procedure_with_identifier $2 $4 $7}
+
+FormalParameterList :: {FormalParameterList}
+    : FormalParameterSection {Singleparameter $1 }
+    | FormalParameterSection ';'  FormalParameterList {Multipleparameter $1 $3}
+--Warning ---     | FormalParameterSection ';' FormalParameterList {Multipleparamete $1 :$3}
+--sHOUULD i USE $1 : $3 or not
+
+FormalParameterSection :: {FormalParameterSection}
+    : ParameterGroup {Simple_parameterGroup $1}
+    | 'var' ParameterGroup {Var_parameterGroup $2}
+
+
+ParameterGroup :: {ParameterGroup}
+    : IdentifierList ':'Identifier {Parameter_group $1 $3}
 
 BlockOptions:: {BlockOptions}
     :VariableDeclarationPart {BlockOptionsVariableDeclarationPart $1}

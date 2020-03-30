@@ -32,6 +32,9 @@ import qualified Data.Map as Map
 
 type VariableMap = Map.Map String (String, Val)
 
+--variableMapEval :: VariableMap -> Map.Map String (String, Val)
+--dvariableMapEval (varMap ) =
+
 
 unsignedNumberEval :: UnsignedNumber -> Val
 unsignedNumberEval (UI int) = Integer int
@@ -50,10 +53,13 @@ functionDesignatorEval (FDesignate "ln" parameterList) varMap = ((Real (log(toFl
 functionDesignatorEval (FDesignate "dopower" parameterList) varMap = ((Real (cos(toFloat(fst(parameterListEval parameterList varMap))))), varMap)
 ---------------------------------------------DID NOT ADD FUNCTIONALITY TO "Dopower" YET Maybe havnt tested it yet ---------------------------------------------------
 
+variableEval :: Variable -> String
+variableEval (Var string) = string
+
 factorEval :: Factor -> VariableMap -> (Val, VariableMap)    --Add boolean to Val in Val.hs
-factorEval (FactorVariable variable) varMap =     ((Real (1.0)), varMap)
+--factorEval (FactorVariable variable) varMap =     ((lookup  (variableEval variable) varMap), varMap)
 factorEval (FactorExpression expression) varMap =  ((Real (2.0)), varMap)
-factorEval (FactorFD functionDesignator) varMap =  (fst(functionDesignatorEval functionDesignator varMap), varMap)
+factorEval (FactorFD functionDesignator) varMap =  (fst(functionDesignatorEval functionDesignator varMap), snd(functionDesignatorEval functionDesignator varMap))
 factorEval (FactorUC unsignedConstant) varMap =  (fst(unsignedConstantEval unsignedConstant varMap), varMap)
 factorEval (FactorSe set) varMap = ((Real (5.0)), varMap)
 factorEval (FactorNot factor) varMap = ((Real (6.0)), varMap)
@@ -202,6 +208,8 @@ blockOptionsEval (BlockOptionsVariableDeclarationPart variableDeclarationPart) =
 blockEval :: Block -> [String]
 blockEval (BlockCopoundStatement s ) = fst(statementsEval s Map.empty)
 blockEval (BlockVariableDeclarationPart b s) = fst(statementsEval s (blockOptionsEval b))
+blockEval (Block_Method procedureAndFunctionDeclarationPart statements) = ["hi", "ds"]
+blockEval (Block_Variable_Method blockOptions procedureAndFunctionDeclarationPart statements) =["hi", "ds"] 
 
 interpret :: Program -> String
 -- TODO: write the interpreter

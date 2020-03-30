@@ -48,6 +48,12 @@ module Pascal.Data
         WithStatement(..),
         WhileStatement(..),
         StructuredStatement(..),
+        ProcedureAndFunctionDeclarationPart(..),
+        ProcedureOrFunctionDeclaration(..),
+        ProcedureDeclaration(..),
+        FormalParameterList(..),
+        FormalParameterSection(..),
+        ParameterGroup(..),
         Program(..)
     ) where
 
@@ -69,9 +75,33 @@ data VariableDeclaration =
 data Block =
     BlockCopoundStatement Statements
     | BlockVariableDeclarationPart BlockOptions Statements
+    | Block_Method ProcedureAndFunctionDeclarationPart Statements
+    | Block_Variable_Method BlockOptions ProcedureAndFunctionDeclarationPart Statements
 
 data BlockOptions =
     BlockOptionsVariableDeclarationPart VariableDeclarationPart
+
+data ProcedureAndFunctionDeclarationPart = 
+    Declaration ProcedureOrFunctionDeclaration
+
+data ProcedureOrFunctionDeclaration =
+    Procedure_method ProcedureDeclaration
+--    | Function_method FunctionDeclaration
+
+data ProcedureDeclaration = 
+    Procedure_no_identifier String Block
+    | Procedure_with_identifier String FormalParameterList  Block
+
+data FormalParameterList =
+    Singleparameter FormalParameterSection 
+    | Multipleparameter FormalParameterSection FormalParameterList
+
+data FormalParameterSection =
+    Simple_parameterGroup ParameterGroup
+    | Var_parameterGroup ParameterGroup
+
+data ParameterGroup =
+    Parameter_group [String] String
 
 data UnsignedNumber =
     UI Int
