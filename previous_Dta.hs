@@ -52,7 +52,7 @@ module Pascal.Data
         FormalParameterList(..),
         FormalParameterSection(..),
         ParameterGroup(..),
-        FunctionDeclaration(..),
+        -- FunctionDeclaration(..),
 
         Program(..)
     ) where
@@ -86,14 +86,14 @@ data ProcedureAndFunctionDeclarationPart =
 
 data ProcedureOrFunctionDeclaration =
     Procedure_method ProcedureDeclaration
-    | Function_method FunctionDeclaration
+ --  | Function_method FunctionDeclaration
 
-data FunctionDeclaration =
-     Function_no_identifier  String  String  Block
-    | Function_identifier  String FormalParameterList String  Block
+-- data FunctionDeclaration =
+--     : Function_no_identifier  String  String ' Block
+--     | Function_no_identifier  String FormalParameterList String ' Block
 
 data ProcedureDeclaration = 
-     Procedure_no_identifier String Block
+    Procedure_no_identifier String Block
     | Procedure_with_identifier String FormalParameterList  Block
 
 data FormalParameterList =

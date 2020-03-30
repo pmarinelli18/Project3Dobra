@@ -218,6 +218,8 @@ whileStatement_eval (Whileloop expression statement) =
 
 
 
+
+
 unlabelledStatementEval :: UnlabelledStatement -> Val
 unlabelledStatementEval (UnlabelledStatementSimpleStatement simpleStatement) = simpleStatementEval simpleStatement
 unlabelledStatementEval (UnlabelledStatementStructuredStatement structuredStatement) = structuredStatementEval structuredStatement
@@ -237,6 +239,8 @@ statementsEval (x) =  (concat (statementToString x) ) --show (traverse (statemen
 blockEval :: Block -> String
 blockEval (BlockCopoundStatement s ) = statementsEval s
 blockEval (BlockVariableDeclarationPart b s) = removePunc2 (statementsEval s )
+blockEval (Block_Method  method statements) = "hello2"
+blockEval (Block_Variable_Method blockOp method statements) = "hello6"
      
 
 interpret :: Program -> String

@@ -5,8 +5,10 @@ var
    c: real;
    
 
-procedure display ( ) ;
-
+function display (  ) : integer ;
+var
+   a: real;
+   
 begin
    writeln('val');
 end;
@@ -14,6 +16,6 @@ end;
 
 begin
 
-   writeln('Winthin the program exlocal');
+   writeln('Winthin the program exlocal')
 
 end.

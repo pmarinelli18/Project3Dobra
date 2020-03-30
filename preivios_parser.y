@@ -98,30 +98,29 @@ Block:: {Block}
     : CompoundStatement {BlockCopoundStatement $1}
     | BlockOptions CompoundStatement{BlockVariableDeclarationPart $1 $2}
     | BlockOptions ProcedureAndFunctionDeclarationPart CompoundStatement {Block_Variable_Method $1 $2 $3}
+    | ProcedureAndFunctionDeclarationPart CompoundStatement {Block_Method $1 $2}
+    
 
 ProcedureAndFunctionDeclarationPart :: {ProcedureAndFunctionDeclarationPart}
-    : ProcedureOrFunctionDeclaration ';' { Declaration $1}
+    : ProcedureOrFunctionDeclaration ';' {Declaration $1}
 
 ProcedureOrFunctionDeclaration :: {ProcedureOrFunctionDeclaration}
     : ProcedureDeclaration  {Procedure_method $1 }
     | FunctionDeclaration {Function_method $1}
 
-
 FunctionDeclaration :: {FunctionDeclaration}
     : 'function' Identifier '(' ')' ':' Identifier ';' Block {Function_no_identifier $2 $6 $8}
-    | 'function' Identifier '(' FormalParameterList ')' ':' Identifier ';' Block {Function_identifier $2 $4 $7 $9}
-
+    | 'function' Identifier '(' FormalParameterList ')' ':' Identifier ';' Block
 
 ProcedureDeclaration :: {ProcedureDeclaration}
-    : 'procedure' Identifier '('  ')' ';' Block {Procedure_no_identifier $2 $6}
-    | 'procedure' Identifier '(' FormalParameterList ')' ';' Block {Procedure_with_identifier $2 $4 $7}
-
-
+    : 'procedure' Identifier '('   ')'  ';'  Block {Procedure_no_identifier $2 $6}
+    | 'procedure' Identifier '(' FormalParameterList ')'  ';'  Block {Procedure_with_identifier $2 $4 $7}
 
 FormalParameterList :: {FormalParameterList}
     : FormalParameterSection {Singleparameter $1 }
-    | FormalParameterSection ';' FormalParameterList {Multipleparameter $1 $3}
-
+    | FormalParameterSection ';'  FormalParameterList {Multipleparameter $1 $3}
+--Warning ---     | FormalParameterSection ';' FormalParameterList {Multipleparamete $1 :$3}
+--sHOUULD i USE $1 : $3 or not
 
 FormalParameterSection :: {FormalParameterSection}
     : ParameterGroup {Simple_parameterGroup $1}
@@ -129,7 +128,7 @@ FormalParameterSection :: {FormalParameterSection}
 
 
 ParameterGroup :: {ParameterGroup}
-    : IdentifierList ':' Identifier {Parameter_group $1 $3}
+    : IdentifierList ':'Identifier {Parameter_group $1 $3}
 
 
 
