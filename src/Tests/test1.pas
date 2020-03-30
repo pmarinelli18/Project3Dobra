@@ -2,7 +2,7 @@ program hi;
 var
       ad : real;
       fsd : bool; //have not implemented multiple variables yet, doesnt read
-
+      hi : bool;
 begin 
    
    
@@ -18,6 +18,7 @@ begin
       4 : writeln('Excellent45')
 
     end;
-    writeln(ad)
+    writeln(fsd);
+    writeln(hi)
 
 end.

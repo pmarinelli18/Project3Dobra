@@ -199,9 +199,14 @@ variableDeclarationEval (VariableDeclarationMainBool str) varMap =    (Map.inser
 variableDeclarationEval (VariableDeclarationMainReal str) varMap =  (Map.insert (head(str)) (Real 1.0) varMap) --("Real", Boolean True) varMap) 
 variableDeclarationEval (VariableDeclarationMainString str) varMap =  (Map.insert (head(str)) (Real 1.0) varMap) --("String", Boolean True) varMap) 
 
+
+variableDeclarationPartMultipleEval :: VariableDeclarationPartMultiple -> VariableMap -> VariableMap
+variableDeclarationPartMultipleEval (VariableDeclarationPartMultipleSingle variableDeclaration ) varMap = variableDeclarationEval variableDeclaration varMap
+variableDeclarationPartMultipleEval (VariableDeclarationPartMultipleMultiple variableDeclaration variableDeclarationPartMultiple) varMap =  Map.union (variableDeclarationEval variableDeclaration varMap) (variableDeclarationPartMultipleEval variableDeclarationPartMultiple varMap) 
+
 variableDeclarationPartEval :: VariableDeclarationPart -> VariableMap -> VariableMap
 variableDeclarationPartEval (VariableDeclarationPartSingle variableDeclaration ) varMap = variableDeclarationEval variableDeclaration varMap
-variableDeclarationPartEval (VariableDeclarationPartMultiple variableDeclaration variableDeclarationPartMultiple) varMap = variableDeclarationEval variableDeclaration varMap
+variableDeclarationPartEval (VariableDeclarationPartMultiple variableDeclaration variableDeclarationPartMultiple) varMap =  Map.union (variableDeclarationEval variableDeclaration varMap) (variableDeclarationPartMultipleEval variableDeclarationPartMultiple varMap) 
 --Have not implemented multiple variables yet just single
 
 
