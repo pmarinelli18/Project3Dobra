@@ -1,9 +1,11 @@
 program hi;
+var
+      ad : real;
+      fsd : bool;
+
+
 begin 
 
-    var
-    (alt, add, fsd, fds ) real;
-    adf real
     case 4 of
       1 : writeln('Excellent2');
       2 : writeln('Excellent3');

@@ -30,6 +30,7 @@ module Pascal.Data
         VariableDeclarationPart(..),
         VariableDeclarationPartMultiple(..),
         VariableDeclaration(..),
+        Statements(..),
         Statement(..),
         IfStatement(..),
         ConstList(..),
@@ -66,8 +67,8 @@ data VariableDeclaration =
     |VariableDeclarationMainString [String]
 
 data Block =
-    BlockCopoundStatement [Statement]
-    | BlockVariableDeclarationPart BlockOptions [Statement]
+    BlockCopoundStatement Statements
+    | BlockVariableDeclarationPart BlockOptions Statements
 
 data BlockOptions =
     BlockOptionsVariableDeclarationPart VariableDeclarationPart
@@ -188,7 +189,7 @@ data CaseListElements =
 
 data CaseStatement =
     Case Expression CaseListElements
-    |CaseElse Expression CaseListElements [Statement]
+    |CaseElse Expression CaseListElements Statements
     | CaseBreakDown Expression [(Val, Val)]
 
 
@@ -200,7 +201,7 @@ data WhileStatement =
     WhileS Expression Statement
 
 data RepeatStatement =
-    Repeat [Statement] Expression
+    Repeat Statements Expression
 
 data ForStatement =
     For String ForList Statement
@@ -225,7 +226,7 @@ data WithStatement =
     With RecordVariableList Statement
 
 data StructuredStatement =
-    StructuredStatementCompoundStatement [Statement]
+    StructuredStatementCompoundStatement Statements
     | StructuredStatementConditionalStatement ConditionalStatement
     | StructuredStatementRepetetiveStatement RepetetiveStatement
     | StructuredStatementWithStatement WithStatement
@@ -233,6 +234,10 @@ data StructuredStatement =
 data UnlabelledStatement =
     UnlabelledStatementSimpleStatement SimpleStatement
     | UnlabelledStatementStructuredStatement StructuredStatement
+
+data Statements =
+    StatementsSingle Statement
+    |StatementsMultiple Statement Statements
 
 data Statement = 
     StatementUnlabelledStatement UnlabelledStatement

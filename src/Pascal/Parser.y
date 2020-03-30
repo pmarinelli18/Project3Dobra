@@ -112,13 +112,13 @@ VariableDeclaration:: {VariableDeclaration}
     | IdentifierList ':' 'real' ';'{VariableDeclarationMainReal $1}
     | IdentifierList ':' 'string' ';'{VariableDeclarationMainString $1}
 
-CompoundStatement:: {[Statement]}
+CompoundStatement:: {Statements}
     : 'begin' Statements 'end' { $2 }
 
-Statements:: {[Statement]}
-    : { [] } -- nothing; make empty list
-    |Statement{ [$1] }
-    |Statement ';' Statements { $1:$3 }-- put statement as first element of statements
+Statements:: {Statements}
+    :  -- nothing; make empty list
+    Statement{StatementsSingle $1 }
+    |Statement ';' Statements {StatementsMultiple $1 $3 }-- put statement as first element of statements
 
 Statement :: {Statement}
     :UnlabelledStatement {StatementUnlabelledStatement $1}
