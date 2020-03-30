@@ -40,11 +40,11 @@ type VariableMap = Map.Map String Val --Map.Map String (String, Val)
 unsignedNumberEval :: UnsignedNumber -> Val
 unsignedNumberEval (UI int) = Integer int
 unsignedNumberEval (UR float) = Real float
- 
+
 unsignedConstantEval :: UnsignedConstant -> VariableMap -> (Val, VariableMap)
-unsignedConstantEval    (UN unsignedNumber) varMap = (unsignedNumberEval unsignedNumber, varMap)
-unsignedConstantEval    (Str str) varMap = ((Id str), varMap)
-unsignedConstantEval    (Nil) varMap= ((Id ("Nil")), varMap)
+unsignedConstantEval (UN unsignedNumber) varMap = (unsignedNumberEval unsignedNumber, varMap)
+unsignedConstantEval (Str str) varMap = ((Id str), varMap)
+unsignedConstantEval (Nil) varMap= ((Id ("Nil")), varMap)
 
 functionDesignatorEval :: FunctionDesignator -> VariableMap -> (Val, VariableMap)
 functionDesignatorEval (FDesignate "cos" parameterList) varMap = ((Real (cos(toFloat(fst(parameterListEval parameterList varMap))))), varMap)
@@ -61,19 +61,19 @@ factorEval :: Factor -> VariableMap -> (Val, VariableMap)    --Add boolean to Va
 factorEval (FactorVariable variable) varMap =     (( fromJust(Map.lookup  ((variableEval variable)) varMap)), varMap)
 factorEval (FactorExpression expression) varMap =  ((Real (2.0)), varMap)
 factorEval (FactorFD functionDesignator) varMap =  (fst(functionDesignatorEval functionDesignator varMap), snd(functionDesignatorEval functionDesignator varMap))
-factorEval (FactorUC unsignedConstant) varMap =  (fst(unsignedConstantEval unsignedConstant varMap), varMap)
+factorEval (FactorUC unsignedConstant) varMap =  (fst(unsignedConstantEval unsignedConstant varMap), snd(unsignedConstantEval unsignedConstant varMap))
 factorEval (FactorSe set) varMap = ((Real (5.0)), varMap)
 factorEval (FactorNot factor) varMap = ((Real (6.0)), varMap)
 factorEval (FactorBool bool) varMap = ((Real (7.0)), varMap)
 
 
 signedFactorEval :: SignedFactor -> VariableMap -> (Val, VariableMap)
-signedFactorEval (SignedFactorDefault factor) varMap = (fst(factorEval factor varMap), varMap)
-signedFactorEval (SignedFactorPlus factor) varMap = (fst(factorEval factor varMap), varMap)
-signedFactorEval (SignedFactorMinus factor) varMap = (fst(factorEval factor varMap), varMap)
+signedFactorEval (SignedFactorDefault factor) varMap = (fst(factorEval factor varMap), snd(factorEval factor varMap))
+signedFactorEval (SignedFactorPlus factor) varMap = (fst(factorEval factor varMap), snd(factorEval factor varMap))
+signedFactorEval (SignedFactorMinus factor) varMap = (fst(factorEval factor varMap), snd(factorEval factor varMap))
 
 termEval :: Term -> VariableMap -> (Val, VariableMap)
-termEval (TermSingle signedFactor) varMap = (fst(signedFactorEval signedFactor varMap), varMap)
+termEval (TermSingle signedFactor) varMap = (fst(signedFactorEval signedFactor varMap), snd(signedFactorEval signedFactor varMap))
 termEval (TermMultipleMult signedFactor term) varMap = ((Real((toFloat (fst(signedFactorEval signedFactor varMap) )) * (toFloat(fst(termEval term varMap))))), varMap)
 termEval (TermMultipleDivision signedFactor term) varMap = ((Real((toFloat (fst(signedFactorEval signedFactor varMap ))) / (toFloat(fst(termEval term varMap ))))), varMap)
 termEval (TermMultipleDiv signedFactor term) varMap = ((Real((toFloat (fst(signedFactorEval signedFactor varMap))) / (toFloat(fst(termEval term varMap))))), varMap)
@@ -82,7 +82,7 @@ termEval (TermMultipleAnd signedFactor term) varMap = ((Boolean((toBool (fst(sig
 ---------------------------------------------DID NOT ADD FUNCTIONALITY TO "mod" YET Maybe havnt tested it yet ---------------------------------------------------
 
 simpleExpressionEval :: SimpleExpression -> VariableMap ->(Val, VariableMap)
-simpleExpressionEval (SingleExpressionTermSingle term) varMap = (fst(termEval term varMap), varMap)
+simpleExpressionEval (SingleExpressionTermSingle term) varMap = (fst(termEval term varMap),snd(termEval term varMap))
 simpleExpressionEval (SingleExpressionTermMultipleAdd term simpleExpression) varMap = ((Real((toFloat (fst(termEval term varMap))) + (toFloat(fst(simpleExpressionEval simpleExpression varMap))))), varMap)
 simpleExpressionEval (SingleExpressionTermMultipleSub term simpleExpression) varMap = ((Real((toFloat (fst(termEval term varMap))) - (toFloat(fst(simpleExpressionEval simpleExpression varMap))))), varMap)
 simpleExpressionEval (SingleExpressionTermMultipleOr term simpleExpression) varMap = ((Boolean((toBool (fst(termEval term varMap))) || (toBool (fst(simpleExpressionEval simpleExpression varMap))))), varMap)
@@ -90,7 +90,7 @@ simpleExpressionEval (SingleExpressionTermMultipleOr term simpleExpression) varM
 
 
 expressionEval :: Expression -> VariableMap -> (Val, VariableMap)
-expressionEval (ExpressionSingle simpleExpression ) varMap = (fst(simpleExpressionEval simpleExpression varMap), varMap)
+expressionEval (ExpressionSingle simpleExpression ) varMap = (fst(simpleExpressionEval simpleExpression varMap), snd(simpleExpressionEval simpleExpression varMap))
 expressionEval (ExpressionMultipleE simpleExpression expression) varMap = ((Boolean (fst((simpleExpressionEval simpleExpression varMap)) == (fst(expressionEval expression varMap)))), varMap)
 expressionEval (ExpressionMultipleNE simpleExpression expression) varMap= ((Boolean (fst((simpleExpressionEval simpleExpression varMap)) /= (fst(expressionEval expression varMap)))), varMap)
 expressionEval (ExpressionMultipleLT simpleExpression expression) varMap= ((Boolean ((toFloat(fst(simpleExpressionEval simpleExpression varMap))) < (toFloat(fst(expressionEval expression varMap))))), varMap)
@@ -101,23 +101,28 @@ expressionEval (ExpressionMultipleIN simpleExpression expression) varMap= ((Bool
 ---------------------------------------------DID NOT ADD FUNCTIONALITY TO "In" YET ---------------------------------------------------
 
 actualParameterEval :: ActualParameter -> VariableMap -> (Val, VariableMap)
-actualParameterEval (ActualParameterSingle expression ) varMap = (fst(expressionEval expression varMap), varMap)
+actualParameterEval (ActualParameterSingle expression ) varMap = (fst(expressionEval expression varMap), snd(expressionEval expression varMap))
 actualParameterEval (ActualParameterMultiple actualParameter expression) varMap= ((Real(1.4)), varMap)
 
 parameterListEval :: ParameterList -> VariableMap -> (Val, VariableMap)
-parameterListEval (ParameterListSingle x) varMap = (fst(actualParameterEval x varMap ), varMap)
+parameterListEval (ParameterListSingle x) varMap = (fst(actualParameterEval x varMap ), snd(actualParameterEval x varMap ))
 parameterListEval (ParameterListMulitiple y x) varMap = ((Id (concat (valToStr (fst(parameterListEval y varMap)), valToStr (fst(actualParameterEval x varMap))))), varMap)
 
 procedureStatementEval :: ProcedureStatement -> VariableMap-> (Val, VariableMap)
 procedureStatementEval (SingleProcedureStatement str) varMap = ((Real (0.11)), varMap)
-procedureStatementEval (MultiProcedureStatement "writeln" x) varMap = (fst(parameterListEval x varMap), varMap)
+procedureStatementEval (MultiProcedureStatement "writeln" x) varMap = (fst(parameterListEval x varMap), snd(parameterListEval x varMap))
 
 simpleStatementEval :: SimpleStatement -> VariableMap -> (Val, VariableMap)
-simpleStatementEval (PS ps) varMap = (fst(procedureStatementEval ps varMap), varMap)
+simpleStatementEval (PS ps) varMap = (fst(procedureStatementEval ps varMap), snd(procedureStatementEval ps varMap))
+simpleStatementEval (SimpleStatementAssignment assignmentStatement) varMap = (Id "", (assignmentStatementEval assignmentStatement varMap))
+
+assignmentStatementEval :: AssignmentStatement -> VariableMap -> VariableMap
+assignmentStatementEval (AssignmentStatementMain variable expression ) varMap =  (Map.insert (variableEval variable) ((fst(expressionEval expression varMap)))  varMap)
+--(Map.insert (head(str)) (Real 1.0) varMap)
 
 ifStatementEval :: IfStatement -> VariableMap -> (String, VariableMap)
-ifStatementEval (IfState expression statement) varMap = ((if (toBool(fst(expressionEval expression varMap))) then (fst(statementEval varMap statement )) else ""), varMap)
-ifStatementEval (IfStateElse expression statement1 statement2) varMap = ((if (toBool(fst(expressionEval expression varMap))) then (fst(statementEval varMap statement1 )) else (fst(statementEval varMap statement2 ))), varMap)
+ifStatementEval (IfState expression statement) varMap = ((if (toBool(fst(expressionEval expression varMap))) then ((fst(statementEval varMap statement ),snd(statementEval varMap statement ))) else ("", varMap)))
+ifStatementEval (IfStateElse expression statement1 statement2) varMap = ((if (toBool(fst(expressionEval expression varMap))) then ((fst(statementEval varMap statement1 ), snd(statementEval varMap statement1 ))) else ((fst(statementEval varMap statement2 ), snd(statementEval varMap statement2 )))))
 
 --constListEval :: ConstList -> Val
 --constListEval (ConstListSingle x) = constantEval x
@@ -133,14 +138,14 @@ ifStatementEval (IfStateElse expression statement1 statement2) varMap = ((if (to
 --caseListElementsEval (CaseListElementsMultiple element case_list ) = (caseListElementEval element : caseListElementsEval case_list)
 
 caseListElements_eval :: CaseListElements -> VariableMap -> ([(Val, Val)], VariableMap)
-caseListElements_eval (CaseListElementsSingle element ) varMap = (([fst(caseListElement_eval element varMap)]), varMap)
-caseListElements_eval (CaseListElementsMultiple element case_list ) varMap=  (((concat [fst(caseListElement_eval element varMap) : (fst(caseListElements_eval case_list varMap))])), varMap)
+caseListElements_eval (CaseListElementsSingle element ) varMap = (([fst(caseListElement_eval element varMap)]), snd(caseListElement_eval element varMap))
+caseListElements_eval (CaseListElementsMultiple element case_list ) varMap=  (((concat [fst(caseListElement_eval element varMap) : (fst(caseListElements_eval case_list varMap))])), snd(caseListElements_eval case_list varMap))
 
 caseListElement_eval :: CaseListElement -> VariableMap-> ((Val, Val), VariableMap)
-caseListElement_eval (CaseListElementSingle const statement) varMap= (((fst(constList_eval const varMap), Id (fst(statementEval varMap statement )) )), varMap)
+caseListElement_eval (CaseListElementSingle const statement) varMap= (((fst(constList_eval const varMap), Id (fst(statementEval varMap statement )) )), snd(statementEval varMap statement ))
 
 constList_eval :: ConstList -> VariableMap-> (Val, VariableMap)
-constList_eval (ConstListSingle x) varMap= ((fst(constant_eval x varMap), varMap))
+constList_eval (ConstListSingle x) varMap= ((fst(constant_eval x varMap), snd(constant_eval x varMap)))
 
 constant_eval :: Constant -> VariableMap-> (Val, VariableMap)
 constant_eval (ConstantUN unsignedNumber) varMap = ((unsignedNumberEval unsignedNumber), varMap)
@@ -152,9 +157,9 @@ removeIndex xs n = fst notGlued ++ snd notGlued
 
 caseStatementEval :: CaseStatement -> VariableMap -> (String, VariableMap)
 caseStatementEval (Case expression case_list) varMap =  ((if  (fst(expressionEval expression varMap) == (fst(head (fst(caseListElements_eval case_list varMap))))) 
-                                                            then (valToStr (snd(head(fst(caseListElements_eval case_list varMap)))))
-                                                            else (fst(caseStatementEval (CaseBreakDown expression (removeIndex (fst(caseListElements_eval case_list varMap)) 1))varMap))
-                                                            ), varMap)
+                                                            then ((valToStr (snd(head(fst(caseListElements_eval case_list varMap))))), snd(caseListElements_eval case_list varMap))
+                                                            else ((fst(caseStatementEval (CaseBreakDown expression (removeIndex (fst(caseListElements_eval case_list varMap)) 1))varMap)),snd(caseListElements_eval case_list varMap))
+                                                            ))
 caseStatementEval (CaseBreakDown expression case_list) varMap=  ((if  (fst(( expressionEval expression varMap)) == (fst(head (case_list)))) 
                                                             then (valToStr(snd(head(case_list))))
                                                              else (fst(caseStatementEval (CaseBreakDown expression(removeIndex case_list 1)) varMap))
@@ -164,8 +169,8 @@ caseStatementEval (CaseBreakDown expression case_list) varMap=  ((if  (fst(( exp
 --caseStatementEval (CaseElse Expression CaseListElements [Statement]) =
 
 conditionalStatementEval :: ConditionalStatement -> VariableMap-> (Val, VariableMap)
-conditionalStatementEval (ConditionalStatementIf ifStatement) varMap = ((Id (fst(ifStatementEval ifStatement varMap))), varMap)
-conditionalStatementEval (ConditionalStatementCase caseStatement) varMap = ((Id (fst(caseStatementEval caseStatement varMap))), varMap)
+conditionalStatementEval (ConditionalStatementIf ifStatement) varMap = ((Id (fst(ifStatementEval ifStatement varMap))), snd(ifStatementEval ifStatement varMap))
+conditionalStatementEval (ConditionalStatementCase caseStatement) varMap = ((Id (fst(caseStatementEval caseStatement varMap))), snd(caseStatementEval caseStatement varMap))
 
 --repetetiveStatementEval :: RepetetiveStatement -> Val
 
@@ -173,16 +178,16 @@ conditionalStatementEval (ConditionalStatementCase caseStatement) varMap = ((Id 
 
 structuredStatementEval :: StructuredStatement -> VariableMap -> (Val, VariableMap)
 --structuredStatementEval (StructuredStatementCompoundStatement statementArray) =
-structuredStatementEval (  StructuredStatementConditionalStatement conditionalStatement) varMap = (fst(conditionalStatementEval conditionalStatement varMap), varMap)
+structuredStatementEval (  StructuredStatementConditionalStatement conditionalStatement) varMap = (fst(conditionalStatementEval conditionalStatement varMap), snd(conditionalStatementEval conditionalStatement varMap))
 --structuredStatementEval (StructuredStatementRepetetiveStatement repetetiveStatement) =
 --structuredStatementEval ( StructuredStatementWithStatement withStatement) =
 
 unlabelledStatementEval :: UnlabelledStatement -> VariableMap-> (Val, VariableMap)
-unlabelledStatementEval (UnlabelledStatementSimpleStatement simpleStatement) varMap= (fst(simpleStatementEval simpleStatement varMap), varMap)
-unlabelledStatementEval (UnlabelledStatementStructuredStatement structuredStatement) varMap= (fst(structuredStatementEval structuredStatement varMap), varMap)
+unlabelledStatementEval (UnlabelledStatementSimpleStatement simpleStatement) varMap= (fst(simpleStatementEval simpleStatement varMap), snd(simpleStatementEval simpleStatement varMap))
+unlabelledStatementEval (UnlabelledStatementStructuredStatement structuredStatement) varMap= (fst(structuredStatementEval structuredStatement varMap), snd(structuredStatementEval structuredStatement varMap))
 
 statementEval ::  VariableMap -> Statement ->(String, VariableMap)
-statementEval varMap(StatementUnlabelledStatement us)  = (valToStr (fst(unlabelledStatementEval us varMap)), varMap)
+statementEval varMap(StatementUnlabelledStatement us)  = (valToStr (fst(unlabelledStatementEval us varMap)), snd(unlabelledStatementEval us varMap))
 
 --statementToString :: [Statement] -> VariableMap-> ([String], VariableMap)
 --statementToString (x) varMap= ((map (fst(statementToStringHelper varMap)) x), varMap)
@@ -190,14 +195,14 @@ statementEval varMap(StatementUnlabelledStatement us)  = (valToStr (fst(unlabell
 --statementsEvalHelper :: [Statement] ->
 
 statementsEval :: Statements -> VariableMap -> ([String], VariableMap)
-statementsEval (StatementsSingle x) varMap = ([fst(statementEval varMap x )], varMap)
-statementsEval (StatementsMultiple x y) varMap = (concat[[fst(statementEval varMap x )], (fst(statementsEval y varMap))], snd(statementsEval y varMap)) --show (traverse (statementEval x)) ]
+statementsEval (StatementsSingle x) varMap = ([fst(statementEval varMap x )], snd(statementEval varMap x ))
+statementsEval (StatementsMultiple x y) varMap = (concat[[fst(statementEval varMap x )], (fst(statementsEval y (snd(statementEval varMap x ))))], snd(statementsEval y varMap)) --show (traverse (statementEval x)) ]
 
 
 variableDeclarationEval :: VariableDeclaration -> VariableMap -> VariableMap
-variableDeclarationEval (VariableDeclarationMainBool str) varMap =    (Map.insert (head(str)) (Real 1.0) varMap) --("Bool", Boolean True) varMap) 
+variableDeclarationEval (VariableDeclarationMainBool str) varMap =    (Map.insert (head(str)) (Boolean True) varMap) --("Bool", Boolean True) varMap) 
 variableDeclarationEval (VariableDeclarationMainReal str) varMap =  (Map.insert (head(str)) (Real 1.0) varMap) --("Real", Boolean True) varMap) 
-variableDeclarationEval (VariableDeclarationMainString str) varMap =  (Map.insert (head(str)) (Real 1.0) varMap) --("String", Boolean True) varMap) 
+variableDeclarationEval (VariableDeclarationMainString str) varMap =  (Map.insert (head(str)) (Id "") varMap) --("String", Boolean True) varMap) 
 
 
 variableDeclarationPartMultipleEval :: VariableDeclarationPartMultiple -> VariableMap -> VariableMap

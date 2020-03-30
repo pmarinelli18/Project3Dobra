@@ -228,9 +228,11 @@ UnlabelledStatement :: {UnlabelledStatement}
 
 SimpleStatement :: {SimpleStatement}
     : ProcedureStatement {PS $1}
-    --| AssignmentStatement
+    | AssignmentStatement {SimpleStatementAssignment $1}
     --| GotoStatement
 
+AssignmentStatement :: {AssignmentStatement}
+    :Variable ':=' Expression {AssignmentStatementMain $1 $3}
 
 ProcedureStatement :: {ProcedureStatement}
     : Identifier {SingleProcedureStatement $1 }

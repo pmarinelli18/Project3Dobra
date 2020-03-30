@@ -17,6 +17,7 @@ module Pascal.Data
         Expression(..),
         ActualParameter(..),
         ParameterList(..),
+        AssignmentStatement(..),
         SimpleStatement(..),
         UnlabelledStatement(..),
         ProcedureStatement(..),
@@ -190,6 +191,10 @@ data ParameterList =
 
 data SimpleStatement =
     PS ProcedureStatement
+    | SimpleStatementAssignment AssignmentStatement
+
+data AssignmentStatement = 
+    AssignmentStatementMain Variable Expression
 
 data IfStatement =
     IfState Expression Statement
