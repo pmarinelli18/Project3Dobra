@@ -1,5 +1,4 @@
-
-    program hi;
+program hi;
     var 
         alta : bool;
         sum : real;
@@ -7,7 +6,8 @@
 
 begin 
      
-    while number>0 do
+     
+    while 3<5 do
         begin
             writeln('hello');
         end;

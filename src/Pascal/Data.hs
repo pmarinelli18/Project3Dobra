@@ -195,6 +195,11 @@ data ConditionalStatement =
 
 data WhileStatement =
     WhileS Expression Statement
+    | Whileloop Expression Statement
+    | Whileloop1 Expression Statement
+    | Whileloop2 Expression Statement
+    | Whileloop3 Expression Statement
+
 
 data RepeatStatement =
     Repeat [Statement] Expression
@@ -226,6 +231,10 @@ data StructuredStatement =
     | StructuredStatementConditionalStatement ConditionalStatement
     | StructuredStatementRepetetiveStatement RepetetiveStatement
     | StructuredStatementWithStatement WithStatement
+
+
+
+
 
 data UnlabelledStatement =
     UnlabelledStatementSimpleStatement SimpleStatement

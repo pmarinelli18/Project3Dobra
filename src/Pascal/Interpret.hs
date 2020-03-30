@@ -117,30 +117,30 @@ ifStatementEval (IfStateElse expression statement1 statement2) = if (toBool(expr
 
 conditionalStatementEval :: ConditionalStatement -> Val
 conditionalStatementEval (ConditionalStatementIf ifStatement) = Id (ifStatementEval ifStatement)
-conditionalStatementEval (ConditionalStatementCase caseStatement) = strToVal (caseStatementEval caseStatement)
+conditionalStatementEval (ConditionalStatementCase caseStatement) =  (caseStatementEval caseStatement)
 
 
-caseStatementEval :: CaseStatement -> String
-caseStatementEval (Case expression case_list) =  if  (( expressionEval expression) == (fst(head (caseListElements_eval case_list)))) then (snd(head(caseListElements_eval case_list))) else ""
+caseStatementEval :: CaseStatement -> Val
+--caseStatementEval (Case expression case_list) =  if  (( expressionEval expression) == (fst(head (caseListElements_eval case_list)))) then (snd(head(caseListElements_eval case_list))) else ""
 --caseStatementEval (Case expression case_list) =  case  (toFloat( expressionEval expression)) of (toFloat(fst(head(caseListElements_eval case_list)))) -> (snd(head(caseListElements_eval case_list)))  
--- caseStatementEval (Case expression case_list) = do 
---     if length( caseListElements_eval case_list) > 0 
---         then
---             Real(19)
---         else
---             Real(25)
+caseStatementEval (Case expression case_list) = do 
+    if length( caseListElements_eval case_list) > 0 
+        then
+            Integer(length( caseListElements_eval case_list))
+        else
+            Real(100)--Real(length( caseListElements_eval case_list))
  
     --case Real(150) of (fst (caseListElements_eval case_list)) -> snd(caseListElements_eval case_list) 
 --I am returning a tuple; to retrieve the first element of the tuple, I use fst; to retrieve the second, I use snd                                             
-caseStatementEval (CaseElse expression  case_list ifelse) =if  (toFloat( expressionEval expression) == toFloat(fst(head (caseListElements_eval case_list)))) then (snd(head(caseListElements_eval case_list))) else ""
+caseStatementEval (CaseElse expression  case_list ifelse) =if  (toFloat( expressionEval expression) == toFloat(fst(head (caseListElements_eval case_list)))) then (snd(head(caseListElements_eval case_list))) else Real(99)
 
 
-caseListElements_eval :: CaseListElements -> [(Val, String)]
+caseListElements_eval :: CaseListElements -> [(Val, Val)]
 caseListElements_eval (CaseListElementsSingle element ) = [caseListElement_eval element]
 caseListElements_eval (CaseListElementsMultiple element case_list ) = (caseListElement_eval element : caseListElements_eval case_list)
 
-caseListElement_eval :: CaseListElement -> (Val,String)
-caseListElement_eval (CaseListElementSingle const statement) = (constList_eval const,  (statementEval statement) )
+caseListElement_eval :: CaseListElement -> (Val,Val)
+caseListElement_eval (CaseListElementSingle const statement) = (constList_eval const,  Id (statementEval statement) )
 
 constList_eval :: ConstList -> Val
 constList_eval (ConstListSingle x) = constant_eval x
@@ -152,10 +152,51 @@ constant_eval (ConstantUN unsignedNumber) = unsignedNumberEval unsignedNumber
 
 
 structuredStatementEval :: StructuredStatement ->Val
---structuredStatementEval (StructuredStatementCompoundStatement statementArray) =
+structuredStatementEval (StructuredStatementCompoundStatement statementArray) = strToVal(statementsEval statementArray)
 structuredStatementEval (  StructuredStatementConditionalStatement conditionalStatement) = conditionalStatementEval conditionalStatement
---structuredStatementEval (StructuredStatementRepetetiveStatement repetetiveStatement) =
+structuredStatementEval (StructuredStatementRepetetiveStatement repetetiveStatement) = repetetiveStatement_eval repetetiveStatement
 --structuredStatementEval ( StructuredStatementWithStatement withStatement) =
+
+
+
+repetetiveStatement_eval :: RepetetiveStatement -> Val
+repetetiveStatement_eval (RepetetiveStatementWhile whileT) = Id((whileStatement_eval whileT))
+
+
+whileStatement_eval :: WhileStatement -> String
+whileStatement_eval (WhileS expression statement) = 
+                        if(toBool(expressionEval expression)) then 
+                             ((statementEval statement)  ++
+                             (whileStatement_eval (Whileloop expression statement)) )
+                             else "" -- then Id (statementEval statement)  else Real(77)
+whileStatement_eval (Whileloop expression statement) = 
+                        if(toBool(expressionEval expression)) then 
+                            ((statementEval statement)  ++
+                             (whileStatement_eval (Whileloop expression statement)) )
+                            else "" --
+
+-- whileStatement_eval (Whileloop2 expression statement) = 
+--                         if(toBool(expressionEval expression)) then 
+--                            ((statementEval statement)  ++
+--                              (whileStatement_eval (Whileloop3 expression statement)) )
+--                             else "" --
+
+-- whileStatement_eval (Whileloop3 expression statement) = 
+--                         if(toBool(expressionEval expression)) then 
+--                             ("Hello3" )
+--                             else "" --
+            
+
+
+-- whileStatement_eval (Whileloop expression statement) = 
+--                         if(toBool(expressionEval expression)) then 
+--                             concat((statementEval statement)   ,  
+--                             (whileStatement_eval (Whileloop expression statement))  ) 
+--                             else [""] --
+
+
+
+
 
 unlabelledStatementEval :: UnlabelledStatement -> Val
 unlabelledStatementEval (UnlabelledStatementSimpleStatement simpleStatement) = simpleStatementEval simpleStatement
