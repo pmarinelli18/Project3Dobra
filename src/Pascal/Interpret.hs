@@ -10,6 +10,7 @@ where
 import Pascal.Data
 import Pascal.Val
 import qualified Data.Map as Map
+import Data.Maybe
 
 -- TODO: define auxiliary functions to aid interpretation
 -- Feel free to put them here or in different modules
@@ -30,10 +31,10 @@ import qualified Data.Map as Map
 --numToString :: Float -> String
 --numToString (x) = (show x)
 
-type VariableMap = Map.Map String (String, Val)
+type VariableMap = Map.Map String Val --Map.Map String (String, Val)
 
---variableMapEval :: VariableMap -> Map.Map String (String, Val)
---dvariableMapEval (varMap ) =
+--VariableMapEval :: VariableMap -> VariableMap
+--dVariableMapEval (varMap ) =
 
 
 unsignedNumberEval :: UnsignedNumber -> Val
@@ -57,7 +58,7 @@ variableEval :: Variable -> String
 variableEval (Var string) = string
 
 factorEval :: Factor -> VariableMap -> (Val, VariableMap)    --Add boolean to Val in Val.hs
---factorEval (FactorVariable variable) varMap =     ((lookup  (variableEval variable) varMap), varMap)
+factorEval (FactorVariable variable) varMap =     (( fromJust(Map.lookup  ((variableEval variable)) varMap)), varMap)
 factorEval (FactorExpression expression) varMap =  ((Real (2.0)), varMap)
 factorEval (FactorFD functionDesignator) varMap =  (fst(functionDesignatorEval functionDesignator varMap), snd(functionDesignatorEval functionDesignator varMap))
 factorEval (FactorUC unsignedConstant) varMap =  (fst(unsignedConstantEval unsignedConstant varMap), varMap)
@@ -190,17 +191,19 @@ statementEval varMap(StatementUnlabelledStatement us)  = (valToStr (fst(unlabell
 
 statementsEval :: Statements -> VariableMap -> ([String], VariableMap)
 statementsEval (StatementsSingle x) varMap = ([fst(statementEval varMap x )], varMap)
-statementsEval (StatementsMultiple x y) varMap = (concat[[fst(statementEval varMap x )], (fst(statementsEval y varMap))], varMap) --show (traverse (statementEval x)) ]
+statementsEval (StatementsMultiple x y) varMap = (concat[[fst(statementEval varMap x )], (fst(statementsEval y varMap))], snd(statementsEval y varMap)) --show (traverse (statementEval x)) ]
 
 
 variableDeclarationEval :: VariableDeclaration -> VariableMap -> VariableMap
-variableDeclarationEval (VariableDeclarationMainBool str) varMap =    (Map.insert (head(str)) ("Bool", Boolean True) varMap) 
-variableDeclarationEval (VariableDeclarationMainReal str) varMap =  (Map.insert (head(str)) ("Real", Boolean True) varMap) 
-variableDeclarationEval (VariableDeclarationMainString str) varMap =  (Map.insert (head(str)) ("String", Boolean True) varMap) 
+variableDeclarationEval (VariableDeclarationMainBool str) varMap =    (Map.insert (head(str)) (Real 1.0) varMap) --("Bool", Boolean True) varMap) 
+variableDeclarationEval (VariableDeclarationMainReal str) varMap =  (Map.insert (head(str)) (Real 1.0) varMap) --("Real", Boolean True) varMap) 
+variableDeclarationEval (VariableDeclarationMainString str) varMap =  (Map.insert (head(str)) (Real 1.0) varMap) --("String", Boolean True) varMap) 
 
 variableDeclarationPartEval :: VariableDeclarationPart -> VariableMap -> VariableMap
 variableDeclarationPartEval (VariableDeclarationPartSingle variableDeclaration ) varMap = variableDeclarationEval variableDeclaration varMap
---variableDeclarationPartEval (VariableDeclarationPartMultiple variableDeclaration variableDeclarationPartMultiple varMap) = variableDeclarationEval variableDeclaration varMap
+variableDeclarationPartEval (VariableDeclarationPartMultiple variableDeclaration variableDeclarationPartMultiple) varMap = variableDeclarationEval variableDeclaration varMap
+--Have not implemented multiple variables yet just single
+
 
 blockOptionsEval :: BlockOptions -> VariableMap
 blockOptionsEval (BlockOptionsVariableDeclarationPart variableDeclarationPart) = variableDeclarationPartEval variableDeclarationPart Map.empty

@@ -1,19 +1,13 @@
 program hi;
 var
       ad : real;
-      fsd : bool;
-
-procedure display ( ) ;
-
-begin
-   writeln('val')
-end;
+      fsd : bool; //have not implemented multiple variables yet, doesnt read
 
 begin 
    
    
-    case 4 of
-      1 : writeln('Excellent2');
+    case 1 of
+      1 : writeln(ad);
       2 : writeln('Excellent3');
       3 : writeln('Excellent5');
       1 : writeln('Excellent2');
@@ -24,6 +18,6 @@ begin
       4 : writeln('Excellent45')
 
     end;
-    writeln(4)
+    writeln(ad)
 
 end.
