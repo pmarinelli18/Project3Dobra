@@ -161,6 +161,26 @@ structuredStatementEval (StructuredStatementRepetetiveStatement repetetiveStatem
 
 repetetiveStatement_eval :: RepetetiveStatement -> Val
 repetetiveStatement_eval (RepetetiveStatementWhile whileT) = Id((whileStatement_eval whileT))
+repetetiveStatement_eval (RepetetiveStatementFor forLoop) = strToVal(forStatement_eval forLoop)
+
+
+forStatement_eval :: ForStatement -> String
+forStatement_eval (ForTo identifier expressionIn expressionF statement) = 
+                    -- if((expressionEval expressionIn) == (expressionEval expressionF)) 
+                    if((Real(15)) == (expressionEval expressionF)) 
+                        then  ""   
+                        else ( statementEval statement ++ (forStatement_eval (ForLoop identifier expressionIn expressionF  statement )) )
+                        -- else ( statementEval statement ++ (forStatement_eval (ForLoop identifier expressionIn expressionF  statement )) )
+                         -- Real(toFloat(expressionEval expressionIn)+1)
+
+
+-- forStatement_eval (ForDown String Expression Expression Statement) =
+forStatement_eval (ForLoop identifier expressionIn expressionF statement) =  
+                    --if((expressionEval expressionIn) == (expressionEval expressionF)) 
+                    if((Real(16)) == (expressionEval expressionF)) 
+                        then  "" 
+                        else  ( statementEval statement ++ (forStatement_eval (ForLoop identifier expressionIn expressionF  statement ))) --  (forStatement_eval (ForLoop identifier expressionIn expressionF  statement )) --strToVal ("")
+
 
 
 whileStatement_eval :: WhileStatement -> String

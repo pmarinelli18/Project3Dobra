@@ -165,11 +165,13 @@ RepeatStatement :: {RepeatStatement}
     : 'repeat' Statements 'until' Expression {Repeat $2 $4}
 
 ForStatement :: {ForStatement}
-    : 'for' Identifier 'assign' ForList 'do' Statement {For $2 $4 $6}
+    : 'for' Identifier ':='  Expression 'to' Expression 'do' Statement {ForTo $2 $4 $6 $8}
+    | 'for' Identifier ':=' Expression 'downto' Expression 'do' Statement {ForDown $2 $4 $6 $8}
+    
 
-ForList :: {ForList}
-    : Expression 'to' Expression {ForListTo $1 $3}
-    | Expression 'downto' Expression {ForListDownTo $1 $3}
+--ForList :: {ForList}
+--    : Expression 'to' Expression {ForListTo $1 $3}
+--    | Expression 'downto' Expression {ForListDownTo $1 $3}
 
 RepetetiveStatement :: {RepetetiveStatement}
     : WhileStatement {RepetetiveStatementWhile $1}

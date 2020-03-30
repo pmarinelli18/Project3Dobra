@@ -41,7 +41,7 @@ module Pascal.Data
         ConditionalStatement(..),
         RepeatStatement(..),
         ForStatement(..),
-        ForList(..),
+        -- ForList(..),
         RepetetiveStatement(..),
         RecordVariableList(..),
         WithStatement(..),
@@ -205,11 +205,13 @@ data RepeatStatement =
     Repeat [Statement] Expression
 
 data ForStatement =
-    For String ForList Statement
+    ForTo String Expression Expression Statement
+    |ForDown String Expression Expression Statement
+    |ForLoop String Expression Expression  Statement
 
-data ForList =
-    ForListTo Expression Expression
-    | ForListDownTo Expression Expression
+-- data ForList =
+--     ForListTo Expression Expression
+--     | ForListDownTo Expression Expression
 
 data RepetetiveStatement =
     RepetetiveStatementWhile WhileStatement
@@ -231,8 +233,6 @@ data StructuredStatement =
     | StructuredStatementConditionalStatement ConditionalStatement
     | StructuredStatementRepetetiveStatement RepetetiveStatement
     | StructuredStatementWithStatement WithStatement
-
-
 
 
 
