@@ -41,7 +41,7 @@ toInt :: Val -> Integer
 toInt (Real x) = floor x
 toInt (Integer i) = toInteger i     
 toInt (Id _) = error "Not convertible to Integer"
-toInt (Boolean _) = error "Not convertible to float"
+toInt (Boolean _) = error "Not convertible to Integer"
 
 toBool :: Val -> Bool
 toBool (Real _) = error "Not convertible to Integer"
