@@ -5,9 +5,14 @@ program hi;
         number : real;
 
 begin 
+
+    sum := -3;
+    writeln(sum, '  ');
+
+
     while sum <5 do
         begin
-            writeln(sum);
+            writeln(sum, '  ');
             sum := sum + 1
         end
 

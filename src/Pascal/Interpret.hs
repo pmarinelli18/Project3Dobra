@@ -51,6 +51,7 @@ procedureOrFunctionDeclarationEval (Function_method functionDeclaration)varMap p
 variableEval :: Variable -> String
 variableEval (Var string) = string
 
+
 factorEval :: Factor -> VariableMap -> FunctionAndProcedureMap -> (Val, VariableMap)    --Add boolean to Val in Val.hs
 factorEval (FactorVariable variable) varMap  pfMap=     (( fromJust(Map.lookup  ((variableEval variable)) (last varMap))), varMap)
 factorEval (FactorExpression expression) varMap pfMap =  ((Real (2.0)), varMap)
@@ -58,13 +59,14 @@ factorEval (FactorFD functionDesignator) varMap pfMap =  (fst(functionDesignator
 factorEval (FactorUC unsignedConstant) varMap pfMap =  (fst(unsignedConstantEval unsignedConstant varMap pfMap), snd(unsignedConstantEval unsignedConstant varMap pfMap))
 factorEval (FactorSe set) varMap pfMap = ((Real (5.0)), varMap)
 factorEval (FactorNot factor) varMap pfMap = ((Real (6.0)), varMap)
-factorEval (FactorBool bool) varMap pfMap = ((Real (7.0)), varMap)
-
+factorEval (FactorBool bool) varMap pfMap = (Boolean(bool), varMap) 
 
 signedFactorEval :: SignedFactor -> VariableMap -> FunctionAndProcedureMap -> (Val, VariableMap)
 signedFactorEval (SignedFactorDefault factor) varMap  pfMap= (fst(factorEval factor varMap pfMap), snd(factorEval factor varMap pfMap))
 signedFactorEval (SignedFactorPlus factor) varMap pfMap = (fst(factorEval factor varMap pfMap), snd(factorEval factor varMap pfMap))
-signedFactorEval (SignedFactorMinus factor) varMap pfMap = (fst(factorEval factor varMap pfMap), snd(factorEval factor varMap pfMap))
+signedFactorEval (SignedFactorMinus factor) varMap pfMap = (Real( -1 *(toFloat((fst(factorEval factor varMap pfMap))))), snd(factorEval factor varMap pfMap))
+
+
 
 termEval :: Term -> VariableMap -> FunctionAndProcedureMap -> (Val, VariableMap)
 termEval (TermSingle signedFactor) varMap pfMap = (fst(signedFactorEval signedFactor varMap pfMap), snd(signedFactorEval signedFactor varMap pfMap))
@@ -73,6 +75,7 @@ termEval (TermMultipleDivision signedFactor term) varMap pfMap = ((Real((toFloat
 termEval (TermMultipleDiv signedFactor term) varMap pfMap = ((Real((toFloat (fst(signedFactorEval signedFactor varMap pfMap))) / (toFloat(fst(termEval term varMap pfMap))))), varMap)
 termEval (TermMultipleMod signedFactor term) varMap pfMap = ((Real((toFloat (fst(signedFactorEval signedFactor varMap pfMap))) * (toFloat(fst(termEval term varMap pfMap))))), varMap)--Integer((toInt(signedFactorEval signedFactor)) `mod` (toInt(termEval term)))
 termEval (TermMultipleAnd signedFactor term) varMap pfMap = ((Boolean((toBool (fst(signedFactorEval signedFactor varMap pfMap))) && (toBool(fst(termEval term varMap pfMap))))), varMap)
+
 ---------------------------------------------DID NOT ADD FUNCTIONALITY TO "mod" YET Maybe havnt tested it yet ---------------------------------------------------
 
 simpleExpressionEval :: SimpleExpression -> VariableMap -> FunctionAndProcedureMap ->(Val, VariableMap)
@@ -103,7 +106,7 @@ parameterListEval (ParameterListSingle x) varMap pfMap = (fst(actualParameterEva
 parameterListEval (ParameterListMulitiple y x) varMap pfMap = ((Id (concat (valToStr (fst(parameterListEval y varMap pfMap)), valToStr (fst(actualParameterEval x varMap pfMap))))), varMap)
 
 procedureStatementEval :: ProcedureStatement -> VariableMap-> FunctionAndProcedureMap -> (Val, VariableMap)
-procedureStatementEval (MultiProcedureStatement "writeln" x) varMap  pfMap= (fst(parameterListEval x varMap pfMap), snd(parameterListEval x varMap pfMap))
+procedureStatementEval (MultiProcedureStatement "writeln" x) varMap  pfMap= ( (Id( (valToStr(fst(parameterListEval x varMap pfMap)) ++ "#&#!" )) ), snd(parameterListEval x varMap pfMap))
 procedureStatementEval (SingleProcedureStatement str) varMap  pfMap= ((Real (0.11)), varMap)
 procedureStatementEval (MultiProcedureStatement str x) varMap  pfMap=((fst(procedureOrFunctionDeclarationEval (fromJust(Map.lookup  ((str)) pfMap)) varMap pfMap))
     , varMap)
@@ -113,11 +116,13 @@ simpleStatementEval (PS ps) varMap  pfMap= (fst(procedureStatementEval ps varMap
 simpleStatementEval (SimpleStatementAssignment assignmentStatement) varMap  pfMap= (Id "", (assignmentStatementEval assignmentStatement varMap pfMap))
 
 
+
 assignmentStatementEval :: AssignmentStatement -> VariableMap -> FunctionAndProcedureMap -> VariableMap
 assignmentStatementEval (AssignmentStatementMain variable expression ) varMap pfMap = (take ((length varMap) -1) varMap) 
     ++ [(Map.insert (variableEval variable) ((fst(expressionEval expression varMap pfMap))) (last varMap))]
 assignmentStatementEval (AssignmentStatementValue variable value ) varMap pfMap = (take ((length varMap) -1) varMap) 
     ++ [(Map.insert (variableEval variable) ((value)) (last varMap))]
+
 --(Map.insert (head(str)) (Real 1.0) varMap)
 
 ifStatementEval :: IfStatement -> VariableMap -> FunctionAndProcedureMap -> (String, VariableMap)
@@ -191,7 +196,15 @@ forStatement_evalHelper identifier expressionTo statement varMap  pfMap=
     snd(forStatement_evalHelper identifier expressionTo  statement (snd(statementEval varMap statement  pfMap))  pfMap))
                         -- else ( statementEval statement ++ (forStatement_eval (ForLoop identifier expressionIn expressionF  statement )) )
                          -- Real(toFloat(expressionEval expressionIn)+1)
-                         --assignmentStatementEval (AssignmentStatementMain variable expression )
+
+
+-- forStatement_eval (ForDown String Expression Expression Statement) =
+forStatement_eval (ForLoop identifier expressionIn expressionF statement) varMap=  
+                    --if((expressionEval expressionIn) == (expressionEval expressionF)) 
+                    if((Real(16)) == (fst(expressionEval expressionF varMap))) 
+                        then  ("", varMap) 
+                        else  ( (fst( statementEval varMap statement )) ++ (fst(forStatement_eval (ForLoop identifier expressionIn expressionF  statement) varMap)), snd( statementEval varMap statement))
+
 
 
 whileStatement_eval :: WhileStatement -> VariableMap -> FunctionAndProcedureMap -> (String, VariableMap)
@@ -201,7 +214,7 @@ whileStatement_eval (WhileS expression statement) varMap pfMap=
                              (fst(whileStatement_eval (WhileS expression statement) (snd(statementEval varMap statement  pfMap)) pfMap)),
                               snd(whileStatement_eval (WhileS expression statement) (snd(statementEval varMap statement  pfMap)) pfMap) 
                               )
-                             else ("", varMap) 
+                             else ("", varMap) -- then Id (statementEval statement)  else Real(77) 
 
 unlabelledStatementEval :: UnlabelledStatement -> VariableMap->FunctionAndProcedureMap -> (Val, VariableMap)
 unlabelledStatementEval (UnlabelledStatementSimpleStatement simpleStatement) varMap pfMap= (fst(simpleStatementEval simpleStatement varMap pfMap), snd(simpleStatementEval simpleStatement varMap pfMap))
@@ -260,6 +273,6 @@ blockEval (Block_Variable_Method b p s) = fst(statementsEval s ([blockOptionsEva
 
 interpret :: Program -> String
 -- TODO: write the interpreter
-interpret (ProgramBlock programheading block) = removePunc2(concat(blockEval block))
+interpret (ProgramBlock programheading block) = (replace  (removePunc2(concat(blockEval block))) "#&#!" "\n")
 
 interpret _ = "Not implemented"

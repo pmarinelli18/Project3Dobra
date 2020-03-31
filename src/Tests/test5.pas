@@ -12,6 +12,6 @@ begin
     Volume:=(length * (height * weight))/3;
 
     
-    writeln('The Volume of your Pyramid is ' + Volume);
-    writeln('This is test5');
+    writeln('The Volume of your Pyramid is ' , Volume);
+    writeln('This is test5')
 end.
