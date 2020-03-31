@@ -7,42 +7,13 @@ answer : bool;
 
 
 begin
-    writeln('the number is equal to _5');
-    writeln('Is the number equal to _5');
-    writeln('True or False');
-    answer := true;
-    if(decision=answer) then
-        count:= count + 1
-    else
-        count:= count - 1;
-
-    writeln('multiply by _5');
-    writeln('Is the number equal to _35');
-    writeln('True or False');
-    answer := false;
-    if(decision=answer) then
-        count:=count+1
-    else
-        count:=count-1;
     
-    writeln('divide by _25');
-    writeln('Is the number equal to _5');
+    writeln('the number is equal to 5');
+    writeln('Is the number equal to 5');
     writeln('True or False');
     answer := false;
-    if(decision=answer) then
-        count:=count+1
-    else
-        count:=count-1;
-    
-    writeln('logarithm of answer');
-    writeln('Is the number equal to _1');
-    writeln('True or False');
-    answer := false;
-    if(decision=answer) then
-        count:=count+1
-    else
-        count:=count-1;
+    count := 7;
 
-    writeln('Your score is ' + count);
-    writeln('This is test7');
+    writeln('Your score is ' , answer);
+    writeln('Your score is ' , count)
 end.

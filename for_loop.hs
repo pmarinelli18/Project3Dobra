@@ -1,8 +1,6 @@
-import Control.Monad (unless)
- 
-for (x:xs) f = do
-  f x
-  unless (null xs) $ for xs f
- 
-main = for [1..10] (\i -> putStrLn ("Hello: " ++ show i))
-
+replace :: Eq a => [a] -> [a] -> [a] -> [a]
+replace [] _ _ = []
+replace s find repl =
+    if take (length find) s == find
+        then repl ++ (replace (drop (length find) s) find repl)
+        else [head s] ++ (replace (tail s) find repl)

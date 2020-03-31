@@ -6,10 +6,11 @@ drag : real;
 connecr : bool;
 
 begin
-alta := 3.4;
-writeln(alta);
-writeln( cos (1) );
-writeln(sqrt(4));
-writeln(ln(2))
+    alta := 3.4;
+    writeln(alta, ' ');
+    writeln( cos (1), ' ' );
+    writeln(sqrt(4), ' ');
+    writeln(ln(2), ' ')
+
 end.
 

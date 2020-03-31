@@ -11,11 +11,11 @@ begin
     a := 2;
     d:= true;
     o:= true;
-    writeln('decision' + d);
-    writeln('original' + o);
+    writeln('decision ' , d);
+    writeln('original ' , o);
     if  b>a then writeln('True') else
         writeln('false' );
     
 
-    writeln('This is test6');
+    writeln('This is test6')
 end.

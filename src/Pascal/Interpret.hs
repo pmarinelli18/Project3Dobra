@@ -65,7 +65,10 @@ factorEval (FactorFD functionDesignator) varMap =  (fst(functionDesignatorEval f
 factorEval (FactorUC unsignedConstant) varMap =  (fst(unsignedConstantEval unsignedConstant varMap), snd(unsignedConstantEval unsignedConstant varMap))
 factorEval (FactorSe set) varMap = ((Real (5.0)), varMap)
 factorEval (FactorNot factor) varMap = ((Real (6.0)), varMap)
-factorEval (FactorBool bool) varMap = ((Real (7.0)), varMap)
+factorEval (FactorBool bool) varMap = (Boolean(bool), varMap) -- (( fromJust(Map.lookup  ((variableEval bool)) (last varMap))), varMap)
+    --
+
+--bool_eval (Bool)
 
 
 signedFactorEval :: SignedFactor -> VariableMap -> (Val, VariableMap)
@@ -111,9 +114,9 @@ parameterListEval (ParameterListMulitiple y x) varMap = ((Id ( (valToStr (fst(pa
 
 procedureStatementEval :: ProcedureStatement -> VariableMap-> (Val, VariableMap)
 procedureStatementEval (SingleProcedureStatement str) varMap = ((Real (0.11)), varMap)
-procedureStatementEval (MultiProcedureStatement "writeln" x) varMap = (fst(parameterListEval x varMap), snd(parameterListEval x varMap))
--- procedureStatementEval (MultiProcedureStatement "writeln" x) varMap = ( (Id( (valToStr(fst(parameterListEval x varMap)) ++ " \n  " )) )
---                                         , snd(parameterListEval x varMap))
+--procedureStatementEval (MultiProcedureStatement "writeln" x) varMap = (fst(parameterListEval x varMap), snd(parameterListEval x varMap))
+procedureStatementEval (MultiProcedureStatement "writeln" x) varMap = ( (Id( (valToStr(fst(parameterListEval x varMap)) ++ "#&#!" )) )
+                                         , snd(parameterListEval x varMap))
 
 
 simpleStatementEval :: SimpleStatement -> VariableMap -> (Val, VariableMap)
@@ -249,6 +252,6 @@ blockEval (Block_Variable_Method blockOptions procedureAndFunctionDeclarationPar
 
 interpret :: Program -> String
 -- TODO: write the interpreter
-interpret (ProgramBlock programheading block) = removePunc2(concat(blockEval block))
+interpret (ProgramBlock programheading block) = (replace  (removePunc2(concat(blockEval block))) "#&#!" "\n")
 
 interpret _ = "Not implemented"

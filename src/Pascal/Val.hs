@@ -51,3 +51,11 @@ toBool (Boolean b) = b
 
 removePunc2 :: String -> String 
 removePunc2 xs = [ x | x <- xs, not (x `elem` "\"\'\\") ]
+
+
+replace :: Eq a => [a] -> [a] -> [a] -> [a]
+replace [] _ _ = []
+replace s find repl =
+    if take (length find) s == find
+        then repl ++ (replace (drop (length find) s) find repl)
+        else [head s] ++ (replace (tail s) find repl)
