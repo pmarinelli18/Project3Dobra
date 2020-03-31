@@ -169,9 +169,9 @@ conditionalStatementEval (ConditionalStatementIf ifStatement) varMap = ((Id (fst
 conditionalStatementEval (ConditionalStatementCase caseStatement) varMap = ((Id (fst(caseStatementEval caseStatement varMap))), snd(caseStatementEval caseStatement varMap))
 
 structuredStatementEval :: StructuredStatement -> VariableMap -> (Val, VariableMap)
---structuredStatementEval (StructuredStatementCompoundStatement statementArray) varMap = strToVal(statementsEval statementArray varMap)
+structuredStatementEval (StructuredStatementCompoundStatement statementArray) varMap = (Id (concat(fst(statementsEval statementArray varMap))), snd(statementsEval  statementArray varMap))
 structuredStatementEval (  StructuredStatementConditionalStatement conditionalStatement) varMap = (fst(conditionalStatementEval conditionalStatement varMap), snd(conditionalStatementEval conditionalStatement varMap))
---structuredStatementEval (StructuredStatementRepetetiveStatement repetetiveStatement) = repetetiveStatement_eval repetetiveStatement
+structuredStatementEval (StructuredStatementRepetetiveStatement repetetiveStatement)varMap = repetetiveStatement_eval repetetiveStatement varMap
 --structuredStatementEval ( StructuredStatementWithStatement withStatement) =
 
 repetetiveStatement_eval :: RepetetiveStatement -> VariableMap-> (Val, VariableMap)

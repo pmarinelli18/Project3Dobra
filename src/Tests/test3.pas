@@ -1,15 +1,16 @@
-program ForBreakTest; 
+program HelloWorld;
 var
-   a: real;
+alta : real;
+BaT : real;
+(*There is a cooment here*)
+connecr : boolean;
 
 begin
-
-      writeln('didnt break');
-
-     for tt := 15 to 20 do
-      begin
-         writeln('didnt break');
-         writeln(2+2);
-      end;
-      
+    alta:=212-3;
+    (*There is a cooment here*)
+    BaT:=55+66;
+        (*There is a cooment here*)
+    BaT:=BaT-alta;
+    writeln('This is the final result of BaT ' + BaT);
+    writeln('This is test3');
 end.
