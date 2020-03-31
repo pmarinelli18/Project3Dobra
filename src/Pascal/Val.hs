@@ -50,4 +50,4 @@ toBool (Id _) = error "Not convertible to Integer"
 toBool (Boolean b) = b
 
 removePunc2 :: String -> String 
-removePunc2 xs = [ x | x <- xs, not (x `elem` "\"\'\\") ]
+removePunc2 xs = [ x | x <- xs, not (x `elem` "\"\' \\ ") ]

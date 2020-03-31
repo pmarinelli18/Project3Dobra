@@ -111,7 +111,10 @@ parameterListEval (ParameterListMulitiple y x) varMap = ((Id (concat (valToStr (
 
 procedureStatementEval :: ProcedureStatement -> VariableMap-> (Val, VariableMap)
 procedureStatementEval (SingleProcedureStatement str) varMap = ((Real (0.11)), varMap)
-procedureStatementEval (MultiProcedureStatement "writeln" x) varMap = (fst(parameterListEval x varMap), snd(parameterListEval x varMap))
+--procedureStatementEval (MultiProcedureStatement "writeln" x) varMap = (fst(parameterListEval x varMap), snd(parameterListEval x varMap))
+procedureStatementEval (MultiProcedureStatement "writeln" x) varMap = ( (Id( (valToStr(fst(parameterListEval x varMap)) ++ " \n  " )) )
+                                        , snd(parameterListEval x varMap))
+
 
 simpleStatementEval :: SimpleStatement -> VariableMap -> (Val, VariableMap)
 simpleStatementEval (PS ps) varMap = (fst(procedureStatementEval ps varMap), snd(procedureStatementEval ps varMap))
