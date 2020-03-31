@@ -57,9 +57,6 @@ module Pascal.Data
     ) where
 import Pascal.Val
 
-
-import Pascal.Val
-
 data VariableDeclarationPart =
     VariableDeclarationPartSingle VariableDeclaration
     |VariableDeclarationPartMultiple VariableDeclaration VariableDeclarationPartMultiple
@@ -199,6 +196,7 @@ data SimpleStatement =
 
 data AssignmentStatement = 
     AssignmentStatementMain Variable Expression
+    |AssignmentStatementValue Variable Val
 
 data IfStatement =
     IfState Expression Statement

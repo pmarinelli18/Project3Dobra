@@ -37,9 +37,9 @@ toFloat (Boolean _) = error "Not convertible to float"
 
 -- converts to Float if Real or Integer, error otherwise
 -- used to deal with arguments of operators
-toInt :: Val -> Integer
+toInt :: Val -> Int
 toInt (Real x) = floor x
-toInt (Integer i) = toInteger i     
+toInt (Integer i) = i     
 toInt (Id _) = error "Not convertible to Integer"
 toInt (Boolean _) = error "Not convertible to Integer"
 

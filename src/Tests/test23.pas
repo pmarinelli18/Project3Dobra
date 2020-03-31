@@ -4,12 +4,10 @@ var
 
 begin
 
-      writeln('didnt break');
 
      for tt := 15 to 20 do
       begin
-         writeln('didnt break');
-         writeln(2+2)
+         writeln(tt)
       end
       
 end.

@@ -118,7 +118,10 @@ simpleStatementEval (PS ps) varMap = (fst(procedureStatementEval ps varMap), snd
 simpleStatementEval (SimpleStatementAssignment assignmentStatement) varMap = (Id "", (assignmentStatementEval assignmentStatement varMap))
 
 assignmentStatementEval :: AssignmentStatement -> VariableMap -> VariableMap
-assignmentStatementEval (AssignmentStatementMain variable expression ) varMap = (take ((length varMap) -1) varMap) ++ [(Map.insert (variableEval variable) ((fst(expressionEval expression varMap))) (last varMap))]
+assignmentStatementEval (AssignmentStatementMain variable expression ) varMap = (take ((length varMap) -1) varMap) 
+    ++ [(Map.insert (variableEval variable) ((fst(expressionEval expression varMap))) (last varMap))]
+assignmentStatementEval (AssignmentStatementValue variable value ) varMap = (take ((length varMap) -1) varMap) 
+    ++ [(Map.insert (variableEval variable) ((value)) (last varMap))]
 --(Map.insert (head(str)) (Real 1.0) varMap)
 
 ifStatementEval :: IfStatement -> VariableMap -> (String, VariableMap)
@@ -181,21 +184,20 @@ repetetiveStatement_eval (RepetetiveStatementFor forLoop) varMap = (strToVal(fst
 
 forStatement_eval :: ForStatement -> VariableMap-> (String, VariableMap)
 forStatement_eval (ForTo identifier expressionIn expressionF statement) varMap= 
-                    -- if((expressionEval expressionIn) == (expressionEval expressionF)) 
-                    if((Real(15)) == (fst(expressionEval expressionF varMap))) 
-                        then  ("", varMap)   
-                        else ( (fst(statementEval varMap statement )) ++ (fst(forStatement_eval ((ForLoop identifier expressionIn expressionF  statement)) varMap)), snd(statementEval varMap statement))
+    ((fst(forStatement_evalHelper identifier (toInt(fst(expressionEval expressionF varMap))) statement 
+    (varMap ++ [(Map.insert(identifier) ((fst(expressionEval expressionIn varMap))) (last varMap))]))), varMap)
+
+forStatement_evalHelper :: String -> Int -> Statement -> VariableMap -> (String, VariableMap)
+forStatement_evalHelper identifier expressionTo statement varMap = 
+    if(toInt( fromJust(Map.lookup  ((identifier)) (last varMap))) >= (expressionTo)) 
+    then  ("", varMap)   
+    else ((fst(statementEval varMap statement )) ++ (fst(forStatement_evalHelper identifier expressionTo  statement 
+    (assignmentStatementEval (AssignmentStatementValue (Var identifier) (Integer ((toInt( fromJust(Map.lookup  ((identifier)) (last varMap)))) + 1)) )
+     (snd(statementEval varMap statement )) ))), 
+    snd(forStatement_evalHelper identifier expressionTo  statement (snd(statementEval varMap statement )) ))
                         -- else ( statementEval statement ++ (forStatement_eval (ForLoop identifier expressionIn expressionF  statement )) )
                          -- Real(toFloat(expressionEval expressionIn)+1)
-
-
--- forStatement_eval (ForDown String Expression Expression Statement) =
-forStatement_eval (ForLoop identifier expressionIn expressionF statement) varMap=  
-                    --if((expressionEval expressionIn) == (expressionEval expressionF)) 
-                    if((Real(16)) == (fst(expressionEval expressionF varMap))) 
-                        then  ("", varMap) 
-                        else  ( (fst( statementEval varMap statement )) ++ (fst(forStatement_eval (ForLoop identifier expressionIn expressionF  statement) varMap)), snd( statementEval varMap statement))
-
+                         --assignmentStatementEval (AssignmentStatementMain variable expression )
 
 
 whileStatement_eval :: WhileStatement -> VariableMap -> (String, VariableMap)
@@ -205,7 +207,7 @@ whileStatement_eval (WhileS expression statement) varMap=
                              (fst(whileStatement_eval (WhileS expression statement) (snd(statementEval varMap statement )))),
                               snd(whileStatement_eval (WhileS expression statement) (snd(statementEval varMap statement ))) 
                               )
-                             else ("", varMap) -- then Id (statementEval statement)  else Real(77) 
+                             else ("", varMap) 
 
 unlabelledStatementEval :: UnlabelledStatement -> VariableMap-> (Val, VariableMap)
 unlabelledStatementEval (UnlabelledStatementSimpleStatement simpleStatement) varMap= (fst(simpleStatementEval simpleStatement varMap), snd(simpleStatementEval simpleStatement varMap))
