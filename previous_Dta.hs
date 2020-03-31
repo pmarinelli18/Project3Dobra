@@ -14,7 +14,6 @@ module Pascal.Data
         Expression(..),
         ActualParameter(..),
         ParameterList(..),
-        AssignmentStatement(..),
         SimpleStatement(..),
         UnlabelledStatement(..),
         ProcedureStatement(..),
@@ -28,7 +27,6 @@ module Pascal.Data
         VariableDeclarationPart(..),
         VariableDeclarationPartMultiple(..),
         VariableDeclaration(..),
-        Statements(..),
         Statement(..),
         IfStatement(..),
         ConstList(..),
@@ -46,19 +44,21 @@ module Pascal.Data
         WithStatement(..),
         WhileStatement(..),
         StructuredStatement(..),
+
+        --Function--
         ProcedureAndFunctionDeclarationPart(..),
         ProcedureOrFunctionDeclaration(..),
         ProcedureDeclaration(..),
         FormalParameterList(..),
         FormalParameterSection(..),
         ParameterGroup(..),
-        FunctionDeclaration(..),
+        -- FunctionDeclaration(..),
+
         Program(..)
     ) where
 import Pascal.Val
 
 
-import Pascal.Val
 
 data VariableDeclarationPart =
     VariableDeclarationPartSingle VariableDeclaration
@@ -69,32 +69,31 @@ data VariableDeclarationPartMultiple =
     |VariableDeclarationPartMultipleMultiple VariableDeclaration VariableDeclarationPartMultiple
 
 data VariableDeclaration = 
-    VariableDeclarationMainBool [String]
-    |VariableDeclarationMainReal [String]
-    |VariableDeclarationMainString [String]
+    VariableDeclarationMain [String] VType
 
 data Block =
-    BlockCopoundStatement Statements
-    | BlockVariableDeclarationPart BlockOptions Statements
-    | Block_Method ProcedureAndFunctionDeclarationPart Statements
-    | Block_Variable_Method BlockOptions ProcedureAndFunctionDeclarationPart Statements
+    BlockCopoundStatement [Statement]
+    | BlockVariableDeclarationPart BlockOptions [Statement]
+    | Block_Method ProcedureAndFunctionDeclarationPart [Statement]
+    | Block_Variable_Method BlockOptions ProcedureAndFunctionDeclarationPart [Statement] 
 
 data BlockOptions =
     BlockOptionsVariableDeclarationPart VariableDeclarationPart
+
 
 data ProcedureAndFunctionDeclarationPart = 
     Declaration ProcedureOrFunctionDeclaration
 
 data ProcedureOrFunctionDeclaration =
     Procedure_method ProcedureDeclaration
-    | Function_method FunctionDeclaration
+ --  | Function_method FunctionDeclaration
 
-data FunctionDeclaration =
-     Function_no_identifier  String  String  Block
-    | Function_identifier  String FormalParameterList String  Block
+-- data FunctionDeclaration =
+--     : Function_no_identifier  String  String ' Block
+--     | Function_no_identifier  String FormalParameterList String ' Block
 
 data ProcedureDeclaration = 
-     Procedure_no_identifier String Block
+    Procedure_no_identifier String Block
     | Procedure_with_identifier String FormalParameterList  Block
 
 data FormalParameterList =
@@ -107,6 +106,7 @@ data FormalParameterSection =
 
 data ParameterGroup =
     Parameter_group [String] String
+
 
 data UnsignedNumber =
     UI Int
@@ -195,10 +195,6 @@ data ParameterList =
 
 data SimpleStatement =
     PS ProcedureStatement
-    | SimpleStatementAssignment AssignmentStatement
-
-data AssignmentStatement = 
-    AssignmentStatementMain Variable Expression
 
 data IfStatement =
     IfState Expression Statement
@@ -228,8 +224,7 @@ data CaseListElements =
 
 data CaseStatement =
     Case Expression CaseListElements
-    |CaseElse Expression CaseListElements Statements
-    | CaseBreakDown Expression [(Val, Val)]
+    |CaseElse Expression CaseListElements [Statement]
 
 
 data ConditionalStatement =
@@ -245,7 +240,7 @@ data WhileStatement =
 
 
 data RepeatStatement =
-    Repeat Statements Expression
+    Repeat [Statement] Expression
 
 data ForStatement =
     ForTo String Expression Expression Statement
@@ -272,7 +267,7 @@ data WithStatement =
     With RecordVariableList Statement
 
 data StructuredStatement =
-    StructuredStatementCompoundStatement Statements
+    StructuredStatementCompoundStatement [Statement]
     | StructuredStatementConditionalStatement ConditionalStatement
     | StructuredStatementRepetetiveStatement RepetetiveStatement
     | StructuredStatementWithStatement WithStatement
@@ -282,10 +277,6 @@ data StructuredStatement =
 data UnlabelledStatement =
     UnlabelledStatementSimpleStatement SimpleStatement
     | UnlabelledStatementStructuredStatement StructuredStatement
-
-data Statements =
-    StatementsSingle Statement
-    |StatementsMultiple Statement Statements
 
 data Statement = 
     StatementUnlabelledStatement UnlabelledStatement

@@ -100,6 +100,7 @@ Block:: {Block}
     | BlockOptions ProcedureAndFunctionDeclarationPart CompoundStatement {Block_Variable_Method $1 $2 $3}
     | ProcedureAndFunctionDeclarationPart CompoundStatement {Block_Method $1 $2}
     
+
 ProcedureAndFunctionDeclarationPart :: {ProcedureAndFunctionDeclarationPart}
     : ProcedureOrFunctionDeclaration ';' {Declaration $1}
 
@@ -109,16 +110,17 @@ ProcedureOrFunctionDeclaration :: {ProcedureOrFunctionDeclaration}
 
 FunctionDeclaration :: {FunctionDeclaration}
     : 'function' Identifier '(' ')' ':' Identifier ';' Block {Function_no_identifier $2 $6 $8}
-    | 'function' Identifier '(' FormalParameterList ')' ':' Identifier ';' Block {Function_identifier $2 $4 $7 $9}
+    | 'function' Identifier '(' FormalParameterList ')' ':' Identifier ';' Block
 
 ProcedureDeclaration :: {ProcedureDeclaration}
     : 'procedure' Identifier '('   ')'  ';'  Block {Procedure_no_identifier $2 $6}
-    | 'procedure' Identifier '(' FormalParameterList ')' ';'  Block {Procedure_with_identifier $2 $4 $7}
+    | 'procedure' Identifier '(' FormalParameterList ')'  ';'  Block {Procedure_with_identifier $2 $4 $7}
 
 FormalParameterList :: {FormalParameterList}
     : FormalParameterSection {Singleparameter $1 }
-    | FormalParameterSection ';' FormalParameterList {Multipleparameter $1 $3}
-
+    | FormalParameterSection ';'  FormalParameterList {Multipleparameter $1 $3}
+--Warning ---     | FormalParameterSection ';' FormalParameterList {Multipleparamete $1 :$3}
+--sHOUULD i USE $1 : $3 or not
 
 FormalParameterSection :: {FormalParameterSection}
     : ParameterGroup {Simple_parameterGroup $1}
@@ -127,6 +129,9 @@ FormalParameterSection :: {FormalParameterSection}
 
 ParameterGroup :: {ParameterGroup}
     : IdentifierList ':'Identifier {Parameter_group $1 $3}
+
+
+
 
 
 BlockOptions:: {BlockOptions}
@@ -141,17 +146,16 @@ VariableDeclarationPartMultiple:: {VariableDeclarationPartMultiple}
     | VariableDeclaration {VariableDeclarationPartMultipleSingle $1}
 
 VariableDeclaration:: {VariableDeclaration}
-    : IdentifierList ':' 'bool' ';'{VariableDeclarationMainBool $1}
-    | IdentifierList ':' 'real' ';'{VariableDeclarationMainReal $1}
-    | IdentifierList ':' 'string' ';'{VariableDeclarationMainString $1}
+    : IdentifierList ':' VType ';'{VariableDeclarationMain $1 $3 }
 
-CompoundStatement:: {Statements}
+
+CompoundStatement:: {[Statement]}
     : 'begin' Statements 'end' { $2 }
 
-Statements:: {Statements}
-    :  -- nothing; make empty list
-    Statement{StatementsSingle $1 }
-    |Statement ';' Statements {StatementsMultiple $1 $3 }-- put statement as first element of statements
+Statements:: {[Statement]}
+    : { [] } -- nothing; make empty list
+    |Statement{ [$1] }
+    |Statement ';' Statements { $1:$3 }-- put statement as first element of statements
 
 Statement :: {Statement}
     :UnlabelledStatement {StatementUnlabelledStatement $1}
@@ -234,11 +238,9 @@ UnlabelledStatement :: {UnlabelledStatement}
 
 SimpleStatement :: {SimpleStatement}
     : ProcedureStatement {PS $1}
-    | AssignmentStatement {SimpleStatementAssignment $1}
+    --| AssignmentStatement
     --| GotoStatement
 
-AssignmentStatement :: {AssignmentStatement}
-    :Variable ':=' Expression {AssignmentStatementMain $1 $3}
 
 ProcedureStatement :: {ProcedureStatement}
     : Identifier {SingleProcedureStatement $1 }

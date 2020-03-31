@@ -1,3 +1,4 @@
+
 program hi;
 var
       a: real;
@@ -8,3 +9,4 @@ begin
     writeln(a)
 
 end.
+

@@ -133,10 +133,6 @@ ifStatementEval (IfStateElse expression statement1 statement2) varMap = ((if (to
 --caseListElementEval :: CaseListElement -> (Val,Val)
 --caseListElementEval (CaseListElementSingle const statement) = (constListEval const, Id (statementEval statement) )
 
---caseListElementsEval :: CaseListElements -> [(Val, Val)]
---caseListElementsEval (CaseListElementsSingle element ) = [caseListElementEval element]
---caseListElementsEval (CaseListElementsMultiple element case_list ) = (caseListElementEval element : caseListElementsEval case_list)
-
 caseListElements_eval :: CaseListElements -> VariableMap -> ([(Val, Val)], VariableMap)
 caseListElements_eval (CaseListElementsSingle element ) varMap = (([fst(caseListElement_eval element varMap)]), snd(caseListElement_eval element varMap))
 caseListElements_eval (CaseListElementsMultiple element case_list ) varMap=  (((concat [fst(caseListElement_eval element varMap) : (fst(caseListElements_eval case_list varMap))])), snd(caseListElements_eval case_list varMap))
@@ -172,15 +168,46 @@ conditionalStatementEval :: ConditionalStatement -> VariableMap-> (Val, Variable
 conditionalStatementEval (ConditionalStatementIf ifStatement) varMap = ((Id (fst(ifStatementEval ifStatement varMap))), snd(ifStatementEval ifStatement varMap))
 conditionalStatementEval (ConditionalStatementCase caseStatement) varMap = ((Id (fst(caseStatementEval caseStatement varMap))), snd(caseStatementEval caseStatement varMap))
 
---repetetiveStatementEval :: RepetetiveStatement -> Val
-
---withStatementEval :: WithStatement -> Val
-
 structuredStatementEval :: StructuredStatement -> VariableMap -> (Val, VariableMap)
---structuredStatementEval (StructuredStatementCompoundStatement statementArray) =
+--structuredStatementEval (StructuredStatementCompoundStatement statementArray) varMap = strToVal(statementsEval statementArray varMap)
 structuredStatementEval (  StructuredStatementConditionalStatement conditionalStatement) varMap = (fst(conditionalStatementEval conditionalStatement varMap), snd(conditionalStatementEval conditionalStatement varMap))
---structuredStatementEval (StructuredStatementRepetetiveStatement repetetiveStatement) =
+--structuredStatementEval (StructuredStatementRepetetiveStatement repetetiveStatement) = repetetiveStatement_eval repetetiveStatement
 --structuredStatementEval ( StructuredStatementWithStatement withStatement) =
+
+repetetiveStatement_eval :: RepetetiveStatement -> Val
+repetetiveStatement_eval (RepetetiveStatementWhile whileT) = Id((whileStatement_eval whileT))
+repetetiveStatement_eval (RepetetiveStatementFor forLoop) = strToVal(forStatement_eval forLoop)
+
+forStatement_eval :: ForStatement -> String
+forStatement_eval (ForTo identifier expressionIn expressionF statement) = 
+                    -- if((expressionEval expressionIn) == (expressionEval expressionF)) 
+                    if((Real(15)) == (expressionEval expressionF)) 
+                        then  ""   
+                        else ( statementEval statement ++ (forStatement_eval (ForLoop identifier expressionIn expressionF  statement )) )
+                        -- else ( statementEval statement ++ (forStatement_eval (ForLoop identifier expressionIn expressionF  statement )) )
+                         -- Real(toFloat(expressionEval expressionIn)+1)
+
+
+-- forStatement_eval (ForDown String Expression Expression Statement) =
+forStatement_eval (ForLoop identifier expressionIn expressionF statement) =  
+                    --if((expressionEval expressionIn) == (expressionEval expressionF)) 
+                    if((Real(16)) == (expressionEval expressionF)) 
+                        then  "" 
+                        else  ( statementEval statement ++ (forStatement_eval (ForLoop identifier expressionIn expressionF  statement ))) --  (forStatement_eval (ForLoop identifier expressionIn expressionF  statement )) --strToVal ("")
+
+
+
+whileStatement_eval :: WhileStatement -> String
+whileStatement_eval (WhileS expression statement) = 
+                        if(toBool(expressionEval expression)) then 
+                             ((statementEval statement)  ++
+                             (whileStatement_eval (Whileloop expression statement)) )
+                             else "" -- then Id (statementEval statement)  else Real(77)
+whileStatement_eval (Whileloop expression statement) = 
+                        if(toBool(expressionEval expression)) then 
+                            ((statementEval statement)  ++
+                             (whileStatement_eval (Whileloop expression statement)) )
+                            else "" 
 
 unlabelledStatementEval :: UnlabelledStatement -> VariableMap-> (Val, VariableMap)
 unlabelledStatementEval (UnlabelledStatementSimpleStatement simpleStatement) varMap= (fst(simpleStatementEval simpleStatement varMap), snd(simpleStatementEval simpleStatement varMap))
@@ -188,11 +215,6 @@ unlabelledStatementEval (UnlabelledStatementStructuredStatement structuredStatem
 
 statementEval ::  VariableMap -> Statement ->(String, VariableMap)
 statementEval varMap(StatementUnlabelledStatement us)  = (valToStr (fst(unlabelledStatementEval us varMap)), snd(unlabelledStatementEval us varMap))
-
---statementToString :: [Statement] -> VariableMap-> ([String], VariableMap)
---statementToString (x) varMap= ((map (fst(statementToStringHelper varMap)) x), varMap)
-
---statementsEvalHelper :: [Statement] ->
 
 statementsEval :: Statements -> VariableMap -> ([String], VariableMap)
 statementsEval (StatementsSingle x) varMap = ([fst(statementEval varMap x )], snd(statementEval varMap x ))
@@ -209,11 +231,11 @@ variableDeclarationPartMultipleEval :: VariableDeclarationPartMultiple -> Variab
 variableDeclarationPartMultipleEval (VariableDeclarationPartMultipleSingle variableDeclaration ) varMap = variableDeclarationEval variableDeclaration varMap
 variableDeclarationPartMultipleEval (VariableDeclarationPartMultipleMultiple variableDeclaration variableDeclarationPartMultiple) varMap =  Map.union (variableDeclarationEval variableDeclaration varMap) (variableDeclarationPartMultipleEval variableDeclarationPartMultiple varMap) 
 
+
 variableDeclarationPartEval :: VariableDeclarationPart -> VariableMap -> VariableMap
 variableDeclarationPartEval (VariableDeclarationPartSingle variableDeclaration ) varMap = variableDeclarationEval variableDeclaration varMap
 variableDeclarationPartEval (VariableDeclarationPartMultiple variableDeclaration variableDeclarationPartMultiple) varMap =  Map.union (variableDeclarationEval variableDeclaration varMap) (variableDeclarationPartMultipleEval variableDeclarationPartMultiple varMap) 
 --Have not implemented multiple variables yet just single
-
 
 blockOptionsEval :: BlockOptions -> VariableMap
 blockOptionsEval (BlockOptionsVariableDeclarationPart variableDeclarationPart) = variableDeclarationPartEval variableDeclarationPart Map.empty
@@ -226,6 +248,6 @@ blockEval (Block_Variable_Method blockOptions procedureAndFunctionDeclarationPar
 
 interpret :: Program -> String
 -- TODO: write the interpreter
-interpret (ProgramBlock programheading block) = (concat(blockEval block))
+interpret (ProgramBlock programheading block) = removePunc2(concat(blockEval block))
 
 interpret _ = "Not implemented"
