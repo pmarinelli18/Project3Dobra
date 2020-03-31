@@ -5,11 +5,9 @@ program hi;
         number : real;
 
 begin 
-     
-     
     while 3<5 do
         begin
             writeln('hello');
-        end;
+        end
 
 end.

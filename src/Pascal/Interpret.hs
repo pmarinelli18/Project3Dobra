@@ -11,6 +11,7 @@ import Pascal.Data
 import Pascal.Val
 import qualified Data.Map as Map
 import Data.Maybe
+import Data.List
 
 -- TODO: define auxiliary functions to aid interpretation
 -- Feel free to put them here or in different modules
@@ -31,7 +32,7 @@ import Data.Maybe
 --numToString :: Float -> String
 --numToString (x) = (show x)
 
-type VariableMap = Map.Map String Val --Map.Map String (String, Val)
+type VariableMap = [Map.Map String Val] --Map.Map String (String, Val)
 
 --VariableMapEval :: VariableMap -> VariableMap
 --dVariableMapEval (varMap ) =
@@ -58,7 +59,7 @@ variableEval :: Variable -> String
 variableEval (Var string) = string
 
 factorEval :: Factor -> VariableMap -> (Val, VariableMap)    --Add boolean to Val in Val.hs
-factorEval (FactorVariable variable) varMap =     (( fromJust(Map.lookup  ((variableEval variable)) varMap)), varMap)
+factorEval (FactorVariable variable) varMap =     (( fromJust(Map.lookup  ((variableEval variable)) (last varMap))), varMap)
 factorEval (FactorExpression expression) varMap =  ((Real (2.0)), varMap)
 factorEval (FactorFD functionDesignator) varMap =  (fst(functionDesignatorEval functionDesignator varMap), snd(functionDesignatorEval functionDesignator varMap))
 factorEval (FactorUC unsignedConstant) varMap =  (fst(unsignedConstantEval unsignedConstant varMap), snd(unsignedConstantEval unsignedConstant varMap))
@@ -117,7 +118,7 @@ simpleStatementEval (PS ps) varMap = (fst(procedureStatementEval ps varMap), snd
 simpleStatementEval (SimpleStatementAssignment assignmentStatement) varMap = (Id "", (assignmentStatementEval assignmentStatement varMap))
 
 assignmentStatementEval :: AssignmentStatement -> VariableMap -> VariableMap
-assignmentStatementEval (AssignmentStatementMain variable expression ) varMap =  (Map.insert (variableEval variable) ((fst(expressionEval expression varMap)))  varMap)
+assignmentStatementEval (AssignmentStatementMain variable expression ) varMap = (take ((length varMap) -1) varMap) ++ [(Map.insert (variableEval variable) ((fst(expressionEval expression varMap))) (last varMap))]
 --(Map.insert (head(str)) (Real 1.0) varMap)
 
 ifStatementEval :: IfStatement -> VariableMap -> (String, VariableMap)
@@ -149,7 +150,7 @@ constant_eval (ConstantUN unsignedNumber) varMap = ((unsignedNumberEval unsigned
 
 removeIndex :: [(Val, Val)] -> Int ->[(Val, Val)]
 removeIndex xs n = fst notGlued ++ snd notGlued
-    where notGlued = (take (n-1) xs, drop n xs)
+    where notGlued = (Prelude.take (n-1) xs, Prelude.drop n xs)
 
 caseStatementEval :: CaseStatement -> VariableMap -> (String, VariableMap)
 caseStatementEval (Case expression case_list) varMap =  ((if  (fst(expressionEval expression varMap) == (fst(head (fst(caseListElements_eval case_list varMap))))) 
@@ -221,28 +222,28 @@ statementsEval (StatementsSingle x) varMap = ([fst(statementEval varMap x )], sn
 statementsEval (StatementsMultiple x y) varMap = (concat[[fst(statementEval varMap x )], (fst(statementsEval y (snd(statementEval varMap x ))))], snd(statementsEval y varMap)) --show (traverse (statementEval x)) ]
 
 
-variableDeclarationEval :: VariableDeclaration -> VariableMap -> VariableMap
+variableDeclarationEval :: VariableDeclaration -> Map.Map String Val -> Map.Map String Val
 variableDeclarationEval (VariableDeclarationMainBool str) varMap =    (Map.insert (head(str)) (Boolean True) varMap) --("Bool", Boolean True) varMap) 
 variableDeclarationEval (VariableDeclarationMainReal str) varMap =  (Map.insert (head(str)) (Real 1.0) varMap) --("Real", Boolean True) varMap) 
 variableDeclarationEval (VariableDeclarationMainString str) varMap =  (Map.insert (head(str)) (Id "") varMap) --("String", Boolean True) varMap) 
 
 
-variableDeclarationPartMultipleEval :: VariableDeclarationPartMultiple -> VariableMap -> VariableMap
+variableDeclarationPartMultipleEval :: VariableDeclarationPartMultiple -> Map.Map String Val -> Map.Map String Val
 variableDeclarationPartMultipleEval (VariableDeclarationPartMultipleSingle variableDeclaration ) varMap = variableDeclarationEval variableDeclaration varMap
 variableDeclarationPartMultipleEval (VariableDeclarationPartMultipleMultiple variableDeclaration variableDeclarationPartMultiple) varMap =  Map.union (variableDeclarationEval variableDeclaration varMap) (variableDeclarationPartMultipleEval variableDeclarationPartMultiple varMap) 
 
 
-variableDeclarationPartEval :: VariableDeclarationPart -> VariableMap -> VariableMap
+variableDeclarationPartEval :: VariableDeclarationPart -> Map.Map String Val -> Map.Map String Val
 variableDeclarationPartEval (VariableDeclarationPartSingle variableDeclaration ) varMap = variableDeclarationEval variableDeclaration varMap
 variableDeclarationPartEval (VariableDeclarationPartMultiple variableDeclaration variableDeclarationPartMultiple) varMap =  Map.union (variableDeclarationEval variableDeclaration varMap) (variableDeclarationPartMultipleEval variableDeclarationPartMultiple varMap) 
 --Have not implemented multiple variables yet just single
 
-blockOptionsEval :: BlockOptions -> VariableMap
+blockOptionsEval :: BlockOptions -> Map.Map String Val
 blockOptionsEval (BlockOptionsVariableDeclarationPart variableDeclarationPart) = variableDeclarationPartEval variableDeclarationPart Map.empty
 
 blockEval :: Block -> [String]
-blockEval (BlockCopoundStatement s ) = fst(statementsEval s Map.empty)
-blockEval (BlockVariableDeclarationPart b s) = fst(statementsEval s (blockOptionsEval b))
+blockEval (BlockCopoundStatement s ) = fst(statementsEval s [Map.empty])
+blockEval (BlockVariableDeclarationPart b s) = fst(statementsEval s ([blockOptionsEval b]))
 blockEval (Block_Method procedureAndFunctionDeclarationPart statements) = ["hi", "ds"]
 blockEval (Block_Variable_Method blockOptions procedureAndFunctionDeclarationPart statements) =["hi", "ds"] 
 

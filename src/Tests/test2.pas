@@ -9,9 +9,18 @@ begin
 alta := 3.4;
 writeln(alta);
 writeln( cos (1) );
-writeln(true or false);
-writeln(true and false);
 writeln(sqrt(4));
-writeln(ln(2));
-writeln(dopower(5,5))
+writeln(ln(2))
+end.
+
+
+program hi;
+var
+      a: real;
+begin 
+   
+    
+    a :=13.0;
+    writeln(a +5)
+
 end.
