@@ -8,13 +8,13 @@ begin
     
     writeln('My answer is true');
     writeln('What is your answer');
-    writeln('Your answer is ' + connecr);
-    writeln('My debt is equal to _99');
+    writeln('Your answer is ' , connecr);
+    writeln('My debt is equal to 99');
     writeln('How mmuch would you decrease it?');
     BaT:= 99;
     BaT:=BaT-alta;
-    writeln('My debt now is ' + BaT);
+    writeln('My debt now is ' , BaT);
     
     
-    writeln('This is test9');
+    writeln('This is test9')
 end.

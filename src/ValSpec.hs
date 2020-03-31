@@ -34,10 +34,10 @@ main = hspec $ do
             toFloat (Integer(55)) `shouldBe`  55.0
 
         it "Error if deal with  Id" $ do
-            evaluate (toFloat (Id("Hello"))) `shouldThrow` errorCall "Not convertible to float"
+            evaluate (toFloat (Id("Hello"))) `shouldThrow` errorCall "Float_  Not convertible to float"
 
         it "Error if deal with  Boolean" $ do
-            evaluate (toFloat (Boolean(True))) `shouldThrow` errorCall "Not convertible to float"
+            evaluate (toFloat (Boolean(True))) `shouldThrow` errorCall "Float_  Not convertible to float"
 
     describe "toInt" $ do
         it "convert to Int  if deal with real type" $ do
@@ -47,21 +47,21 @@ main = hspec $ do
             toInt (Integer(55)) `shouldBe`  55
 
         it "Error if deal with  Id" $ do
-            evaluate (toInt (Id("Hello"))) `shouldThrow` errorCall "Not convertible to Integer"
+            evaluate (toInt (Id("Hello"))) `shouldThrow` errorCall "Int_ Not convertible to Integer"
 
         it "Error if deal with  Boolean" $ do
-            evaluate ( toInt (Boolean(True))) `shouldThrow` errorCall "Not convertible to Integer"
+            evaluate ( toInt (Boolean(True))) `shouldThrow` errorCall "Int_  Not convertible to Integer"
 
 
     describe "toBool" $ do
         it "error when trying to  turn a Real into True/False" $ do
-           evaluate ( toBool ( Id ("hewno")) ) `shouldThrow` errorCall "Not convertible to Integer"
+           evaluate ( toBool ( Id ("hewno")) ) `shouldThrow` errorCall "Bool_ Not convertible to Integer"
 
         it "error can turn a Real iIntegern/vÅQto True/False" $ do
-           evaluate ( toBool ( Integer (55)) ) `shouldThrow` errorCall "Not convertible to Integer"
+           evaluate ( toBool ( Integer (55)) ) `shouldThrow` errorCall "Bool_ Not convertible to Integer"
 
         it "error can turn a Real iIntegern/vÅQto True/False" $ do
-           evaluate ( toBool ( Real(55)) ) `shouldThrow` errorCall "Not convertible to Integer"
+           evaluate ( toBool ( Real(55)) ) `shouldThrow` errorCall "Bool_ Not convertible to Real"
 
         it "convert a Val Boolean into an actual Boolean type" $ do
             toBool (Boolean(True) )`shouldBe`  True
@@ -69,4 +69,9 @@ main = hspec $ do
     describe "removePunc2" $ do
         it "get rid of extra \' and \\ " $ do 
             removePunc2 ("\"\\\"Music\\\"\"") `shouldBe` "Music"
+
+
+    describe "Replace" $ do
+        it "replce a varible in string for desireable element " $ do 
+            replace "Geminis" "Gemin" "Nemes" `shouldBe` "Nemesis"
      

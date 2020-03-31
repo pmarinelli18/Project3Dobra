@@ -19,7 +19,7 @@ begin
     Drag := BaT - alta;
     writeln('  This is the value of alta ');
     writeln(Drag);
-    Drag := dopower(2 , 3); 
+    //Drag := dopower(2 , 3); 
     writeln('  This is the final result of Drag ');
     writeln(Drag);
     writeln('  This is test4')
