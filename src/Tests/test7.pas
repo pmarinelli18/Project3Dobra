@@ -2,15 +2,14 @@ program HelloWorld;
 var
 BaT : real;
 count:real;
-decision : boolean;
-answer : boolean;
+decision : bool;
+answer : bool;
 
 
 begin
     writeln('the number is equal to _5');
     writeln('Is the number equal to _5');
     writeln('True or False');
-    readln(decision);
     answer := true;
     if(decision=answer) then
         count:= count + 1
@@ -20,7 +19,6 @@ begin
     writeln('multiply by _5');
     writeln('Is the number equal to _35');
     writeln('True or False');
-    readln(decision);
     answer := false;
     if(decision=answer) then
         count:=count+1
@@ -30,7 +28,6 @@ begin
     writeln('divide by _25');
     writeln('Is the number equal to _5');
     writeln('True or False');
-    readln(decision);
     answer := false;
     if(decision=answer) then
         count:=count+1
@@ -40,7 +37,6 @@ begin
     writeln('logarithm of answer');
     writeln('Is the number equal to _1');
     writeln('True or False');
-    readln(decision);
     answer := false;
     if(decision=answer) then
         count:=count+1

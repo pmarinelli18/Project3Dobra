@@ -9,12 +9,11 @@ var
    b: real;
    c: real;
 begin
-   (*local variables *)
    a :=10;
    b :=20;
    c := a + b;
    writeln('Winthin the procedure display');
-   writeln('value of a = ', a ,' b =  ',  b,' and c = ', c);
+   writeln('value of a = ', a ,' b =  ',  b,' and c = ', c)
 end;
 begin
    a:=100;
@@ -24,5 +23,5 @@ begin
    c:= a + b;
    writeln('Winthin the program exlocal');
    writeln('value of a = ', a ,' b =  ',  b,' and c = ', c);
-   display();
+   display()
 end.

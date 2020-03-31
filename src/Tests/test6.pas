@@ -2,8 +2,8 @@ program HelloWorld;
 var
 b : real;
 a : real;
-d : boolean;
-o : boolean;
+d : bool;
+o : bool;
 
 
 begin

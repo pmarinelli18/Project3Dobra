@@ -3,7 +3,7 @@ program HelloWorld;
 var
     alta : real;
     BaT : real;
-    connecr : boolean;
+    connecr : bool;
     sum : real;
     number : real;
 

@@ -3,8 +3,7 @@ var
 alta : real;
 BaT : real;
 Drag : real;
-(*There is a cooment here*)
-connecr : boolean;
+connecr : bool;
 
 begin
     writeln('This is the value of BaT ');
@@ -12,13 +11,11 @@ begin
     writeln('This is the value of alta ');
     writeln(alta);
     alta:=ln(1) + 3;
-    (*There is a cooment here*)
     BaT:=cos(0);
     writeln('This is the value of BaT ');
     writeln(BaT);
     writeln('This is the value of alta ');
     writeln(alta);
-    (*There is a cooment here*)
     Drag := BaT - alta;
     writeln('This is the value of alta ');
     writeln(Drag);

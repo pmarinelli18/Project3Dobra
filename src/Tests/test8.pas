@@ -1,10 +1,8 @@
 program Tetere;
 var
 alta : real;
-(*There is a cooment here*)
 BaT : real;
-(*There is a cooment here*)
-connecr : boolean;
+connecr : bool;
 
 begin
     alta:=cos(alta);
