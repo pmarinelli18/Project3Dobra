@@ -70,8 +70,8 @@ factorEval (FactorBool bool) varMap = ((Real (7.0)), varMap)
 
 signedFactorEval :: SignedFactor -> VariableMap -> (Val, VariableMap)
 signedFactorEval (SignedFactorDefault factor) varMap = (fst(factorEval factor varMap), snd(factorEval factor varMap))
-signedFactorEval (SignedFactorPlus factor) varMap = (fst(factorEval factor varMap), snd(factorEval factor varMap))
-signedFactorEval (SignedFactorMinus factor) varMap = (fst(factorEval factor varMap), snd(factorEval factor varMap))
+signedFactorEval (SignedFactorPlus factor) varMap = ( (fst(factorEval factor varMap)), snd(factorEval factor varMap))
+signedFactorEval (SignedFactorMinus factor) varMap = (Real( -1 *(toFloat((fst(factorEval factor varMap))))), snd(factorEval factor varMap))
 
 termEval :: Term -> VariableMap -> (Val, VariableMap)
 termEval (TermSingle signedFactor) varMap = (fst(signedFactorEval signedFactor varMap), snd(signedFactorEval signedFactor varMap))
@@ -107,13 +107,13 @@ actualParameterEval (ActualParameterMultiple actualParameter expression) varMap=
 
 parameterListEval :: ParameterList -> VariableMap -> (Val, VariableMap)
 parameterListEval (ParameterListSingle x) varMap = (fst(actualParameterEval x varMap ), snd(actualParameterEval x varMap ))
-parameterListEval (ParameterListMulitiple y x) varMap = ((Id (concat (valToStr (fst(parameterListEval y varMap)), valToStr (fst(actualParameterEval x varMap))))), varMap)
+parameterListEval (ParameterListMulitiple y x) varMap = ((Id ( (valToStr (fst(parameterListEval y varMap)) ++ valToStr (fst(actualParameterEval x varMap))))), varMap)
 
 procedureStatementEval :: ProcedureStatement -> VariableMap-> (Val, VariableMap)
 procedureStatementEval (SingleProcedureStatement str) varMap = ((Real (0.11)), varMap)
---procedureStatementEval (MultiProcedureStatement "writeln" x) varMap = (fst(parameterListEval x varMap), snd(parameterListEval x varMap))
-procedureStatementEval (MultiProcedureStatement "writeln" x) varMap = ( (Id( (valToStr(fst(parameterListEval x varMap)) ++ " \n  " )) )
-                                        , snd(parameterListEval x varMap))
+procedureStatementEval (MultiProcedureStatement "writeln" x) varMap = (fst(parameterListEval x varMap), snd(parameterListEval x varMap))
+-- procedureStatementEval (MultiProcedureStatement "writeln" x) varMap = ( (Id( (valToStr(fst(parameterListEval x varMap)) ++ " \n  " )) )
+--                                         , snd(parameterListEval x varMap))
 
 
 simpleStatementEval :: SimpleStatement -> VariableMap -> (Val, VariableMap)

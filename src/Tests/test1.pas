@@ -10,12 +10,14 @@ var
 begin
     sum:= 10;
     number:=10;
+
     while number > 4 do
     begin
-        sum := sum + number;
-        number := number - 2;
-        writeln(number)
+        number := number + 15;
+        writeln('This is nuber ', number)
+
     end;
+
     alta:=212-3;
     writeln(alta);
     BaT:=55+66;
