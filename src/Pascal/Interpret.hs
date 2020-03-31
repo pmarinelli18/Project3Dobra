@@ -201,14 +201,11 @@ forStatement_eval (ForLoop identifier expressionIn expressionF statement) varMap
 whileStatement_eval :: WhileStatement -> VariableMap -> (String, VariableMap)
 whileStatement_eval (WhileS expression statement) varMap= 
                         if(toBool(fst(expressionEval expression varMap))) then 
-                             ((fst(statementEval varMap statement ))  ++
-                             (fst(whileStatement_eval (Whileloop expression statement) varMap)), snd(statementEval varMap statement) )
-                             else ("", varMap) -- then Id (statementEval statement)  else Real(77)
-whileStatement_eval (Whileloop expression statement) varMap= 
-                        if(toBool(fst(expressionEval expression varMap))) then 
-                            ((fst(statementEval varMap statement))  ++
-                             (fst(whileStatement_eval (Whileloop expression statement)  varMap)),snd(statementEval varMap statement) )
-                            else ("", varMap) 
+                             (fst(statementEval varMap statement )  ++
+                             (fst(whileStatement_eval (WhileS expression statement) (snd(statementEval varMap statement )))),
+                              snd(whileStatement_eval (WhileS expression statement) (snd(statementEval varMap statement ))) 
+                              )
+                             else ("", varMap) -- then Id (statementEval statement)  else Real(77) 
 
 unlabelledStatementEval :: UnlabelledStatement -> VariableMap-> (Val, VariableMap)
 unlabelledStatementEval (UnlabelledStatementSimpleStatement simpleStatement) varMap= (fst(simpleStatementEval simpleStatement varMap), snd(simpleStatementEval simpleStatement varMap))

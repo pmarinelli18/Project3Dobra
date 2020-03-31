@@ -5,9 +5,10 @@ program hi;
         number : real;
 
 begin 
-    while 3<5 do
+    while sum <5 do
         begin
-            writeln('hello');
+            writeln(sum);
+            sum := sum + 1
         end
 
 end.
