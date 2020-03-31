@@ -174,40 +174,40 @@ structuredStatementEval (  StructuredStatementConditionalStatement conditionalSt
 --structuredStatementEval (StructuredStatementRepetetiveStatement repetetiveStatement) = repetetiveStatement_eval repetetiveStatement
 --structuredStatementEval ( StructuredStatementWithStatement withStatement) =
 
-repetetiveStatement_eval :: RepetetiveStatement -> Val
-repetetiveStatement_eval (RepetetiveStatementWhile whileT) = Id((whileStatement_eval whileT))
-repetetiveStatement_eval (RepetetiveStatementFor forLoop) = strToVal(forStatement_eval forLoop)
+repetetiveStatement_eval :: RepetetiveStatement -> VariableMap-> (Val, VariableMap)
+repetetiveStatement_eval (RepetetiveStatementWhile whileT) varMap = (Id(fst(whileStatement_eval whileT varMap)), snd(whileStatement_eval whileT varMap))
+repetetiveStatement_eval (RepetetiveStatementFor forLoop) varMap = (strToVal(fst(forStatement_eval forLoop varMap)), snd(forStatement_eval forLoop varMap))
 
-forStatement_eval :: ForStatement -> String
-forStatement_eval (ForTo identifier expressionIn expressionF statement) = 
+forStatement_eval :: ForStatement -> VariableMap-> (String, VariableMap)
+forStatement_eval (ForTo identifier expressionIn expressionF statement) varMap= 
                     -- if((expressionEval expressionIn) == (expressionEval expressionF)) 
-                    if((Real(15)) == (expressionEval expressionF)) 
-                        then  ""   
-                        else ( statementEval statement ++ (forStatement_eval (ForLoop identifier expressionIn expressionF  statement )) )
+                    if((Real(15)) == (fst(expressionEval expressionF varMap))) 
+                        then  ("", varMap)   
+                        else ( (fst(statementEval varMap statement )) ++ (fst(forStatement_eval ((ForLoop identifier expressionIn expressionF  statement)) varMap)), snd(statementEval varMap statement))
                         -- else ( statementEval statement ++ (forStatement_eval (ForLoop identifier expressionIn expressionF  statement )) )
                          -- Real(toFloat(expressionEval expressionIn)+1)
 
 
 -- forStatement_eval (ForDown String Expression Expression Statement) =
-forStatement_eval (ForLoop identifier expressionIn expressionF statement) =  
+forStatement_eval (ForLoop identifier expressionIn expressionF statement) varMap=  
                     --if((expressionEval expressionIn) == (expressionEval expressionF)) 
-                    if((Real(16)) == (expressionEval expressionF)) 
-                        then  "" 
-                        else  ( statementEval statement ++ (forStatement_eval (ForLoop identifier expressionIn expressionF  statement ))) --  (forStatement_eval (ForLoop identifier expressionIn expressionF  statement )) --strToVal ("")
+                    if((Real(16)) == (fst(expressionEval expressionF varMap))) 
+                        then  ("", varMap) 
+                        else  ( (fst( statementEval varMap statement )) ++ (fst(forStatement_eval (ForLoop identifier expressionIn expressionF  statement) varMap)), snd( statementEval varMap statement))
 
 
 
-whileStatement_eval :: WhileStatement -> String
-whileStatement_eval (WhileS expression statement) = 
-                        if(toBool(expressionEval expression)) then 
-                             ((statementEval statement)  ++
-                             (whileStatement_eval (Whileloop expression statement)) )
-                             else "" -- then Id (statementEval statement)  else Real(77)
-whileStatement_eval (Whileloop expression statement) = 
-                        if(toBool(expressionEval expression)) then 
-                            ((statementEval statement)  ++
-                             (whileStatement_eval (Whileloop expression statement)) )
-                            else "" 
+whileStatement_eval :: WhileStatement -> VariableMap -> (String, VariableMap)
+whileStatement_eval (WhileS expression statement) varMap= 
+                        if(toBool(fst(expressionEval expression varMap))) then 
+                             ((fst(statementEval varMap statement ))  ++
+                             (fst(whileStatement_eval (Whileloop expression statement) varMap)), snd(statementEval varMap statement) )
+                             else ("", varMap) -- then Id (statementEval statement)  else Real(77)
+whileStatement_eval (Whileloop expression statement) varMap= 
+                        if(toBool(fst(expressionEval expression varMap))) then 
+                            ((fst(statementEval varMap statement))  ++
+                             (fst(whileStatement_eval (Whileloop expression statement)  varMap)),snd(statementEval varMap statement) )
+                            else ("", varMap) 
 
 unlabelledStatementEval :: UnlabelledStatement -> VariableMap-> (Val, VariableMap)
 unlabelledStatementEval (UnlabelledStatementSimpleStatement simpleStatement) varMap= (fst(simpleStatementEval simpleStatement varMap), snd(simpleStatementEval simpleStatement varMap))

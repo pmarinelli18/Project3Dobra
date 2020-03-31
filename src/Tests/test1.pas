@@ -6,7 +6,7 @@ begin
    
     
     a :=13.0;
-    writeln(a)
+    writeln(a +5)
 
 end.
 
