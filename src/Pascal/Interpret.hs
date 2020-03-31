@@ -38,8 +38,16 @@ functionDesignatorEval (FDesignate x parameterList) varMap pfMap = (
 
 
 procedureOrFunctionDeclarationEval :: ProcedureOrFunctionDeclaration  -> VariableMap -> FunctionAndProcedureMap -> (Val, VariableMap)
-procedureOrFunctionDeclarationEval( Procedure_method procedureDeclaration)varMap pfMap= (Id "hi", varMap)
-procedureOrFunctionDeclarationEval (Function_method functionDeclaration)varMap pfMap= (Id "hi", varMap)
+procedureOrFunctionDeclarationEval( Procedure_method procedureDeclaration)varMap pfMap= (fst (procedureDeclarationEval procedureDeclaration varMap pfMap), varMap)
+procedureOrFunctionDeclarationEval (Function_method functionDeclaration)varMap pfMap= (fst (functionDeclarationEval functionDeclaration varMap pfMap), varMap)
+
+procedureDeclarationEval:: ProcedureDeclaration -> VariableMap -> FunctionAndProcedureMap -> (Val, VariableMap)
+procedureDeclarationEval (Procedure_no_identifier string block) varMap pfMap= ((Id(concat(blockEval block))), varMap)
+procedureDeclarationEval (Procedure_with_identifier string formalParameterList  block) varMap pfMap= ((Id(concat(blockEval block))), varMap)
+
+functionDeclarationEval:: FunctionDeclaration -> VariableMap -> FunctionAndProcedureMap -> (Val, VariableMap)
+functionDeclarationEval (Function_no_identifier string1 string2 block) varMap pfMap =((Id(concat(blockEval block))), varMap)
+functionDeclarationEval (Function_identifier string1 formalParameterList string2  block) varMap pfMap=((Id(concat(blockEval block))), varMap)
 
 
 ---------------------------------------------DID NOT ADD FUNCTIONALITY TO "Dopower" YET Maybe havnt tested it yet ---------------------------------------------------
@@ -103,7 +111,7 @@ actualParameterEval (ActualParameterMultiple actualParameter expression) varMap 
 
 parameterListEval :: ParameterList -> VariableMap -> FunctionAndProcedureMap -> (Val, VariableMap)
 parameterListEval (ParameterListSingle x) varMap pfMap = (fst(actualParameterEval x varMap  pfMap), snd(actualParameterEval x varMap pfMap ))
-parameterListEval (ParameterListMulitiple y x) varMap pfMap = ((Id (concat (valToStr (fst(parameterListEval y varMap pfMap)), valToStr (fst(actualParameterEval x varMap pfMap))))), varMap)
+parameterListEval (ParameterListMulitiple y x) varMap pfMap = ((Id ((valToStr (fst(parameterListEval y varMap pfMap))++ valToStr (fst(actualParameterEval x varMap pfMap))))), varMap)
 
 procedureStatementEval :: ProcedureStatement -> VariableMap-> FunctionAndProcedureMap -> (Val, VariableMap)
 procedureStatementEval (MultiProcedureStatement "writeln" x) varMap  pfMap= ( (Id( (valToStr(fst(parameterListEval x varMap pfMap)) ++ "#&#!" )) ), snd(parameterListEval x varMap pfMap))
@@ -196,14 +204,6 @@ forStatement_evalHelper identifier expressionTo statement varMap  pfMap=
     snd(forStatement_evalHelper identifier expressionTo  statement (snd(statementEval varMap statement  pfMap))  pfMap))
                         -- else ( statementEval statement ++ (forStatement_eval (ForLoop identifier expressionIn expressionF  statement )) )
                          -- Real(toFloat(expressionEval expressionIn)+1)
-
-
--- forStatement_eval (ForDown String Expression Expression Statement) =
-forStatement_eval (ForLoop identifier expressionIn expressionF statement) varMap=  
-                    --if((expressionEval expressionIn) == (expressionEval expressionF)) 
-                    if((Real(16)) == (fst(expressionEval expressionF varMap))) 
-                        then  ("", varMap) 
-                        else  ( (fst( statementEval varMap statement )) ++ (fst(forStatement_eval (ForLoop identifier expressionIn expressionF  statement) varMap)), snd( statementEval varMap statement))
 
 
 

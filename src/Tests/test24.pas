@@ -15,7 +15,9 @@ end;
 
 
 begin
-   display(4);
-   writeln('Winthin the program exlocal')
+   display(t);
+   writeln('Winthin the program exlocal');
+   display(t)
+   
 
 end.

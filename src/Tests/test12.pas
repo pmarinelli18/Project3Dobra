@@ -30,5 +30,5 @@ begin
         a:= fibonacci(2);
     writeln('fibonacci(2):',a);
         a:= fibonacci(1);
-    writeln('fibonacci(1):',a);
+    writeln('fibonacci(1):',a)
 end.
