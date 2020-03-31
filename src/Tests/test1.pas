@@ -1,19 +1,12 @@
 
-    program hi;
-    var 
-        alta : bool;
-        sum : real;
-        number : real;
-
+program hi;
+var
+      a: real;
 begin 
-
-
-writeln('   hello 55');
-
-writeln('   hello 55');
-
-writeln('   hello 55');
-
-writeln('   hello 55');
+   
+    
+    a :=13.0;
+    writeln(a)
 
 end.
+

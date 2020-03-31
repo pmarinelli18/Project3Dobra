@@ -14,6 +14,7 @@ module Pascal.Data
         Expression(..),
         ActualParameter(..),
         ParameterList(..),
+        AssignmentStatement(..),
         SimpleStatement(..),
         UnlabelledStatement(..),
         ProcedureStatement(..),
@@ -27,6 +28,7 @@ module Pascal.Data
         VariableDeclarationPart(..),
         VariableDeclarationPartMultiple(..),
         VariableDeclaration(..),
+        Statements(..),
         Statement(..),
         IfStatement(..),
         ConstList(..),
@@ -44,8 +46,6 @@ module Pascal.Data
         WithStatement(..),
         WhileStatement(..),
         StructuredStatement(..),
-
-        --Function--
         ProcedureAndFunctionDeclarationPart(..),
         ProcedureOrFunctionDeclaration(..),
         ProcedureDeclaration(..),
@@ -53,12 +53,12 @@ module Pascal.Data
         FormalParameterSection(..),
         ParameterGroup(..),
         FunctionDeclaration(..),
-
         Program(..)
     ) where
 import Pascal.Val
 
 
+import Pascal.Val
 
 data VariableDeclarationPart =
     VariableDeclarationPartSingle VariableDeclaration
@@ -69,17 +69,18 @@ data VariableDeclarationPartMultiple =
     |VariableDeclarationPartMultipleMultiple VariableDeclaration VariableDeclarationPartMultiple
 
 data VariableDeclaration = 
-    VariableDeclarationMain [String] VType
+    VariableDeclarationMainBool [String]
+    |VariableDeclarationMainReal [String]
+    |VariableDeclarationMainString [String]
 
 data Block =
-    BlockCopoundStatement [Statement]
-    | BlockVariableDeclarationPart BlockOptions [Statement]
-    | Block_Method ProcedureAndFunctionDeclarationPart [Statement]
-    | Block_Variable_Method BlockOptions ProcedureAndFunctionDeclarationPart [Statement] 
+    BlockCopoundStatement Statements
+    | BlockVariableDeclarationPart BlockOptions Statements
+    | Block_Method ProcedureAndFunctionDeclarationPart Statements
+    | Block_Variable_Method BlockOptions ProcedureAndFunctionDeclarationPart Statements
 
 data BlockOptions =
     BlockOptionsVariableDeclarationPart VariableDeclarationPart
-
 
 data ProcedureAndFunctionDeclarationPart = 
     Declaration ProcedureOrFunctionDeclaration
@@ -106,7 +107,6 @@ data FormalParameterSection =
 
 data ParameterGroup =
     Parameter_group [String] String
-
 
 data UnsignedNumber =
     UI Int
@@ -195,6 +195,10 @@ data ParameterList =
 
 data SimpleStatement =
     PS ProcedureStatement
+    | SimpleStatementAssignment AssignmentStatement
+
+data AssignmentStatement = 
+    AssignmentStatementMain Variable Expression
 
 data IfStatement =
     IfState Expression Statement
@@ -224,7 +228,8 @@ data CaseListElements =
 
 data CaseStatement =
     Case Expression CaseListElements
-    |CaseElse Expression CaseListElements [Statement]
+    |CaseElse Expression CaseListElements Statements
+    | CaseBreakDown Expression [(Val, Val)]
 
 
 data ConditionalStatement =
@@ -240,7 +245,7 @@ data WhileStatement =
 
 
 data RepeatStatement =
-    Repeat [Statement] Expression
+    Repeat Statements Expression
 
 data ForStatement =
     ForTo String Expression Expression Statement
@@ -267,7 +272,7 @@ data WithStatement =
     With RecordVariableList Statement
 
 data StructuredStatement =
-    StructuredStatementCompoundStatement [Statement]
+    StructuredStatementCompoundStatement Statements
     | StructuredStatementConditionalStatement ConditionalStatement
     | StructuredStatementRepetetiveStatement RepetetiveStatement
     | StructuredStatementWithStatement WithStatement
@@ -277,6 +282,10 @@ data StructuredStatement =
 data UnlabelledStatement =
     UnlabelledStatementSimpleStatement SimpleStatement
     | UnlabelledStatementStructuredStatement StructuredStatement
+
+data Statements =
+    StatementsSingle Statement
+    |StatementsMultiple Statement Statements
 
 data Statement = 
     StatementUnlabelledStatement UnlabelledStatement
