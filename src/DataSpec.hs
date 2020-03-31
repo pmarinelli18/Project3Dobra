@@ -6,6 +6,7 @@ import Pascal.Data
 
 main ::IO()
 main = hspec $ do
-    describe "strToVal" $ do 
-        it "convert a string into  Val data type" $ do
-            strToVal "Val"  `shouldBe` Id "Val"
+  describe "unsignedNumberEval" $ do 
+    context "something" $ do
+      it "convert a string into  Val data type" $ do
+        interpret _ = "Not implemented"

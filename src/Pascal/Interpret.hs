@@ -13,120 +13,116 @@ import qualified Data.Map as Map
 import Data.Maybe
 import Data.List
 
--- TODO: define auxiliary functions to aid interpretation
--- Feel free to put them here or in different modules
--- Hint: write separate evaluators for numeric and
--- boolean expressions and for statements
-
--- make sure you write test unit cases for all functions
---expNum :: Exp -> Float
---expNum (Real x) = x
---expNum (Op1 "+" x) = ( expNum x )
---expNum (Op1 "-" x) = ( - (expNum x) )
---expNum (Op2 "+" x y) = ( expNum x + expNum y)
---expNum (Op2 "*" x y) = ( expNum x * expNum y)
-
---writeln :: ProcedureStatement -> String
---writeln (MultiProcedureStatement "writeln" x) = (show x)
-
---numToString :: Float -> String
---numToString (x) = (show x)
-
 type VariableMap = [Map.Map String Val] --Map.Map String (String, Val)
-
---VariableMapEval :: VariableMap -> VariableMap
---dVariableMapEval (varMap ) =
+type FunctionAndProcedureMap = Map.Map String ProcedureOrFunctionDeclaration
 
 
 unsignedNumberEval :: UnsignedNumber -> Val
 unsignedNumberEval (UI int) = Integer int
 unsignedNumberEval (UR float) = Real float
 
-unsignedConstantEval :: UnsignedConstant -> VariableMap -> (Val, VariableMap)
-unsignedConstantEval (UN unsignedNumber) varMap = (unsignedNumberEval unsignedNumber, varMap)
-unsignedConstantEval (Str str) varMap = ((Id str), varMap)
-unsignedConstantEval (Nil) varMap= ((Id ("Nil")), varMap)
+unsignedConstantEval :: UnsignedConstant -> VariableMap -> FunctionAndProcedureMap -> (Val, VariableMap)
+unsignedConstantEval (UN unsignedNumber) varMap  pfMap= (unsignedNumberEval unsignedNumber, varMap)
+unsignedConstantEval (Str str) varMap  pfMap= ((Id str), varMap)
+unsignedConstantEval (Nil) varMap pfMap= ((Id ("Nil")), varMap)
 
-functionDesignatorEval :: FunctionDesignator -> VariableMap -> (Val, VariableMap)
-functionDesignatorEval (FDesignate "cos" parameterList) varMap = ((Real (cos(toFloat(fst(parameterListEval parameterList varMap))))), varMap)
-functionDesignatorEval (FDesignate "sin" parameterList) varMap = ((Real (sin(toFloat(fst(parameterListEval parameterList varMap))))), varMap)
-functionDesignatorEval (FDesignate "sqrt" parameterList) varMap = ((Real (sqrt(toFloat(fst(parameterListEval parameterList varMap))))), varMap)
-functionDesignatorEval (FDesignate "ln" parameterList) varMap = ((Real (log(toFloat(fst(parameterListEval parameterList varMap))))), varMap)
-functionDesignatorEval (FDesignate "dopower" parameterList) varMap = ((Real (cos(toFloat(fst(parameterListEval parameterList varMap))))), varMap)
+functionDesignatorEval :: FunctionDesignator -> VariableMap -> FunctionAndProcedureMap -> (Val, VariableMap)
+functionDesignatorEval (FDesignate "cos" parameterList) varMap pfMap = ((Real (cos(toFloat(fst(parameterListEval parameterList varMap pfMap))))), varMap)
+functionDesignatorEval (FDesignate "sin" parameterList) varMap pfMap = ((Real (sin(toFloat(fst(parameterListEval parameterList varMap pfMap))))), varMap)
+functionDesignatorEval (FDesignate "sqrt" parameterList) varMap pfMap = ((Real (sqrt(toFloat(fst(parameterListEval parameterList varMap pfMap))))), varMap)
+functionDesignatorEval (FDesignate "ln" parameterList) varMap pfMap = ((Real (log(toFloat(fst(parameterListEval parameterList varMap pfMap))))), varMap)
+functionDesignatorEval (FDesignate "dopower" parameterList) varMap pfMap = ((Real (cos(toFloat(fst(parameterListEval parameterList varMap pfMap))))), varMap)
+functionDesignatorEval (FDesignate x parameterList) varMap pfMap = (
+    (fst(procedureOrFunctionDeclarationEval (fromJust(Map.lookup  ((x)) pfMap)) varMap pfMap))
+    , varMap)
+
+
+procedureOrFunctionDeclarationEval :: ProcedureOrFunctionDeclaration  -> VariableMap -> FunctionAndProcedureMap -> (Val, VariableMap)
+procedureOrFunctionDeclarationEval( Procedure_method procedureDeclaration)varMap pfMap= (Id "hi", varMap)
+procedureOrFunctionDeclarationEval (Function_method functionDeclaration)varMap pfMap= (Id "hi", varMap)
+
+
 ---------------------------------------------DID NOT ADD FUNCTIONALITY TO "Dopower" YET Maybe havnt tested it yet ---------------------------------------------------
+---------------------------------------------DID NOT ADD FUNCTIONALITY TO "Dopower" YET Maybe havnt tested it yet ---------------------------------------------------
+---------------------------------------------DID NOT ADD FUNCTIONALITY TO "Dopower" YET Maybe havnt tested it yet ---------------------------------------------------
+---------------------------------------------DID NOT ADD FUNCTIONALITY TO "Dopower" YET Maybe havnt tested it yet ---------------------------------------------------
+
 
 variableEval :: Variable -> String
 variableEval (Var string) = string
 
-factorEval :: Factor -> VariableMap -> (Val, VariableMap)    --Add boolean to Val in Val.hs
-factorEval (FactorVariable variable) varMap =     (( fromJust(Map.lookup  ((variableEval variable)) (last varMap))), varMap)
-factorEval (FactorExpression expression) varMap =  ((Real (2.0)), varMap)
-factorEval (FactorFD functionDesignator) varMap =  (fst(functionDesignatorEval functionDesignator varMap), snd(functionDesignatorEval functionDesignator varMap))
-factorEval (FactorUC unsignedConstant) varMap =  (fst(unsignedConstantEval unsignedConstant varMap), snd(unsignedConstantEval unsignedConstant varMap))
-factorEval (FactorSe set) varMap = ((Real (5.0)), varMap)
-factorEval (FactorNot factor) varMap = ((Real (6.0)), varMap)
-factorEval (FactorBool bool) varMap = ((Real (7.0)), varMap)
+factorEval :: Factor -> VariableMap -> FunctionAndProcedureMap -> (Val, VariableMap)    --Add boolean to Val in Val.hs
+factorEval (FactorVariable variable) varMap  pfMap=     (( fromJust(Map.lookup  ((variableEval variable)) (last varMap))), varMap)
+factorEval (FactorExpression expression) varMap pfMap =  ((Real (2.0)), varMap)
+factorEval (FactorFD functionDesignator) varMap pfMap =  (fst(functionDesignatorEval functionDesignator varMap pfMap), snd(functionDesignatorEval functionDesignator varMap pfMap))
+factorEval (FactorUC unsignedConstant) varMap pfMap =  (fst(unsignedConstantEval unsignedConstant varMap pfMap), snd(unsignedConstantEval unsignedConstant varMap pfMap))
+factorEval (FactorSe set) varMap pfMap = ((Real (5.0)), varMap)
+factorEval (FactorNot factor) varMap pfMap = ((Real (6.0)), varMap)
+factorEval (FactorBool bool) varMap pfMap = ((Real (7.0)), varMap)
 
 
-signedFactorEval :: SignedFactor -> VariableMap -> (Val, VariableMap)
-signedFactorEval (SignedFactorDefault factor) varMap = (fst(factorEval factor varMap), snd(factorEval factor varMap))
-signedFactorEval (SignedFactorPlus factor) varMap = (fst(factorEval factor varMap), snd(factorEval factor varMap))
-signedFactorEval (SignedFactorMinus factor) varMap = (fst(factorEval factor varMap), snd(factorEval factor varMap))
+signedFactorEval :: SignedFactor -> VariableMap -> FunctionAndProcedureMap -> (Val, VariableMap)
+signedFactorEval (SignedFactorDefault factor) varMap  pfMap= (fst(factorEval factor varMap pfMap), snd(factorEval factor varMap pfMap))
+signedFactorEval (SignedFactorPlus factor) varMap pfMap = (fst(factorEval factor varMap pfMap), snd(factorEval factor varMap pfMap))
+signedFactorEval (SignedFactorMinus factor) varMap pfMap = (fst(factorEval factor varMap pfMap), snd(factorEval factor varMap pfMap))
 
-termEval :: Term -> VariableMap -> (Val, VariableMap)
-termEval (TermSingle signedFactor) varMap = (fst(signedFactorEval signedFactor varMap), snd(signedFactorEval signedFactor varMap))
-termEval (TermMultipleMult signedFactor term) varMap = ((Real((toFloat (fst(signedFactorEval signedFactor varMap) )) * (toFloat(fst(termEval term varMap))))), varMap)
-termEval (TermMultipleDivision signedFactor term) varMap = ((Real((toFloat (fst(signedFactorEval signedFactor varMap ))) / (toFloat(fst(termEval term varMap ))))), varMap)
-termEval (TermMultipleDiv signedFactor term) varMap = ((Real((toFloat (fst(signedFactorEval signedFactor varMap))) / (toFloat(fst(termEval term varMap))))), varMap)
-termEval (TermMultipleMod signedFactor term) varMap = ((Real((toFloat (fst(signedFactorEval signedFactor varMap))) * (toFloat(fst(termEval term varMap))))), varMap)--Integer((toInt(signedFactorEval signedFactor)) `mod` (toInt(termEval term)))
-termEval (TermMultipleAnd signedFactor term) varMap = ((Boolean((toBool (fst(signedFactorEval signedFactor varMap))) && (toBool(fst(termEval term varMap))))), varMap)
+termEval :: Term -> VariableMap -> FunctionAndProcedureMap -> (Val, VariableMap)
+termEval (TermSingle signedFactor) varMap pfMap = (fst(signedFactorEval signedFactor varMap pfMap), snd(signedFactorEval signedFactor varMap pfMap))
+termEval (TermMultipleMult signedFactor term) varMap pfMap = ((Real((toFloat (fst(signedFactorEval signedFactor varMap pfMap) )) * (toFloat(fst(termEval term varMap pfMap))))), varMap)
+termEval (TermMultipleDivision signedFactor term) varMap pfMap = ((Real((toFloat (fst(signedFactorEval signedFactor varMap  pfMap))) / (toFloat(fst(termEval term varMap pfMap ))))), varMap)
+termEval (TermMultipleDiv signedFactor term) varMap pfMap = ((Real((toFloat (fst(signedFactorEval signedFactor varMap pfMap))) / (toFloat(fst(termEval term varMap pfMap))))), varMap)
+termEval (TermMultipleMod signedFactor term) varMap pfMap = ((Real((toFloat (fst(signedFactorEval signedFactor varMap pfMap))) * (toFloat(fst(termEval term varMap pfMap))))), varMap)--Integer((toInt(signedFactorEval signedFactor)) `mod` (toInt(termEval term)))
+termEval (TermMultipleAnd signedFactor term) varMap pfMap = ((Boolean((toBool (fst(signedFactorEval signedFactor varMap pfMap))) && (toBool(fst(termEval term varMap pfMap))))), varMap)
 ---------------------------------------------DID NOT ADD FUNCTIONALITY TO "mod" YET Maybe havnt tested it yet ---------------------------------------------------
 
-simpleExpressionEval :: SimpleExpression -> VariableMap ->(Val, VariableMap)
-simpleExpressionEval (SingleExpressionTermSingle term) varMap = (fst(termEval term varMap),snd(termEval term varMap))
-simpleExpressionEval (SingleExpressionTermMultipleAdd term simpleExpression) varMap = ((Real((toFloat (fst(termEval term varMap))) + (toFloat(fst(simpleExpressionEval simpleExpression varMap))))), varMap)
-simpleExpressionEval (SingleExpressionTermMultipleSub term simpleExpression) varMap = ((Real((toFloat (fst(termEval term varMap))) - (toFloat(fst(simpleExpressionEval simpleExpression varMap))))), varMap)
-simpleExpressionEval (SingleExpressionTermMultipleOr term simpleExpression) varMap = ((Boolean((toBool (fst(termEval term varMap))) || (toBool (fst(simpleExpressionEval simpleExpression varMap))))), varMap)
+simpleExpressionEval :: SimpleExpression -> VariableMap -> FunctionAndProcedureMap ->(Val, VariableMap)
+simpleExpressionEval (SingleExpressionTermSingle term) varMap  pfMap= (fst(termEval term varMap pfMap),snd(termEval term varMap pfMap))
+simpleExpressionEval (SingleExpressionTermMultipleAdd term simpleExpression) varMap  pfMap= ((Real((toFloat (fst(termEval term varMap pfMap))) + (toFloat(fst(simpleExpressionEval simpleExpression varMap pfMap))))), varMap)
+simpleExpressionEval (SingleExpressionTermMultipleSub term simpleExpression) varMap  pfMap= ((Real((toFloat (fst(termEval term varMap pfMap))) - (toFloat(fst(simpleExpressionEval simpleExpression varMap pfMap))))), varMap)
+simpleExpressionEval (SingleExpressionTermMultipleOr term simpleExpression) varMap  pfMap= ((Boolean((toBool (fst(termEval term varMap pfMap))) || (toBool (fst(simpleExpressionEval simpleExpression varMap pfMap))))), varMap)
 ---------------------------------------------DID NOT ADD FUNCTIONALITY TO "Or" YET Maybe havnt tested it yet ---------------------------------------------------
 
 
-expressionEval :: Expression -> VariableMap -> (Val, VariableMap)
-expressionEval (ExpressionSingle simpleExpression ) varMap = (fst(simpleExpressionEval simpleExpression varMap), snd(simpleExpressionEval simpleExpression varMap))
-expressionEval (ExpressionMultipleE simpleExpression expression) varMap = ((Boolean (fst((simpleExpressionEval simpleExpression varMap)) == (fst(expressionEval expression varMap)))), varMap)
-expressionEval (ExpressionMultipleNE simpleExpression expression) varMap= ((Boolean (fst((simpleExpressionEval simpleExpression varMap)) /= (fst(expressionEval expression varMap)))), varMap)
-expressionEval (ExpressionMultipleLT simpleExpression expression) varMap= ((Boolean ((toFloat(fst(simpleExpressionEval simpleExpression varMap))) < (toFloat(fst(expressionEval expression varMap))))), varMap)
-expressionEval (ExpressionMultipleLTE simpleExpression expression) varMap= ((Boolean ((toFloat(fst(simpleExpressionEval simpleExpression varMap))) <= (toFloat(fst(expressionEval expression varMap))))), varMap)
-expressionEval (ExpressionMultipleGT simpleExpression expression) varMap= ((Boolean ((toFloat(fst(simpleExpressionEval simpleExpression varMap))) > (toFloat(fst(expressionEval expression varMap))))), varMap)
-expressionEval (ExpressionMultipleGTE simpleExpression expression) varMap= ((Boolean ((toFloat(fst(simpleExpressionEval simpleExpression varMap))) >= (toFloat(fst(expressionEval expression varMap))))), varMap)
-expressionEval (ExpressionMultipleIN simpleExpression expression) varMap= ((Boolean (fst((simpleExpressionEval simpleExpression varMap)) == (fst(expressionEval expression varMap)))), varMap)
+expressionEval :: Expression -> VariableMap -> FunctionAndProcedureMap -> (Val, VariableMap)
+expressionEval (ExpressionSingle simpleExpression ) varMap  pfMap= (fst(simpleExpressionEval simpleExpression varMap pfMap), snd(simpleExpressionEval simpleExpression varMap pfMap))
+expressionEval (ExpressionMultipleE simpleExpression expression) varMap  pfMap= ((Boolean (fst((simpleExpressionEval simpleExpression varMap pfMap)) == (fst(expressionEval expression varMap pfMap)))), varMap)
+expressionEval (ExpressionMultipleNE simpleExpression expression) varMap pfMap= ((Boolean (fst((simpleExpressionEval simpleExpression varMap pfMap)) /= (fst(expressionEval expression varMap pfMap)))), varMap)
+expressionEval (ExpressionMultipleLT simpleExpression expression) varMap pfMap= ((Boolean ((toFloat(fst(simpleExpressionEval simpleExpression varMap pfMap))) < (toFloat(fst(expressionEval expression varMap pfMap))))), varMap)
+expressionEval (ExpressionMultipleLTE simpleExpression expression) varMap pfMap= ((Boolean ((toFloat(fst(simpleExpressionEval simpleExpression varMap pfMap))) <= (toFloat(fst(expressionEval expression varMap pfMap))))), varMap)
+expressionEval (ExpressionMultipleGT simpleExpression expression) varMap pfMap= ((Boolean ((toFloat(fst(simpleExpressionEval simpleExpression varMap pfMap))) > (toFloat(fst(expressionEval expression varMap pfMap))))), varMap)
+expressionEval (ExpressionMultipleGTE simpleExpression expression) varMap pfMap= ((Boolean ((toFloat(fst(simpleExpressionEval simpleExpression varMap pfMap))) >= (toFloat(fst(expressionEval expression varMap pfMap))))), varMap)
+expressionEval (ExpressionMultipleIN simpleExpression expression) varMap pfMap= ((Boolean (fst((simpleExpressionEval simpleExpression varMap pfMap)) == (fst(expressionEval expression varMap pfMap)))), varMap)
 ---------------------------------------------DID NOT ADD FUNCTIONALITY TO "In" YET ---------------------------------------------------
 
-actualParameterEval :: ActualParameter -> VariableMap -> (Val, VariableMap)
-actualParameterEval (ActualParameterSingle expression ) varMap = (fst(expressionEval expression varMap), snd(expressionEval expression varMap))
-actualParameterEval (ActualParameterMultiple actualParameter expression) varMap= ((Real(1.4)), varMap)
+actualParameterEval :: ActualParameter -> VariableMap -> FunctionAndProcedureMap -> (Val, VariableMap)
+actualParameterEval (ActualParameterSingle expression ) varMap pfMap = (fst(expressionEval expression varMap pfMap), snd(expressionEval expression varMap pfMap))
+actualParameterEval (ActualParameterMultiple actualParameter expression) varMap pfMap= ((Real(1.4)), varMap)
 
-parameterListEval :: ParameterList -> VariableMap -> (Val, VariableMap)
-parameterListEval (ParameterListSingle x) varMap = (fst(actualParameterEval x varMap ), snd(actualParameterEval x varMap ))
-parameterListEval (ParameterListMulitiple y x) varMap = ((Id (concat (valToStr (fst(parameterListEval y varMap)), valToStr (fst(actualParameterEval x varMap))))), varMap)
+parameterListEval :: ParameterList -> VariableMap -> FunctionAndProcedureMap -> (Val, VariableMap)
+parameterListEval (ParameterListSingle x) varMap pfMap = (fst(actualParameterEval x varMap  pfMap), snd(actualParameterEval x varMap pfMap ))
+parameterListEval (ParameterListMulitiple y x) varMap pfMap = ((Id (concat (valToStr (fst(parameterListEval y varMap pfMap)), valToStr (fst(actualParameterEval x varMap pfMap))))), varMap)
 
-procedureStatementEval :: ProcedureStatement -> VariableMap-> (Val, VariableMap)
-procedureStatementEval (SingleProcedureStatement str) varMap = ((Real (0.11)), varMap)
-procedureStatementEval (MultiProcedureStatement "writeln" x) varMap = (fst(parameterListEval x varMap), snd(parameterListEval x varMap))
+procedureStatementEval :: ProcedureStatement -> VariableMap-> FunctionAndProcedureMap -> (Val, VariableMap)
+procedureStatementEval (MultiProcedureStatement "writeln" x) varMap  pfMap= (fst(parameterListEval x varMap pfMap), snd(parameterListEval x varMap pfMap))
+procedureStatementEval (SingleProcedureStatement str) varMap  pfMap= ((Real (0.11)), varMap)
+procedureStatementEval (MultiProcedureStatement str x) varMap  pfMap=((fst(procedureOrFunctionDeclarationEval (fromJust(Map.lookup  ((str)) pfMap)) varMap pfMap))
+    , varMap)
 
-simpleStatementEval :: SimpleStatement -> VariableMap -> (Val, VariableMap)
-simpleStatementEval (PS ps) varMap = (fst(procedureStatementEval ps varMap), snd(procedureStatementEval ps varMap))
-simpleStatementEval (SimpleStatementAssignment assignmentStatement) varMap = (Id "", (assignmentStatementEval assignmentStatement varMap))
+simpleStatementEval :: SimpleStatement -> VariableMap -> FunctionAndProcedureMap -> (Val, VariableMap)
+simpleStatementEval (PS ps) varMap  pfMap= (fst(procedureStatementEval ps varMap pfMap), snd(procedureStatementEval ps varMap pfMap))
+simpleStatementEval (SimpleStatementAssignment assignmentStatement) varMap  pfMap= (Id "", (assignmentStatementEval assignmentStatement varMap pfMap))
 
-assignmentStatementEval :: AssignmentStatement -> VariableMap -> VariableMap
-assignmentStatementEval (AssignmentStatementMain variable expression ) varMap = (take ((length varMap) -1) varMap) 
-    ++ [(Map.insert (variableEval variable) ((fst(expressionEval expression varMap))) (last varMap))]
-assignmentStatementEval (AssignmentStatementValue variable value ) varMap = (take ((length varMap) -1) varMap) 
+
+assignmentStatementEval :: AssignmentStatement -> VariableMap -> FunctionAndProcedureMap -> VariableMap
+assignmentStatementEval (AssignmentStatementMain variable expression ) varMap pfMap = (take ((length varMap) -1) varMap) 
+    ++ [(Map.insert (variableEval variable) ((fst(expressionEval expression varMap pfMap))) (last varMap))]
+assignmentStatementEval (AssignmentStatementValue variable value ) varMap pfMap = (take ((length varMap) -1) varMap) 
     ++ [(Map.insert (variableEval variable) ((value)) (last varMap))]
 --(Map.insert (head(str)) (Real 1.0) varMap)
 
-ifStatementEval :: IfStatement -> VariableMap -> (String, VariableMap)
-ifStatementEval (IfState expression statement) varMap = ((if (toBool(fst(expressionEval expression varMap))) then ((fst(statementEval varMap statement ),snd(statementEval varMap statement ))) else ("", varMap)))
-ifStatementEval (IfStateElse expression statement1 statement2) varMap = ((if (toBool(fst(expressionEval expression varMap))) then ((fst(statementEval varMap statement1 ), snd(statementEval varMap statement1 ))) else ((fst(statementEval varMap statement2 ), snd(statementEval varMap statement2 )))))
+ifStatementEval :: IfStatement -> VariableMap -> FunctionAndProcedureMap -> (String, VariableMap)
+ifStatementEval (IfState expression statement) varMap  pfMap= ((if (toBool(fst(expressionEval expression varMap pfMap))) then ((fst(statementEval varMap statement pfMap ),snd(statementEval varMap statement pfMap ))) else ("", varMap)))
+ifStatementEval (IfStateElse expression statement1 statement2) varMap  pfMap= ((if (toBool(fst(expressionEval expression varMap pfMap))) then ((fst(statementEval varMap statement1 pfMap ), snd(statementEval varMap statement1 pfMap ))) else ((fst(statementEval varMap statement2  pfMap ), snd(statementEval varMap statement2  pfMap)))))
 
 --constListEval :: ConstList -> Val
 --constListEval (ConstListSingle x) = constantEval x
@@ -137,88 +133,86 @@ ifStatementEval (IfStateElse expression statement1 statement2) varMap = ((if (to
 --caseListElementEval :: CaseListElement -> (Val,Val)
 --caseListElementEval (CaseListElementSingle const statement) = (constListEval const, Id (statementEval statement) )
 
-caseListElements_eval :: CaseListElements -> VariableMap -> ([(Val, Val)], VariableMap)
-caseListElements_eval (CaseListElementsSingle element ) varMap = (([fst(caseListElement_eval element varMap)]), snd(caseListElement_eval element varMap))
-caseListElements_eval (CaseListElementsMultiple element case_list ) varMap=  (((concat [fst(caseListElement_eval element varMap) : (fst(caseListElements_eval case_list varMap))])), snd(caseListElements_eval case_list varMap))
+caseListElements_eval :: CaseListElements -> VariableMap -> FunctionAndProcedureMap -> ([(Val, Val)], VariableMap)
+caseListElements_eval (CaseListElementsSingle element ) varMap  pfMap= (([fst(caseListElement_eval element varMap pfMap)]), snd(caseListElement_eval element varMap pfMap))
+caseListElements_eval (CaseListElementsMultiple element case_list ) varMap pfMap=  (((concat [fst(caseListElement_eval element varMap pfMap) : (fst(caseListElements_eval case_list varMap pfMap))])), snd(caseListElements_eval case_list varMap pfMap))
 
-caseListElement_eval :: CaseListElement -> VariableMap-> ((Val, Val), VariableMap)
-caseListElement_eval (CaseListElementSingle const statement) varMap= (((fst(constList_eval const varMap), Id (fst(statementEval varMap statement )) )), snd(statementEval varMap statement ))
+caseListElement_eval :: CaseListElement -> VariableMap->FunctionAndProcedureMap -> ((Val, Val), VariableMap)
+caseListElement_eval (CaseListElementSingle const statement) varMap pfMap= (((fst(constList_eval const varMap pfMap), Id (fst(statementEval varMap statement  pfMap)) )), snd(statementEval varMap statement  pfMap))
 
-constList_eval :: ConstList -> VariableMap-> (Val, VariableMap)
-constList_eval (ConstListSingle x) varMap= ((fst(constant_eval x varMap), snd(constant_eval x varMap)))
+constList_eval :: ConstList -> VariableMap->FunctionAndProcedureMap -> (Val, VariableMap)
+constList_eval (ConstListSingle x) varMap pfMap= ((fst(constant_eval x varMap pfMap), snd(constant_eval x varMap pfMap)))
 
-constant_eval :: Constant -> VariableMap-> (Val, VariableMap)
-constant_eval (ConstantUN unsignedNumber) varMap = ((unsignedNumberEval unsignedNumber), varMap)
+constant_eval :: Constant -> VariableMap->FunctionAndProcedureMap -> (Val, VariableMap)
+constant_eval (ConstantUN unsignedNumber) varMap pfMap = ((unsignedNumberEval unsignedNumber), varMap)
 
 
 removeIndex :: [(Val, Val)] -> Int ->[(Val, Val)]
 removeIndex xs n = fst notGlued ++ snd notGlued
     where notGlued = (Prelude.take (n-1) xs, Prelude.drop n xs)
 
-caseStatementEval :: CaseStatement -> VariableMap -> (String, VariableMap)
-caseStatementEval (Case expression case_list) varMap =  ((if  (fst(expressionEval expression varMap) == (fst(head (fst(caseListElements_eval case_list varMap))))) 
-                                                            then ((valToStr (snd(head(fst(caseListElements_eval case_list varMap))))), snd(caseListElements_eval case_list varMap))
-                                                            else ((fst(caseStatementEval (CaseBreakDown expression (removeIndex (fst(caseListElements_eval case_list varMap)) 1))varMap)),snd(caseListElements_eval case_list varMap))
+caseStatementEval :: CaseStatement -> VariableMap -> FunctionAndProcedureMap -> (String, VariableMap)
+caseStatementEval (Case expression case_list) varMap pfMap=  ((if  (fst(expressionEval expression varMap pfMap) == (fst(head (fst(caseListElements_eval case_list varMap pfMap))))) 
+                                                            then ((valToStr (snd(head(fst(caseListElements_eval case_list varMap pfMap))))), snd(caseListElements_eval case_list varMap pfMap))
+                                                            else ((fst(caseStatementEval (CaseBreakDown expression (removeIndex (fst(caseListElements_eval case_list varMap pfMap)) 1))varMap  pfMap)),snd(caseListElements_eval case_list varMap pfMap))
                                                             ))
-caseStatementEval (CaseBreakDown expression case_list) varMap=  ((if  (fst(( expressionEval expression varMap)) == (fst(head (case_list)))) 
+caseStatementEval (CaseBreakDown expression case_list) varMap pfMap=  ((if  (fst(( expressionEval expression varMap pfMap)) == (fst(head (case_list)))) 
                                                             then (valToStr(snd(head(case_list))))
-                                                             else (fst(caseStatementEval (CaseBreakDown expression(removeIndex case_list 1)) varMap))
+                                                             else (fst(caseStatementEval (CaseBreakDown expression(removeIndex case_list 1)) varMap  pfMap))
                                                             ), varMap)
---caseStatementEval (Case expression case_list) =  case  (toFloat(expressionEval expression)) of (toFloat(fst(head(caseListElements_eval case_list)))) -> (snd(head(caseListElements_eval case_list)))
---caseStatementEval (Case Expression CaseListElements) =
---caseStatementEval (CaseElse Expression CaseListElements [Statement]) =
 
-conditionalStatementEval :: ConditionalStatement -> VariableMap-> (Val, VariableMap)
-conditionalStatementEval (ConditionalStatementIf ifStatement) varMap = ((Id (fst(ifStatementEval ifStatement varMap))), snd(ifStatementEval ifStatement varMap))
-conditionalStatementEval (ConditionalStatementCase caseStatement) varMap = ((Id (fst(caseStatementEval caseStatement varMap))), snd(caseStatementEval caseStatement varMap))
+conditionalStatementEval :: ConditionalStatement -> VariableMap->FunctionAndProcedureMap -> (Val, VariableMap)
+conditionalStatementEval (ConditionalStatementIf ifStatement) varMap  pfMap= ((Id (fst(ifStatementEval ifStatement varMap pfMap))), snd(ifStatementEval ifStatement varMap pfMap))
+conditionalStatementEval (ConditionalStatementCase caseStatement) varMap  pfMap= ((Id (fst(caseStatementEval caseStatement varMap pfMap))), snd(caseStatementEval caseStatement varMap pfMap))
 
-structuredStatementEval :: StructuredStatement -> VariableMap -> (Val, VariableMap)
-structuredStatementEval (StructuredStatementCompoundStatement statementArray) varMap = (Id (concat(fst(statementsEval statementArray varMap))), snd(statementsEval  statementArray varMap))
-structuredStatementEval (  StructuredStatementConditionalStatement conditionalStatement) varMap = (fst(conditionalStatementEval conditionalStatement varMap), snd(conditionalStatementEval conditionalStatement varMap))
-structuredStatementEval (StructuredStatementRepetetiveStatement repetetiveStatement)varMap = repetetiveStatement_eval repetetiveStatement varMap
+structuredStatementEval :: StructuredStatement -> VariableMap -> FunctionAndProcedureMap -> (Val, VariableMap)
+structuredStatementEval (StructuredStatementCompoundStatement statementArray) varMap  pfMap= (Id (concat(fst(statementsEval statementArray varMap pfMap))), snd(statementsEval  statementArray varMap pfMap))
+structuredStatementEval (  StructuredStatementConditionalStatement conditionalStatement) varMap  pfMap= (fst(conditionalStatementEval conditionalStatement varMap pfMap), snd(conditionalStatementEval conditionalStatement varMap pfMap))
+structuredStatementEval (StructuredStatementRepetetiveStatement repetetiveStatement)varMap  pfMap= repetetiveStatement_eval repetetiveStatement varMap pfMap
 --structuredStatementEval ( StructuredStatementWithStatement withStatement) =
 
-repetetiveStatement_eval :: RepetetiveStatement -> VariableMap-> (Val, VariableMap)
-repetetiveStatement_eval (RepetetiveStatementWhile whileT) varMap = (Id(fst(whileStatement_eval whileT varMap)), snd(whileStatement_eval whileT varMap))
-repetetiveStatement_eval (RepetetiveStatementFor forLoop) varMap = (strToVal(fst(forStatement_eval forLoop varMap)), snd(forStatement_eval forLoop varMap))
+repetetiveStatement_eval :: RepetetiveStatement -> VariableMap->FunctionAndProcedureMap -> (Val, VariableMap)
+repetetiveStatement_eval (RepetetiveStatementWhile whileT) varMap  pfMap= (Id(fst(whileStatement_eval whileT varMap pfMap)), snd(whileStatement_eval whileT varMap pfMap))
+repetetiveStatement_eval (RepetetiveStatementFor forLoop) varMap  pfMap= (strToVal(fst(forStatement_eval forLoop varMap pfMap)), snd(forStatement_eval forLoop varMap pfMap))
 
-forStatement_eval :: ForStatement -> VariableMap-> (String, VariableMap)
-forStatement_eval (ForTo identifier expressionIn expressionF statement) varMap= 
-    ((fst(forStatement_evalHelper identifier (toInt(fst(expressionEval expressionF varMap))) statement 
-    (varMap ++ [(Map.insert(identifier) ((fst(expressionEval expressionIn varMap))) (last varMap))]))), varMap)
+forStatement_eval :: ForStatement -> VariableMap->FunctionAndProcedureMap -> (String, VariableMap)
+forStatement_eval (ForTo identifier expressionIn expressionF statement) varMap pfMap= 
+    ((fst(forStatement_evalHelper identifier (toInt(fst(expressionEval expressionF varMap pfMap))) statement 
+    (varMap ++ [(Map.insert(identifier) ((fst(expressionEval expressionIn varMap pfMap))) (last varMap))]) pfMap)), varMap)
 
-forStatement_evalHelper :: String -> Int -> Statement -> VariableMap -> (String, VariableMap)
-forStatement_evalHelper identifier expressionTo statement varMap = 
+forStatement_evalHelper :: String -> Int -> Statement -> VariableMap -> FunctionAndProcedureMap -> (String, VariableMap)
+forStatement_evalHelper identifier expressionTo statement varMap  pfMap= 
     if(toInt( fromJust(Map.lookup  ((identifier)) (last varMap))) >= (expressionTo)) 
     then  ("", varMap)   
-    else ((fst(statementEval varMap statement )) ++ (fst(forStatement_evalHelper identifier expressionTo  statement 
-    (assignmentStatementEval (AssignmentStatementValue (Var identifier) (Integer ((toInt( fromJust(Map.lookup  ((identifier)) (last varMap)))) + 1)) )
-     (snd(statementEval varMap statement )) ))), 
-    snd(forStatement_evalHelper identifier expressionTo  statement (snd(statementEval varMap statement )) ))
+    else ((fst(statementEval varMap statement pfMap )) ++ (fst(forStatement_evalHelper identifier expressionTo  statement 
+    (assignmentStatementEval (AssignmentStatementValue (Var identifier) 
+    (Integer ((toInt( fromJust(Map.lookup  ((identifier)) (last varMap)))) + 1)))
+     (snd(statementEval varMap statement  pfMap)) pfMap) pfMap)), 
+    snd(forStatement_evalHelper identifier expressionTo  statement (snd(statementEval varMap statement  pfMap))  pfMap))
                         -- else ( statementEval statement ++ (forStatement_eval (ForLoop identifier expressionIn expressionF  statement )) )
                          -- Real(toFloat(expressionEval expressionIn)+1)
                          --assignmentStatementEval (AssignmentStatementMain variable expression )
 
 
-whileStatement_eval :: WhileStatement -> VariableMap -> (String, VariableMap)
-whileStatement_eval (WhileS expression statement) varMap= 
-                        if(toBool(fst(expressionEval expression varMap))) then 
-                             (fst(statementEval varMap statement )  ++
-                             (fst(whileStatement_eval (WhileS expression statement) (snd(statementEval varMap statement )))),
-                              snd(whileStatement_eval (WhileS expression statement) (snd(statementEval varMap statement ))) 
+whileStatement_eval :: WhileStatement -> VariableMap -> FunctionAndProcedureMap -> (String, VariableMap)
+whileStatement_eval (WhileS expression statement) varMap pfMap= 
+                        if(toBool(fst(expressionEval expression varMap pfMap))) then 
+                             (fst(statementEval varMap statement  pfMap)  ++
+                             (fst(whileStatement_eval (WhileS expression statement) (snd(statementEval varMap statement  pfMap)) pfMap)),
+                              snd(whileStatement_eval (WhileS expression statement) (snd(statementEval varMap statement  pfMap)) pfMap) 
                               )
                              else ("", varMap) 
 
-unlabelledStatementEval :: UnlabelledStatement -> VariableMap-> (Val, VariableMap)
-unlabelledStatementEval (UnlabelledStatementSimpleStatement simpleStatement) varMap= (fst(simpleStatementEval simpleStatement varMap), snd(simpleStatementEval simpleStatement varMap))
-unlabelledStatementEval (UnlabelledStatementStructuredStatement structuredStatement) varMap= (fst(structuredStatementEval structuredStatement varMap), snd(structuredStatementEval structuredStatement varMap))
+unlabelledStatementEval :: UnlabelledStatement -> VariableMap->FunctionAndProcedureMap -> (Val, VariableMap)
+unlabelledStatementEval (UnlabelledStatementSimpleStatement simpleStatement) varMap pfMap= (fst(simpleStatementEval simpleStatement varMap pfMap), snd(simpleStatementEval simpleStatement varMap pfMap))
+unlabelledStatementEval (UnlabelledStatementStructuredStatement structuredStatement) varMap pfMap= (fst(structuredStatementEval structuredStatement varMap pfMap), snd(structuredStatementEval structuredStatement varMap pfMap))
 
-statementEval ::  VariableMap -> Statement ->(String, VariableMap)
-statementEval varMap(StatementUnlabelledStatement us)  = (valToStr (fst(unlabelledStatementEval us varMap)), snd(unlabelledStatementEval us varMap))
+statementEval ::  VariableMap -> Statement -> FunctionAndProcedureMap ->(String, VariableMap)
+statementEval varMap(StatementUnlabelledStatement us)   pfMap= (valToStr (fst(unlabelledStatementEval us varMap pfMap)), snd(unlabelledStatementEval us varMap pfMap))
 
-statementsEval :: Statements -> VariableMap -> ([String], VariableMap)
-statementsEval (StatementsSingle x) varMap = ([fst(statementEval varMap x )], snd(statementEval varMap x ))
-statementsEval (StatementsMultiple x y) varMap = (concat[[fst(statementEval varMap x )], (fst(statementsEval y (snd(statementEval varMap x ))))], snd(statementsEval y varMap)) --show (traverse (statementEval x)) ]
+statementsEval :: Statements -> VariableMap -> FunctionAndProcedureMap -> ([String], VariableMap)
+statementsEval (StatementsSingle x) varMap pfMap = ([fst(statementEval varMap x  pfMap)], snd(statementEval varMap x  pfMap))
+statementsEval (StatementsMultiple x y) varMap pfMap = (concat[[fst(statementEval varMap x pfMap )], (fst(statementsEval y (snd(statementEval varMap x  pfMap)) pfMap))], snd(statementsEval y varMap pfMap)) --show (traverse (statementEval x)) ]
 
 
 variableDeclarationEval :: VariableDeclaration -> Map.Map String Val -> Map.Map String Val
@@ -240,11 +234,29 @@ variableDeclarationPartEval (VariableDeclarationPartMultiple variableDeclaration
 blockOptionsEval :: BlockOptions -> Map.Map String Val
 blockOptionsEval (BlockOptionsVariableDeclarationPart variableDeclarationPart) = variableDeclarationPartEval variableDeclarationPart Map.empty
 
+procedureDeclarationEvalString :: ProcedureDeclaration -> String
+procedureDeclarationEvalString (Procedure_no_identifier string block) = string
+procedureDeclarationEvalString (Procedure_with_identifier string formalParameterList block) = string
+
+functionDeclarationEvalString :: FunctionDeclaration -> String
+functionDeclarationEvalString (Function_no_identifier string string1 block) = string
+functionDeclarationEvalString (Function_identifier string formalParameterList string1 block) = string
+
+
+procedureOrFunctionDeclarationEvalString :: ProcedureOrFunctionDeclaration ->  String
+procedureOrFunctionDeclarationEvalString (Procedure_method procedureDeclaration)= procedureDeclarationEvalString procedureDeclaration
+procedureOrFunctionDeclarationEvalString (Function_method functionDeclaration)= functionDeclarationEvalString functionDeclaration
+
+procedureAndFunctionDeclarationPartEval :: ProcedureAndFunctionDeclarationPart -> Map.Map String ProcedureOrFunctionDeclaration -> Map.Map String ProcedureOrFunctionDeclaration
+procedureAndFunctionDeclarationPartEval (Declaration p) pfMap = (Map.insert (procedureOrFunctionDeclarationEvalString p) p pfMap)
+
+
+
 blockEval :: Block -> [String]
-blockEval (BlockCopoundStatement s ) = fst(statementsEval s [Map.empty])
-blockEval (BlockVariableDeclarationPart b s) = fst(statementsEval s ([blockOptionsEval b]))
-blockEval (Block_Method procedureAndFunctionDeclarationPart statements) = ["hi", "ds"]
-blockEval (Block_Variable_Method blockOptions procedureAndFunctionDeclarationPart statements) =["hi", "ds"] 
+blockEval (BlockCopoundStatement s ) = fst(statementsEval s [Map.empty] Map.empty) 
+blockEval (BlockVariableDeclarationPart b s) = fst(statementsEval s ([blockOptionsEval b]) Map.empty)
+blockEval (Block_Method p s) = fst(statementsEval s [Map.empty] (procedureAndFunctionDeclarationPartEval p  Map.empty))
+blockEval (Block_Variable_Method b p s) = fst(statementsEval s ([blockOptionsEval b]) (procedureAndFunctionDeclarationPartEval p Map.empty))
 
 interpret :: Program -> String
 -- TODO: write the interpreter
