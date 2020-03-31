@@ -10,12 +10,12 @@ var
    a: real;
    
 begin
-   writeln('val')
+   writeln('val hello')
 end;
 
 
 begin
-
+   display(4);
    writeln('Winthin the program exlocal')
 
 end.
