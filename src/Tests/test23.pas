@@ -1,6 +1,7 @@
 program ForBreakTest; 
 var
    a: real;
+   tt: real;
 
 begin
 
@@ -8,6 +9,8 @@ begin
      for tt := 15 to 20 do
       begin
          writeln(tt)
-      end
+      end;
+      writeln('                  ');
+      writeln(tt)
       
 end.

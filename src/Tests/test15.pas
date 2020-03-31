@@ -4,10 +4,8 @@ var
 
 begin
    a := 10;
-   (* repeat until loop execution *)
    for a := 15  to 20 do
       begin
-         (* skip the iteration *)
          a := a + 1;
          if a > 17 then
          break
