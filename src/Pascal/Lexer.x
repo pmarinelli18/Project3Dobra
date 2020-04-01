@@ -52,7 +52,7 @@ tokens :-
   repeat|until|for|assign|to|downto     { tok_string     TokenK }
   with                                  { tok_string     TokenK }
   $alpha [$alpha $digit \_ \']*         { tok_string     TokenID }
-  ['] [$alpha $digit \= $white \! \ \? \_ ]* [']          { tok_string     TokenSt }
+  ['] [$alpha $digit \= $white \! \ \? \_ \: ]* [']          { tok_string     TokenSt }
 
 {
 

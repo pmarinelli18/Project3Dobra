@@ -133,7 +133,7 @@ termEval (TermSingle signedFactor) varMap pfMap = (fst(signedFactorEval signedFa
 termEval (TermMultipleMult signedFactor term) varMap pfMap = ((Real((toFloat (fst(signedFactorEval signedFactor varMap pfMap) )) * (toFloat(fst(termEval term varMap pfMap))))), varMap)
 termEval (TermMultipleDivision signedFactor term) varMap pfMap = ((Real((toFloat (fst(signedFactorEval signedFactor varMap  pfMap))) / (toFloat(fst(termEval term varMap pfMap ))))), varMap)
 termEval (TermMultipleDiv signedFactor term) varMap pfMap = ((Real((toFloat (fst(signedFactorEval signedFactor varMap pfMap))) / (toFloat(fst(termEval term varMap pfMap))))), varMap)
-termEval (TermMultipleMod signedFactor term) varMap pfMap = ((Real((toFloat (fst(signedFactorEval signedFactor varMap pfMap))) * (toFloat(fst(termEval term varMap pfMap))))), varMap)--Integer((toInt(signedFactorEval signedFactor)) `mod` (toInt(termEval term)))
+termEval (TermMultipleMod signedFactor term) varMap pfMap = ((Integer(( mod (toInt (fst(signedFactorEval signedFactor varMap pfMap)))  (toInt(fst(termEval term varMap pfMap)))))), varMap)--Integer((toInt(signedFactorEval signedFactor)) `mod` (toInt(termEval term)))
 termEval (TermMultipleAnd signedFactor term) varMap pfMap = ((Boolean((toBool (fst(signedFactorEval signedFactor varMap pfMap))) && (toBool(fst(termEval term varMap pfMap))))), varMap)
 
 ---------------------------------------------DID NOT ADD FUNCTIONALITY TO "mod" YET Maybe havnt tested it yet ---------------------------------------------------
@@ -325,6 +325,6 @@ blockEval (Block_Variable_Method b p s) = fst(statementsEval s ([blockOptionsEva
 
 interpret :: Program -> String
 -- TODO: write the interpreter
-interpret (ProgramBlock programheading block) = (replace  ((concat(blockEval block))) "#&#!" "\n")
+interpret (ProgramBlock programheading block) = (replace ( removePunc2 ((concat(blockEval block))) ) "#&#!" "\n")
 
 interpret _ = "Not implemented"
