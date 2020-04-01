@@ -13,22 +13,23 @@ begin
 	end
 	else
 	begin
-		fibonacci := n;
-	end;
-end;
+		fibonacci := n
+	end
+end
+;
 
 begin
  writeln('hi');
     a:= fibonacci(8);
-    writeln('fibonacci(8):',a);
+    writeln('fibonacci 8',a);
         a:= fibonacci(3);
-    writeln('fibonacci(3):',a);
+    writeln('fibonacci3',a);
         a:= fibonacci(5);
-    writeln('fibonacci(5):',a);
+    writeln('fibonacci5',a);
         a:= fibonacci(10);
-    writeln('fibonacci(10):',a);
+    writeln('fibonacci10',a);
         a:= fibonacci(2);
-    writeln('fibonacci(2):',a);
+    writeln('fibonacci2',a);
         a:= fibonacci(1);
-    writeln('fibonacci(1):',a)
+    writeln('fibonacci1',a)
 end.

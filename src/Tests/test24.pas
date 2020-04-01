@@ -10,14 +10,15 @@ var
    a: real;
    
 begin
-   writeln('val hello')
+   writeln(2)
 end;
 
 
 begin
    display(t);
    writeln('Winthin the program exlocal');
-   display(t)
+   a := display(t);
+   writeln(a)
    
 
 end.

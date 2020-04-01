@@ -1,8 +1,49 @@
 module Pascal.Interpret 
 (
-    --writeln,
-    --numToString,
-    interpret
+    VariableMap,
+    FunctionAndProcedureMap,
+    interpret,
+    unsignedNumberEval,
+    unsignedConstantEval,
+    functionDesignatorEval,
+    procedureOrFunctionDeclarationEval,
+    variableEval,
+    factorEval,
+    signedFactorEval,
+    termEval,
+    simpleExpressionEval,
+    expressionEval,
+    actualParameterEval,
+    parameterListEval,
+    procedureStatementEval,
+    simpleStatementEval,
+    assignmentStatementEval,
+    ifStatementEval,
+    caseListElements_eval,
+    caseListElement_eval,
+    constList_eval,
+    constant_eval,
+    removeIndex,
+    caseStatementEval,
+    conditionalStatementEval,
+    structuredStatementEval,
+    repetetiveStatement_eval,
+    forStatement_eval,
+    forStatement_evalHelper,
+    whileStatement_eval,
+    unlabelledStatementEval,
+    statementEval,
+    statementsEval,
+    variableDeclarationEval,
+    variableDeclarationPartMultipleEval,
+    variableDeclarationPartEval,
+    blockOptionsEval,
+    procedureDeclarationEvalString,
+    functionDeclarationEvalString,
+    procedureOrFunctionDeclarationEvalString,
+    procedureAndFunctionDeclarationPartEval,
+    blockEval
+
 )
 where
 
@@ -12,6 +53,7 @@ import Pascal.Val
 import qualified Data.Map as Map
 import Data.Maybe
 import Data.List
+
 
 type VariableMap = [Map.Map String Val] --Map.Map String (String, Val)
 type FunctionAndProcedureMap = Map.Map String ProcedureOrFunctionDeclaration
@@ -38,16 +80,26 @@ functionDesignatorEval (FDesignate x parameterList) varMap pfMap = (
 
 
 procedureOrFunctionDeclarationEval :: ProcedureOrFunctionDeclaration  -> VariableMap -> FunctionAndProcedureMap -> (Val, VariableMap)
-procedureOrFunctionDeclarationEval( Procedure_method procedureDeclaration)varMap pfMap= (fst (procedureDeclarationEval procedureDeclaration varMap pfMap), varMap)
-procedureOrFunctionDeclarationEval (Function_method functionDeclaration)varMap pfMap= (fst (functionDeclarationEval functionDeclaration varMap pfMap), varMap)
+procedureOrFunctionDeclarationEval( Procedure_method procedureDeclaration)varMap pfMap= 
+    (fst (procedureDeclarationEval procedureDeclaration varMap pfMap), varMap)
+procedureOrFunctionDeclarationEval (Function_method functionDeclaration)varMap pfMap= 
+    (fst (functionDeclarationEval functionDeclaration varMap pfMap), varMap)
 
 procedureDeclarationEval:: ProcedureDeclaration -> VariableMap -> FunctionAndProcedureMap -> (Val, VariableMap)
-procedureDeclarationEval (Procedure_no_identifier string block) varMap pfMap= ((Id(concat(blockEval block))), varMap)
-procedureDeclarationEval (Procedure_with_identifier string formalParameterList  block) varMap pfMap= ((Id(concat(blockEval block))), varMap)
+procedureDeclarationEval (Procedure_no_identifier string block) varMap pfMap= 
+    ((Id(concat(blockEval block))), varMap)
+procedureDeclarationEval (Procedure_with_identifier string formalParameterList  block) varMap pfMap= 
+    ((Id(concat(blockEval block))), varMap)
 
 functionDeclarationEval:: FunctionDeclaration -> VariableMap -> FunctionAndProcedureMap -> (Val, VariableMap)
-functionDeclarationEval (Function_no_identifier string1 string2 block) varMap pfMap =((Id(concat(blockEval block))), varMap)
-functionDeclarationEval (Function_identifier string1 formalParameterList string2  block) varMap pfMap=((Id(concat(blockEval block))), varMap)
+functionDeclarationEval (Function_no_identifier string1 string2 block) varMap pfMap =
+    ((Id(concat(blockEval block))), varMap)
+functionDeclarationEval (Function_identifier string1 formalParameterList string2  block) varMap pfMap=
+    ((Id(concat(blockEval block))), varMap)
+
+formalParameterListEval:: FormalParameterList ->VariableMap -> VariableMap
+formalParameterListEval (Singleparameter formalParameterSection) varMap= varMap
+formalParameterListEval (Multipleparameter formalParameterSection formalParameterList) varMap= varMap
 
 
 ---------------------------------------------DID NOT ADD FUNCTIONALITY TO "Dopower" YET Maybe havnt tested it yet ---------------------------------------------------
@@ -273,6 +325,6 @@ blockEval (Block_Variable_Method b p s) = fst(statementsEval s ([blockOptionsEva
 
 interpret :: Program -> String
 -- TODO: write the interpreter
-interpret (ProgramBlock programheading block) = (replace  (removePunc2(concat(blockEval block))) "#&#!" "\n")
+interpret (ProgramBlock programheading block) = (replace  ((concat(blockEval block))) "#&#!" "\n")
 
 interpret _ = "Not implemented"

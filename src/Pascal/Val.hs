@@ -32,26 +32,25 @@ valToStr (Boolean x) = show x
 toFloat :: Val -> Float
 toFloat (Real x) = x
 toFloat (Integer i) = fromIntegral i     
-toFloat (Id _) = error "Float_  Not convertible to float"
-toFloat (Boolean _) = error "Float_  Not convertible to float"
+toFloat (Id _) = error "Not convertible to float"
+toFloat (Boolean _) = error "Not convertible to float"
 
 -- converts to Float if Real or Integer, error otherwise
 -- used to deal with arguments of operators
 toInt :: Val -> Int
 toInt (Real x) = floor x
 toInt (Integer i) = i     
-toInt (Id _) = error "Int_ Not convertible to Integer"
-toInt (Boolean _) = error "Int_  Not convertible to Integer"
+toInt (Id _) = error "Not convertible to Integer"
+toInt (Boolean _) = error "Not convertible to Integer"
 
 toBool :: Val -> Bool
-toBool (Real _) = error "Bool_ Not convertible to Real"
-toBool (Integer _) = error "Bool_ Not convertible to Integer"
-toBool (Id _) = error "Bool_ Not convertible to Integer"
+toBool (Real _) = error "Not convertible to Integer"
+toBool (Integer _) = error "Not convertible to Integer"
+toBool (Id _) = error "Not convertible to Integer"
 toBool (Boolean b) = b
 
 removePunc2 :: String -> String 
 removePunc2 xs = [ x | x <- xs, not (x `elem` "\"\'\\") ]
-
 
 replace :: Eq a => [a] -> [a] -> [a] -> [a]
 replace [] _ _ = []
