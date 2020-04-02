@@ -6,11 +6,10 @@ var
    
 
 function display (t: real  ) : real ;
-var
-   a: real;
    
 begin
-   writeln(2)
+   writeln(2);
+   display := 2
 end;
 
 

@@ -100,9 +100,11 @@ functionDeclarationEval (Function_no_identifier string1 string2 block) varMap pf
     --(head(fst(blockEval block varMap pfMap)), varMap)
     --((Id(concat(blockEval block varMap pfMap))), varMap)
 functionDeclarationEval (Function_identifier string1 formalParameterList string2  block) varMap pfMap parameterList=
-    -- ( fromJust(Map.lookup  (string1) (last(snd(blockEval block [(Map.insert (string1) (Real 3.0) (last(formalParameterListEval formalParameterList (varMap) parameterList pfMap)))] 
-    -- pfMap)))), varMap)
-    ( fromJust(Map.lookup  (string1) (last(snd(blockEval block ((take ((length varMap) -1) varMap) ++ [(Map.insert (string1) (Real 3.0) (last varMap))]) pfMap)))), varMap)
+    ( fromJust(Map.lookup  (string1) (last(snd(blockEval block [(Map.insert (string1) (Real 0.0) (last(formalParameterListEval formalParameterList (varMap) parameterList pfMap)))] 
+     pfMap)))), varMap)
+    --( fromJust(Map.lookup  (string1) (last(snd(blockEval block ((take ((length varMap) -1) varMap) ++ [(Map.insert (string1) (Real 3.0) (last varMap))]) pfMap)))), varMap)
+    
+    
     -- (head(fst(blockEval block (formalParameterListEval formalParameterList (varMap ++ varMap) parameterList pfMap) 
     -- pfMap)), varMap)
     -- ((Id(concat(blockEval block 
@@ -354,7 +356,7 @@ procedureAndFunctionDeclarationPartEval (Declaration p) pfMap = (Map.insert (pro
 
 
 blockEval :: Block -> VariableMap->FunctionAndProcedureMap  -> ([String], VariableMap) 
-blockEval (BlockCopoundStatement s ) varMap pfMap = (fst(statementsEval s varMap pfMap), varMap)
+blockEval (BlockCopoundStatement s ) varMap pfMap = (fst(statementsEval s varMap pfMap), snd(statementsEval s varMap pfMap))
 blockEval (BlockVariableDeclarationPart b s) varMap pfMap = (fst(statementsEval s ([blockOptionsEval b]) pfMap), snd(statementsEval s ([blockOptionsEval b]) pfMap))
 blockEval (Block_Method p s) varMap pfMap = (fst(statementsEval s varMap (procedureAndFunctionDeclarationPartEval p  pfMap)) , snd(statementsEval s varMap (procedureAndFunctionDeclarationPartEval p  pfMap)))
 blockEval (Block_Variable_Method b p s) varMap pfMap = (fst(statementsEval s ([blockOptionsEval b]) (procedureAndFunctionDeclarationPartEval p pfMap)), snd(statementsEval s ([blockOptionsEval b]) (procedureAndFunctionDeclarationPartEval p pfMap)))
