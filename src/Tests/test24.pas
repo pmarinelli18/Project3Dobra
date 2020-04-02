@@ -5,7 +5,7 @@ var
    c: real;
    
 
-function display (  ) : integer ;
+function display (t: real  ) : real ;
 var
    a: real;
    

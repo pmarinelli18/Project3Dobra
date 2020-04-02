@@ -75,31 +75,67 @@ functionDesignatorEval (FDesignate "sqrt" parameterList) varMap pfMap = ((Real (
 functionDesignatorEval (FDesignate "ln" parameterList) varMap pfMap = ((Real (log(toFloat(fst(parameterListEval parameterList varMap pfMap))))), varMap)
 functionDesignatorEval (FDesignate "dopower" parameterList) varMap pfMap = ((Real (cos(toFloat(fst(parameterListEval parameterList varMap pfMap))))), varMap)
 functionDesignatorEval (FDesignate x parameterList) varMap pfMap = (
-    (fst(procedureOrFunctionDeclarationEval (fromJust(Map.lookup  ((x)) pfMap)) varMap pfMap))
-    , varMap)
+    (fst(procedureOrFunctionDeclarationEval (fromJust(Map.lookup  ((x)) pfMap)) varMap pfMap parameterList))
+    , snd(procedureOrFunctionDeclarationEval (fromJust(Map.lookup  ((x)) pfMap)) varMap pfMap parameterList))
 
 
-procedureOrFunctionDeclarationEval :: ProcedureOrFunctionDeclaration  -> VariableMap -> FunctionAndProcedureMap -> (Val, VariableMap)
-procedureOrFunctionDeclarationEval( Procedure_method procedureDeclaration)varMap pfMap= 
-    (fst (procedureDeclarationEval procedureDeclaration varMap pfMap), varMap)
-procedureOrFunctionDeclarationEval (Function_method functionDeclaration)varMap pfMap= 
-    (fst (functionDeclarationEval functionDeclaration varMap pfMap), varMap)
+procedureOrFunctionDeclarationEval :: ProcedureOrFunctionDeclaration  -> VariableMap -> FunctionAndProcedureMap -> ParameterList -> (Val, VariableMap)
+procedureOrFunctionDeclarationEval( Procedure_method procedureDeclaration)varMap pfMap parameterList= 
+    (fst (procedureDeclarationEval procedureDeclaration varMap pfMap parameterList), varMap)
+procedureOrFunctionDeclarationEval (Function_method functionDeclaration)varMap pfMap parameterList= 
+    (fst (functionDeclarationEval functionDeclaration varMap pfMap parameterList), varMap)
 
-procedureDeclarationEval:: ProcedureDeclaration -> VariableMap -> FunctionAndProcedureMap -> (Val, VariableMap)
-procedureDeclarationEval (Procedure_no_identifier string block) varMap pfMap= 
-    ((Id(concat(blockEval block))), varMap)
-procedureDeclarationEval (Procedure_with_identifier string formalParameterList  block) varMap pfMap= 
-    ((Id(concat(blockEval block))), varMap)
+procedureDeclarationEval:: ProcedureDeclaration -> VariableMap -> FunctionAndProcedureMap -> ParameterList-> (Val, VariableMap)
+procedureDeclarationEval (Procedure_no_identifier string block) varMap pfMap parameterList= 
+    ((Id(concat(fst(blockEval block varMap pfMap)))), varMap)
+procedureDeclarationEval (Procedure_with_identifier string formalParameterList  block) varMap pfMap parameterList= 
+    ((Id(concat(fst(blockEval block     
+    (formalParameterListEval formalParameterList (varMap ++ varMap) parameterList pfMap) 
+    pfMap)))), varMap)
 
-functionDeclarationEval:: FunctionDeclaration -> VariableMap -> FunctionAndProcedureMap -> (Val, VariableMap)
-functionDeclarationEval (Function_no_identifier string1 string2 block) varMap pfMap =
-    ((Id(concat(blockEval block))), varMap)
-functionDeclarationEval (Function_identifier string1 formalParameterList string2  block) varMap pfMap=
-    ((Id(concat(blockEval block))), varMap)
+functionDeclarationEval:: FunctionDeclaration -> VariableMap -> FunctionAndProcedureMap -> ParameterList-> (Val, VariableMap)
+functionDeclarationEval (Function_no_identifier string1 string2 block) varMap pfMap  parameterList=
+    ( fromJust(Map.lookup  (string1) ((last(snd(blockEval block [(Map.insert (string1) (Real 0.0) (last varMap))] pfMap))))), varMap)
 
-formalParameterListEval:: FormalParameterList ->VariableMap -> VariableMap
-formalParameterListEval (Singleparameter formalParameterSection) varMap= varMap
-formalParameterListEval (Multipleparameter formalParameterSection formalParameterList) varMap= varMap
+    --(head(fst(blockEval block varMap pfMap)), varMap)
+    --((Id(concat(blockEval block varMap pfMap))), varMap)
+functionDeclarationEval (Function_identifier string1 formalParameterList string2  block) varMap pfMap parameterList=
+    -- ( fromJust(Map.lookup  (string1) (last(snd(blockEval block [(Map.insert (string1) (Real 3.0) (last(formalParameterListEval formalParameterList (varMap) parameterList pfMap)))] 
+    -- pfMap)))), varMap)
+    ( fromJust(Map.lookup  (string1) (last(snd(blockEval block ((take ((length varMap) -1) varMap) ++ [(Map.insert (string1) (Real 3.0) (last varMap))]) pfMap)))), varMap)
+    -- (head(fst(blockEval block (formalParameterListEval formalParameterList (varMap ++ varMap) parameterList pfMap) 
+    -- pfMap)), varMap)
+    -- ((Id(concat(blockEval block 
+    -- (formalParameterListEval formalParameterList (varMap ++ varMap) parameterList pfMap) 
+    -- pfMap))), varMap)
+
+formalParameterListEval:: FormalParameterList ->VariableMap -> ParameterList-> FunctionAndProcedureMap ->VariableMap
+formalParameterListEval (Singleparameter formalParameterSection) varMap parameterList pfMap= 
+    formalParameterSectionEval formalParameterSection varMap parameterList pfMap
+formalParameterListEval (Multipleparameter formalParameterSection formalParameterList) varMap parameterList pfMap= 
+    (varMap ++ [(Map.union (last (formalParameterSectionEval formalParameterSection varMap parameterList pfMap)) (last (formalParameterListEval formalParameterList varMap parameterList pfMap)))])
+   -- (formalParameterListEval (formalParameterList (formalParameterSectionEval formalParameterSection varMap)))
+
+formalParameterSectionEval :: FormalParameterSection ->VariableMap -> ParameterList-> FunctionAndProcedureMap->VariableMap
+formalParameterSectionEval (Simple_parameterGroup parameterGroup) varMap parameterList pfMap= (parameterGroupEval parameterGroup varMap parameterList pfMap)
+formalParameterSectionEval (Var_parameterGroup parameterGroup) varMap parameterList pfMap= (parameterGroupEval parameterGroup varMap parameterList pfMap)
+
+parameterGroupEval :: ParameterGroup ->VariableMap -> ParameterList -> FunctionAndProcedureMap->VariableMap
+parameterGroupEval (Parameter_groupString stringArray) varMap parameterList pfMap=    (take ((length varMap) -1) varMap) 
+    ++ [(Map.insert (head stringArray) (fst(parameterListEval parameterList varMap pfMap)) (last varMap))]
+parameterGroupEval (Parameter_groupReal stringArray) varMap parameterList pfMap=    (take ((length varMap) -1) varMap) 
+    ++ [(Map.insert (head stringArray) (fst(parameterListEval parameterList varMap pfMap)) (last varMap))]
+parameterGroupEval (Parameter_groupBool stringArray) varMap parameterList pfMap =    (take ((length varMap) -1) varMap) 
+    ++ [(Map.insert (head stringArray) (fst(parameterListEval parameterList varMap pfMap)) (last varMap))]
+
+-- forStatement_eval (ForTo identifier expressionIn expressionF statement) varMap pfMap= 
+--      ((fst(forStatement_evalHelper identifier (toInt(fst(expressionEval expressionF varMap pfMap))) statement 
+--      (varMap ++ [(Map.insert(identifier) ((fst(expressionEval expressionIn varMap pfMap))) (last varMap))]) pfMap)), varMap)
+
+-- assignmentStatementEval (AssignmentStatementMain variable expression ) varMap pfMap = (take ((length varMap) -1) varMap) 
+--     ++ [(Map.insert (variableEval variable) ((fst(expressionEval expression varMap pfMap))) (last varMap))]
+-- assignmentStatementEval (AssignmentStatementValue variable value ) varMap pfMap = (take ((length varMap) -1) varMap) 
+--     ++ [(Map.insert (variableEval variable) ((value)) (last varMap))]
 
 
 ---------------------------------------------DID NOT ADD FUNCTIONALITY TO "Dopower" YET Maybe havnt tested it yet ---------------------------------------------------
@@ -163,13 +199,13 @@ actualParameterEval (ActualParameterMultiple actualParameter expression) varMap 
 
 parameterListEval :: ParameterList -> VariableMap -> FunctionAndProcedureMap -> (Val, VariableMap)
 parameterListEval (ParameterListSingle x) varMap pfMap = (fst(actualParameterEval x varMap  pfMap), snd(actualParameterEval x varMap pfMap ))
-parameterListEval (ParameterListMulitiple y x) varMap pfMap = ((Id ((valToStr (fst(parameterListEval y varMap pfMap))++ valToStr (fst(actualParameterEval x varMap pfMap))))), varMap)
+parameterListEval (ParameterListMulitiple y x) varMap pfMap = ((Id ((valToStr (fst(parameterListEval y varMap pfMap))++ valToStr (fst(actualParameterEval x varMap pfMap))))), snd(parameterListEval y varMap pfMap))
 
 procedureStatementEval :: ProcedureStatement -> VariableMap-> FunctionAndProcedureMap -> (Val, VariableMap)
 procedureStatementEval (MultiProcedureStatement "writeln" x) varMap  pfMap= ( (Id( (valToStr(fst(parameterListEval x varMap pfMap)) ++ "#&#!" )) ), snd(parameterListEval x varMap pfMap))
 procedureStatementEval (SingleProcedureStatement str) varMap  pfMap= ((Real (0.11)), varMap)
-procedureStatementEval (MultiProcedureStatement str x) varMap  pfMap=((fst(procedureOrFunctionDeclarationEval (fromJust(Map.lookup  ((str)) pfMap)) varMap pfMap))
-    , varMap)
+procedureStatementEval (MultiProcedureStatement str x) varMap  pfMap=((fst(procedureOrFunctionDeclarationEval (fromJust(Map.lookup  ((str)) pfMap)) varMap pfMap x))
+    , (snd(procedureOrFunctionDeclarationEval (fromJust(Map.lookup  ((str)) pfMap)) varMap pfMap x)))
 
 simpleStatementEval :: SimpleStatement -> VariableMap -> FunctionAndProcedureMap -> (Val, VariableMap)
 simpleStatementEval (PS ps) varMap  pfMap= (fst(procedureStatementEval ps varMap pfMap), snd(procedureStatementEval ps varMap pfMap))
@@ -221,10 +257,10 @@ caseStatementEval (Case expression case_list) varMap pfMap=  ((if  (fst(expressi
                                                             then ((valToStr (snd(head(fst(caseListElements_eval case_list varMap pfMap))))), snd(caseListElements_eval case_list varMap pfMap))
                                                             else ((fst(caseStatementEval (CaseBreakDown expression (removeIndex (fst(caseListElements_eval case_list varMap pfMap)) 1))varMap  pfMap)),snd(caseListElements_eval case_list varMap pfMap))
                                                             ))
-caseStatementEval (CaseBreakDown expression case_list) varMap pfMap=  ((if  (fst(( expressionEval expression varMap pfMap)) == (fst(head (case_list)))) 
-                                                            then (valToStr(snd(head(case_list))))
-                                                             else (fst(caseStatementEval (CaseBreakDown expression(removeIndex case_list 1)) varMap  pfMap))
-                                                            ), varMap)
+caseStatementEval (CaseBreakDown expression case_list) varMap pfMap=  (((if  (fst(( expressionEval expression varMap pfMap)) == (fst(head (case_list)))) 
+                                                            then ((valToStr(snd(head(case_list)))))
+                                                            else (fst(caseStatementEval (CaseBreakDown expression(removeIndex case_list 1)) varMap  pfMap))
+                                                            )), (snd(caseStatementEval (CaseBreakDown expression(removeIndex case_list 1)) varMap  pfMap)))
 
 conditionalStatementEval :: ConditionalStatement -> VariableMap->FunctionAndProcedureMap -> (Val, VariableMap)
 conditionalStatementEval (ConditionalStatementIf ifStatement) varMap  pfMap= ((Id (fst(ifStatementEval ifStatement varMap pfMap))), snd(ifStatementEval ifStatement varMap pfMap))
@@ -317,14 +353,14 @@ procedureAndFunctionDeclarationPartEval (Declaration p) pfMap = (Map.insert (pro
 
 
 
-blockEval :: Block -> [String]
-blockEval (BlockCopoundStatement s ) = fst(statementsEval s [Map.empty] Map.empty) 
-blockEval (BlockVariableDeclarationPart b s) = fst(statementsEval s ([blockOptionsEval b]) Map.empty)
-blockEval (Block_Method p s) = fst(statementsEval s [Map.empty] (procedureAndFunctionDeclarationPartEval p  Map.empty))
-blockEval (Block_Variable_Method b p s) = fst(statementsEval s ([blockOptionsEval b]) (procedureAndFunctionDeclarationPartEval p Map.empty))
+blockEval :: Block -> VariableMap->FunctionAndProcedureMap  -> ([String], VariableMap) 
+blockEval (BlockCopoundStatement s ) varMap pfMap = (fst(statementsEval s varMap pfMap), varMap)
+blockEval (BlockVariableDeclarationPart b s) varMap pfMap = (fst(statementsEval s ([blockOptionsEval b]) pfMap), snd(statementsEval s ([blockOptionsEval b]) pfMap))
+blockEval (Block_Method p s) varMap pfMap = (fst(statementsEval s varMap (procedureAndFunctionDeclarationPartEval p  pfMap)) , snd(statementsEval s varMap (procedureAndFunctionDeclarationPartEval p  pfMap)))
+blockEval (Block_Variable_Method b p s) varMap pfMap = (fst(statementsEval s ([blockOptionsEval b]) (procedureAndFunctionDeclarationPartEval p pfMap)), snd(statementsEval s ([blockOptionsEval b]) (procedureAndFunctionDeclarationPartEval p pfMap)))
 
 interpret :: Program -> String
 -- TODO: write the interpreter
-interpret (ProgramBlock programheading block) = (replace ( removePunc2 ((concat(blockEval block))) ) "#&#!" "\n")
+interpret (ProgramBlock programheading block) = (replace ( removePunc2 ((concat(fst( blockEval block [Map.empty] Map.empty)))) ) "#&#!" "\n")
 
 interpret _ = "Not implemented"
