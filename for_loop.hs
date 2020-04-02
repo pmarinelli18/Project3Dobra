@@ -1,6 +1,49 @@
-replace :: Eq a => [a] -> [a] -> [a] -> [a]
-replace [] _ _ = []
-replace s find repl =
-    if take (length find) s == find
-        then repl ++ (replace (drop (length find) s) find repl)
-        else [head s] ++ (replace (tail s) find repl)
+
+
+    interpret,
+    
+    ,
+    functionDesignatorEval,
+    procedureOrFunctionDeclarationEval,
+    ,
+                                                    factorEval,
+    ,
+    termEval,
+    simpleExpressionEval,
+    expressionEval,
+    actualParameterEval,
+    parameterListEval,
+    procedureStatementEval,
+    simpleStatementEval,
+    assignmentStatementEval,
+    assignmentStatementEval,
+    ifStatementEval,
+    caseListElements_eval,
+    caseListElement_eval,
+    constList_eval,
+    constant_eval,
+    removeIndex,
+    caseStatementEval,
+    conditionalStatementEval,
+    structuredStatementEval,
+    repetetiveStatement_eval,
+    forStatement_eval,
+    forStatement_evalHelper,
+    whileStatement_eval,
+    unlabelledStatementEval,
+    statementEval,
+    statementsEval,
+    variableDeclarationEval,
+    variableDeclarationPartMultipleEval,
+    variableDeclarationPartEval,
+    blockOptionsEval,
+    procedureDeclarationEvalString,
+    functionDeclarationEvalString,
+    procedureOrFunctionDeclarationEvalString,
+    procedureAndFunctionDeclarationPartEval,
+    blockEval
+
+
+
+
+

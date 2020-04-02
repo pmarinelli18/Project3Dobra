@@ -1,7 +1,5 @@
 module Pascal.Interpret 
 (
-    VariableMap,
-    FunctionAndProcedureMap,
     interpret,
     unsignedNumberEval,
     unsignedConstantEval,
