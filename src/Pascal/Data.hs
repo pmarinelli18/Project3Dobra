@@ -289,7 +289,7 @@ data Statement =
     StatementUnlabelledStatement UnlabelledStatement
 
 data ProcedureStatement =
-    SingleProcedureStatement String
+    SingleProcedureStatement
     | MultiProcedureStatement String ParameterList
 
 data Program = 

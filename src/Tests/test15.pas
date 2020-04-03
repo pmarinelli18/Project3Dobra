@@ -8,12 +8,13 @@ begin
       begin
          a := a + 1;
          if a > 17 then
-         break
+          
+         writeln('more than to 17: ', a)
+         
          else
-         writeln('less than', a);
-         writeln('didnt break');
+         writeln('less than or equal to 17: ', a)
+         
       end;
       
-      writeln('value of a: ', a);
-      a := a+1;
+      writeln('scope works if a is 10: ', a)
 end.

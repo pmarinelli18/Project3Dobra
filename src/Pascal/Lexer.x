@@ -47,7 +47,7 @@ tokens :-
   [\(]|[\)]|begin|end|true|false        { tok_string     TokenK }
   [\(\.]|[\.\)]|nil|div|mod             { tok_string     TokenK }
   and|or|not|var|procedure|function     { tok_string     TokenK }
-  [\,]|[\;]|[\.]|program                { tok_string     TokenK }
+  [\,]|[\;]|[\.]|program|break          { tok_string     TokenK }
   if|then|else|case|of|while|do         { tok_string     TokenK }
   repeat|until|for|assign|to|downto     { tok_string     TokenK }
   with                                  { tok_string     TokenK }

@@ -7,6 +7,7 @@ o : bool;
 
 
 begin
+    writeln('if some tests dont make sense its because we did not imlement readln but Dobra said to implement the same tests');
     b := 1;
     a := 2;
     d:= true;

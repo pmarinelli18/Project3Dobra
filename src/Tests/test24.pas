@@ -8,13 +8,11 @@ var
 function display (t: real  ) : real ;
    
 begin
-   writeln(2);
    display := 2
 end;
 
 
 begin
-   display(t);
    writeln('Winthin the program exlocal');
    a := display(t);
    writeln(a)

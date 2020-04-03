@@ -152,7 +152,7 @@ variableEval (Var string) = string
 
 factorEval :: Factor -> VariableMap -> FunctionAndProcedureMap -> (Val, VariableMap)    --Add boolean to Val in Val.hs
 factorEval (FactorVariable variable) varMap  pfMap=     (( fromJust(Map.lookup  ((variableEval variable)) (last varMap))), varMap)
-factorEval (FactorExpression expression) varMap pfMap =  ((Real (2.0)), varMap)
+factorEval (FactorExpression expression) varMap pfMap =  (fst(expressionEval expression varMap pfMap), varMap)
 factorEval (FactorFD functionDesignator) varMap pfMap =  (fst(functionDesignatorEval functionDesignator varMap pfMap), snd(functionDesignatorEval functionDesignator varMap pfMap))
 factorEval (FactorUC unsignedConstant) varMap pfMap =  (fst(unsignedConstantEval unsignedConstant varMap pfMap), snd(unsignedConstantEval unsignedConstant varMap pfMap))
 factorEval (FactorSe set) varMap pfMap = ((Real (5.0)), varMap)
@@ -205,7 +205,7 @@ parameterListEval (ParameterListMulitiple y x) varMap pfMap = ((Id ((valToStr (f
 
 procedureStatementEval :: ProcedureStatement -> VariableMap-> FunctionAndProcedureMap -> (Val, VariableMap)
 procedureStatementEval (MultiProcedureStatement "writeln" x) varMap  pfMap= ( (Id( (valToStr(fst(parameterListEval x varMap pfMap)) ++ "#&#!" )) ), snd(parameterListEval x varMap pfMap))
-procedureStatementEval (SingleProcedureStatement str) varMap  pfMap= ((Real (0.11)), varMap)
+procedureStatementEval (SingleProcedureStatement) varMap  pfMap= (Id "break", varMap)
 procedureStatementEval (MultiProcedureStatement str x) varMap  pfMap=((fst(procedureOrFunctionDeclarationEval (fromJust(Map.lookup  ((str)) pfMap)) varMap pfMap x))
     , (snd(procedureOrFunctionDeclarationEval (fromJust(Map.lookup  ((str)) pfMap)) varMap pfMap x)))
 
@@ -283,15 +283,28 @@ forStatement_eval (ForTo identifier expressionIn expressionF statement) varMap p
     ((fst(forStatement_evalHelper identifier (toInt(fst(expressionEval expressionF varMap pfMap))) statement 
     (varMap ++ [(Map.insert(identifier) ((fst(expressionEval expressionIn varMap pfMap))) (last varMap))]) pfMap)), varMap)
 
+check::[Char]->[Char]->Bool
+check [][]              =False
+check _[]               =False
+check []_               =False
+check(x:xs)(y:ys)
+ | y == x               =True -- this line
+ | otherwise            =check xs (y:ys)
+
 forStatement_evalHelper :: String -> Int -> Statement -> VariableMap -> FunctionAndProcedureMap -> (String, VariableMap)
 forStatement_evalHelper identifier expressionTo statement varMap  pfMap= 
     if(toInt( fromJust(Map.lookup  ((identifier)) (last varMap))) >= (expressionTo)) 
     then  ("", varMap)   
-    else ((fst(statementEval varMap statement pfMap )) ++ (fst(forStatement_evalHelper identifier expressionTo  statement 
+    else (
+    (if (check "break" (fst(statementEval varMap statement pfMap))  )
+    then
+    (fst(statementEval varMap statement pfMap ), snd(statementEval varMap statement pfMap ))
+    else
+    ((fst(statementEval varMap statement pfMap )) ++ (fst(forStatement_evalHelper identifier expressionTo  statement 
     (assignmentStatementEval (AssignmentStatementValue (Var identifier) 
     (Integer ((toInt( fromJust(Map.lookup  ((identifier)) (last varMap)))) + 1)))
-     (snd(statementEval varMap statement  pfMap)) pfMap) pfMap)), 
-    snd(forStatement_evalHelper identifier expressionTo  statement (snd(statementEval varMap statement  pfMap))  pfMap))
+    (snd(statementEval varMap statement  pfMap)) pfMap) pfMap))
+    , snd(forStatement_evalHelper identifier expressionTo  statement (snd(statementEval varMap statement  pfMap))  pfMap))))
                         -- else ( statementEval statement ++ (forStatement_eval (ForLoop identifier expressionIn expressionF  statement )) )
                          -- Real(toFloat(expressionEval expressionIn)+1)
 
@@ -320,7 +333,7 @@ statementsEval (StatementsMultiple x y) varMap pfMap = (concat[[fst(statementEva
 
 variableDeclarationEval :: VariableDeclaration -> Map.Map String Val -> Map.Map String Val
 variableDeclarationEval (VariableDeclarationMainBool str) varMap =    (Map.insert (head(str)) (Boolean True) varMap) --("Bool", Boolean True) varMap) 
-variableDeclarationEval (VariableDeclarationMainReal str) varMap =  (Map.insert (head(str)) (Real 1.0) varMap) --("Real", Boolean True) varMap) 
+variableDeclarationEval (VariableDeclarationMainReal str) varMap =  (Map.insert (head(str)) (Real 0.0) varMap) --("Real", Boolean True) varMap) 
 variableDeclarationEval (VariableDeclarationMainString str) varMap =  (Map.insert (head(str)) (Id "") varMap) --("String", Boolean True) varMap) 
 
 

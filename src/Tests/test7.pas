@@ -7,47 +7,11 @@ answer : bool;
 
 
 begin
+    writeln('cos of 1: ');
+    writeln(cos(1));
+    writeln('sin of 1: ');
+    writeln(sin(1));
+    writeln('sqrt of 1: ');
+    writeln(sqrt(1))
 
-    writeln('the number is equal to 5');
-    writeln('Is the number equal to 5');
-    writeln('True or False');
-    answer := true;
-
-    if 6 > 6 then
-        count:= count + 1
-    else
-        count:= count - 1;
-
-    writeln('multiply by 5');
-    writeln('Is the number equal to 35');
-    writeln('True or False');
-    answer := false;
-    
-    if decision = answer then
-        count:=count+1
-    else
-        count:=count-1;
-    
-    writeln('divide by 25');
-    writeln('Is the number equal to 5');
-    writeln('True or False');
-    answer := false;
-
-    if decision=answer then
-        count:=count+1
-    else
-        count:=count-1;
-    
-    writeln('logarithm of answer');
-    writeln('Is the number equal to 1');
-    writeln('True or False');
-    answer := false;
-
-    if decision=answer then
-        count:=count+1
-    else
-        count:=count-1;
-
-    writeln('Your score is ' , count);
-    writeln('This is test7')
 end.

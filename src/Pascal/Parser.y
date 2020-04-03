@@ -50,6 +50,7 @@ import Pascal.Lexer
         ';'             { Token _ (TokenK ";") }
         '.'             { Token _ (TokenK ".") }
         'program'       { Token _ (TokenK "program") }
+        'break'         { Token _ (TokenK "break") }
         'procedure'     { Token _ (TokenK "procedure") }
         'function'     { Token _ (TokenK "function") }
         'div'           { Token _ (TokenK "div") }
@@ -248,7 +249,7 @@ AssignmentStatement :: {AssignmentStatement}
     :Variable ':=' Expression {AssignmentStatementMain $1 $3}
 
 ProcedureStatement :: {ProcedureStatement}
-    : Identifier {SingleProcedureStatement $1 }
+    : 'break' {SingleProcedureStatement }
     |Identifier '(' ParameterList ')' { MultiProcedureStatement $1 $3 }
 
 ParameterList :: {ParameterList}
