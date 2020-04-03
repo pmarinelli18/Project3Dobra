@@ -32,18 +32,6 @@ main = hspec $ do
       unsignedConstantEval (Str "something") [Map.empty] Map.empty `shouldBe` (Id "something", [Map.empty])
       unsignedConstantEval (Nil) [Map.empty] Map.empty `shouldBe` ((Id ("Nil")), [Map.empty])
 
---       unsignedConstantEval :: UnsignedConstant -> VariableMap -> FunctionAndProcedureMap -> (Val, VariableMap)
--- unsignedConstantEval (UN unsignedNumber) varMap  pfMap= (unsignedNumberEval unsignedNumber, varMap)
--- unsignedConstantEval (Str str) varMap  pfMap= ((Id str), varMap)
--- unsignedConstantEval (Nil) varMap pfMap= ((Id ("Nil")), varMap)
-
-
-
---  describe "Expression Eval" $ do
---    it "Expression Eval" $ do
---      expressionEval (ExpressionSingle simpleExpression ) varMap  pfMap= (fst(simpleExpressionEval simpleExpression varMap pfMap), snd(simpleExpressionEval simpleExpression varMap pfMap))
-
-
 
   describe "Signed Factor Eval" $ do
     it "Signed Factor Eval Negative" $ do
@@ -52,9 +40,20 @@ main = hspec $ do
       signedFactorEval (SignedFactorPlus (FactorUC (UN (UI 5)) )) [Map.empty] Map.empty `shouldBe` (Integer(5), [Map.empty])
     it "Signed Factor Eval default" $ do
       signedFactorEval (SignedFactorDefault (FactorUC (UN (UI 5))) ) [Map.empty] Map.empty `shouldBe`(Integer(5), [Map.empty])
-      
+
+  
+
+  describe "Constant Eval" $ do
+    it "Contant Eval " $ do
+      constant_eval (ConstantUN (UI 5)) [Map.empty] Map.empty `shouldBe`(Integer(5), [Map.empty])
 
 
+  describe "Constant Eval" $ do
+    it "Contant Eval " $ do
+      constList_eval (ConstListSingle (ConstantUN (UI 5))) [Map.empty] Map.empty `shouldBe`(Integer(5), [Map.empty])
+      constant_eval (ConstantUN (UI 5)) [Map.empty] Map.empty `shouldBe`(Integer(5), [Map.empty])
+  
+  
   describe "Factor Eval" $ do
     it "Factor Eval variable" $ do
       let myMap = Map.fromList [("hello", Real(1)), ("hi", Real(32))]
@@ -88,8 +87,8 @@ main = hspec $ do
       simpleExpressionEval (SingleExpressionTermMultipleAdd (TermMultipleMult (  SignedFactorMinus ( FactorUC (UN (UI 25)))) ( TermSingle (  SignedFactorPlus ( FactorUC (UN (UI 20)))) )) (SingleExpressionTermSingle (TermSingle (  SignedFactorPlus ( FactorUC (UN (UI 45))))) ) )  [Map.empty] Map.empty `shouldBe`  (Real (-455.0),[Map.empty])
     it "Simple Dub Expression" $ do
       simpleExpressionEval (SingleExpressionTermMultipleSub (TermMultipleDiv (  SignedFactorMinus ( FactorUC (UN (UI 2)))) ( TermSingle (  SignedFactorPlus ( FactorUC (UN (UI 4)))) ))  (SingleExpressionTermMultipleAdd (TermMultipleMult (  SignedFactorMinus ( FactorUC (UN (UI 25)))) ( TermSingle (  SignedFactorPlus ( FactorUC (UN (UI 20)))) )) (SingleExpressionTermSingle (TermSingle (  SignedFactorPlus ( FactorUC (UN (UI 25))))) ) )) [Map.empty] Map.empty `shouldBe`  ( Real 474.5,[Map.empty])
-      
--- simpleExpressionEval (SingleExpressionTermMultipleOr term simpleExpression) varMap  pfMap= ((Boolean((toBool (fst(termEval term varMap pfMap))) || (toBool (fst(simpleExpressionEval simpleExpression varMap pfMap))))), varMap)
+      -- let myMap = Map.fromList [("Baby", Integer(35)), ("hello", Real(1)), ("hi", Real(32))]
+      -- simpleExpressionEval (SingleExpressionTermMultipleOr (TermSingle (  SignedFactorMinus ( FactorUC (UN (UI 5))))) ) [Map.empty] Map.empty `shouldBe`  ( Real 474.5,[Map.empty])
 
   describe "Expression Evaluator" $ do
     it "Expression Evaluator" $ do
@@ -124,13 +123,26 @@ main = hspec $ do
       parameterListEval (ParameterListMulitiple (ParameterListSingle (ActualParameterSingle (ExpressionSingle (SingleExpressionTermSingle (TermSingle (  SignedFactorPlus ( FactorUC (UN (UI 35))))) )) ) )  (ActualParameterMultiple (ActualParameterSingle (ExpressionSingle (SingleExpressionTermSingle (TermSingle (  SignedFactorPlus ( FactorUC (UN (UI 35))))) )) ) (ExpressionMultipleNE (SingleExpressionTermSingle (TermSingle (  SignedFactorPlus ( FactorUC (UN (UI 45)))))) (ExpressionSingle (SingleExpressionTermSingle (TermSingle (  SignedFactorPlus ( FactorUC (UN (UI 35))))) )))) ) [Map.empty] Map.empty `shouldBe` (Id "351.4",[Map.empty])
 
 
+
+
+  describe "function and Designator Eval" $ do
+    it "Cose operation " $ do
+      functionDesignatorEval (FDesignate "cos" (ParameterListSingle (ActualParameterSingle (ExpressionSingle (SingleExpressionTermSingle (TermSingle (  SignedFactorPlus ( FactorUC (UN (UI 90))))) )) ) )) [Map.empty] Map.empty `shouldBe` (Real (-0.44807363),[Map.empty])
+    it "Sine operation " $ do
+      functionDesignatorEval (FDesignate "sin" (ParameterListSingle (ActualParameterSingle (ExpressionSingle (SingleExpressionTermSingle (TermSingle (  SignedFactorPlus ( FactorUC (UN (UI 45))))) )) ) )) [Map.empty] Map.empty `shouldBe` (Real 0.8509035,[Map.empty])
+    it "Sqrt operation " $ do
+      functionDesignatorEval (FDesignate "sqrt" (ParameterListSingle (ActualParameterSingle (ExpressionSingle (SingleExpressionTermSingle (TermSingle (  SignedFactorPlus ( FactorUC (UN (UI 81))))) )) ) )) [Map.empty] Map.empty `shouldBe` (Real 9,[Map.empty])
+    it "Ln operation " $ do
+      functionDesignatorEval (FDesignate "ln" (ParameterListSingle (ActualParameterSingle (ExpressionSingle (SingleExpressionTermSingle (TermSingle (  SignedFactorPlus ( FactorUC (UN (UI 10))))) )) ) )) [Map.empty] Map.empty `shouldBe` (Real 2.3025851,[Map.empty])
+
+
+
   describe "Procedure Statemnt List Evaluator" $ do
     it "Procedure Statemnt Single" $ do
       procedureStatementEval (MultiProcedureStatement "writeln" (ParameterListSingle (ActualParameterSingle (ExpressionSingle (SingleExpressionTermSingle (TermSingle (  SignedFactorPlus ( FactorUC (UN (UI 35))))) )) ) ) ) [Map.empty] Map.empty `shouldBe`  (Id "35#&#!",[Map.empty])
     it "Procedure Statemnt null string" $ do
       procedureStatementEval (SingleProcedureStatement "Hello") [Map.empty] Map.empty `shouldBe` ((Real (0.11)), [Map.empty] )
 
---procedureStatementEval (MultiProcedureStatement str x) varMap  pfMap=((fst(procedureOrFunctionDeclarationEval (fromJust(Map.lookup  ((str)) pfMap)) varMap pfMap)), varMap)
 
   describe "Procedure Statemnt List Evaluator" $ do
     it "Procedure Statemnt Single" $ do
@@ -143,10 +155,8 @@ main = hspec $ do
     it "Assign value " $ do
       let myMap = Map.fromList [("Baby", Integer(35)), ("hello", Real(1)), ("hi", Real(32))]
       assignmentStatementEval (AssignmentStatementMain (Var "Baby") (ExpressionSingle (SingleExpressionTermSingle (TermSingle (  SignedFactorPlus ( FactorUC (UN (UI 35))))) )) ) [myMap] Map.empty `shouldBe`  [  myMap ] --[fromList [("hello",Real 1.0),("hi",Real 32.0)]]
-    --it "Assign Multiple value " $ do
-      --let myMap = Map.fromList [("Baby", Integer(35)), ("hello", Real(1)), ("hi", Real(32))]
-      --assignmentStatementEval (AssignmentStatementValue (Var "Baby") 55 ) [myMap] Map.empty  = (take ((length varMap) -1) varMap) ++ [(Map.insert (variableEval variable) ((value)) (last varMap))]
-      -- assignmentStatementEval (AssignmentStatementValue variable value ) varMap pfMap = (take ((length varMap) -1) varMap)  ++ [(Map.insert (variableEval variable) ((value)) (last varMap))]
+
+      
 
   describe "Simple Statemnt  Evaluator" $ do
     it "Simple value with assigment" $ do
@@ -163,7 +173,6 @@ main = hspec $ do
     it "Simple Unlabelled Statement" $ do
       let myMap = Map.fromList [("Baby", Integer(35)), ("hello", Real(1)), ("hi", Real(32))]
       unlabelledStatementEval (UnlabelledStatementStructuredStatement (StructuredStatementCompoundStatement (StatementsSingle (((StatementUnlabelledStatement (UnlabelledStatementSimpleStatement (SimpleStatementAssignment (AssignmentStatementMain (Var "Baby") (ExpressionSingle (SingleExpressionTermSingle (TermSingle (  SignedFactorPlus ( FactorUC (UN (UI 35))))) )) ) ))) )) ) ) ) [myMap] Map.empty  `shouldBe` (Id "\"\"",[myMap])
-
 
 
 
@@ -185,24 +194,82 @@ main = hspec $ do
 
 
 
-  describe "Structured Statement Statement  Evaluator" $ do
+  describe "Structured Statement Evaluator" $ do
     it "Compound Statement" $ do
       let myMap = Map.fromList [("Baby", Integer(35)), ("hello", Real(1)), ("hi", Real(32))]
       structuredStatementEval (StructuredStatementCompoundStatement (StatementsSingle (((StatementUnlabelledStatement (UnlabelledStatementSimpleStatement (SimpleStatementAssignment (AssignmentStatementMain (Var "Baby") (ExpressionSingle (SingleExpressionTermSingle (TermSingle (  SignedFactorPlus ( FactorUC (UN (UI 35))))) )) ) ))) )) ) ) [myMap] Map.empty  `shouldBe` (Id "\"\"",[myMap])
-    -- it "Compound Statement" $ do
-    --   let myMap = Map.fromList [("Baby", Integer(35)), ("hello", Real(1)), ("hi", Real(32))]
-    --   structuredStatementEval (  StructuredStatementConditionalStatement conditionalStatement) varMap  pfMap= (fst(conditionalStatementEval conditionalStatement varMap pfMap), snd(conditionalStatementEval conditionalStatement varMap pfMap))
-
--- structuredStatementEval :: StructuredStatement -> VariableMap -> FunctionAndProcedureMap -> (Val, VariableMap)
--- 
--- structuredStatementEval (  StructuredStatementConditionalStatement conditionalStatement) varMap  pfMap= (fst(conditionalStatementEval conditionalStatement varMap pfMap), snd(conditionalStatementEval conditionalStatement varMap pfMap))
--- structuredStatementEval (StructuredStatementRepetetiveStatement repetetiveStatement)varMap  pfMap= repetetiveStatement_eval repetetiveStatement varMap pfMap
+    it "Compound Statement" $ do
+      let myMap = Map.fromList [("Baby", Integer(35)), ("hello", Real(1)), ("hi", Real(32))]
+      structuredStatementEval (  StructuredStatementConditionalStatement (ConditionalStatementIf (IfState (ExpressionMultipleLT (SingleExpressionTermSingle (TermSingle (  SignedFactorPlus ( FactorUC (UN (UI 45)))))) (ExpressionSingle (SingleExpressionTermSingle (TermSingle (  SignedFactorPlus ( FactorUC (UN (UI 35))))) ))) (((StatementUnlabelledStatement (UnlabelledStatementSimpleStatement (SimpleStatementAssignment (AssignmentStatementMain (Var "Baby") (ExpressionSingle (SingleExpressionTermSingle (TermSingle (  SignedFactorPlus ( FactorUC (UN (UI 35))))) )) ) ))) ))))) [myMap] Map.empty  `shouldBe` (Id "",[myMap])
+    it "Repetitive Statement" $do
+      let myMap = Map.fromList [("Baby", Integer(35)), ("hello", Real(1)), ("hi", Real(32))]
+      structuredStatementEval (StructuredStatementRepetetiveStatement (RepetetiveStatementFor (ForTo "5" (ExpressionSingle (SingleExpressionTermSingle (TermSingle (  SignedFactorPlus ( FactorUC (UN (UI 15))))) )) (ExpressionSingle (SingleExpressionTermSingle (TermSingle (  SignedFactorPlus ( FactorUC (UN (UI 35))))) ))  (((StatementUnlabelledStatement (UnlabelledStatementSimpleStatement (SimpleStatementAssignment (AssignmentStatementMain (Var "Baby") (ExpressionSingle (SingleExpressionTermSingle (TermSingle (  SignedFactorPlus ( FactorUC (UN (UI 35))))) )) ) ))) )))) ) [myMap] Map.empty  `shouldBe` (Id "\"\"\"\"\"\"\"\"\"\"\"\"\"\"\"\"\"\"\"\"\"\"\"\"\"\"\"\"\"\"\"\"\"\"\"\"\"\"\"\"",[myMap])
 
 
--- unlabelledStatementEval :: UnlabelledStatement -> VariableMap->FunctionAndProcedureMap -> (Val, VariableMap)
--- 
--- unlabelledStatementEval (UnlabelledStatementStructuredStatement structuredStatement) varMap pfMap= (fst(structuredStatementEval structuredStatement varMap pfMap), snd(structuredStatementEval structuredStatement varMap pfMap))
 
+
+
+
+  describe "Repetitve Statement  Evaluator" $ do
+    it "For Statement" $ do
+      let myMap = Map.fromList [("Baby", Integer(35)), ("hello", Real(1)), ("hi", Real(32))]
+      repetetiveStatement_eval (RepetetiveStatementFor (ForTo "5" (ExpressionSingle (SingleExpressionTermSingle (TermSingle (  SignedFactorPlus ( FactorUC (UN (UI 15))))) )) (ExpressionSingle (SingleExpressionTermSingle (TermSingle (  SignedFactorPlus ( FactorUC (UN (UI 35))))) ))  (((StatementUnlabelledStatement (UnlabelledStatementSimpleStatement (SimpleStatementAssignment (AssignmentStatementMain (Var "Baby") (ExpressionSingle (SingleExpressionTermSingle (TermSingle (  SignedFactorPlus ( FactorUC (UN (UI 35))))) )) ) ))) )))) [myMap] Map.empty  `shouldBe` (Id "\"\"\"\"\"\"\"\"\"\"\"\"\"\"\"\"\"\"\"\"\"\"\"\"\"\"\"\"\"\"\"\"\"\"\"\"\"\"\"\"",[myMap])
+
+
+
+
+  describe "Variable  Evaluator" $ do
+    it "Variable Boolean " $ do
+      let extraMap = Map.fromList [("whale",Boolean True)]
+      variableDeclarationEval (VariableDeclarationMainBool ["whale"]) Map.empty `shouldBe` extraMap
+    it "Variable String " $ do
+      let extraMap = Map.fromList [("Mario",Real 1.0)]
+      variableDeclarationEval (VariableDeclarationMainReal ["Mario"]) Map.empty `shouldBe` extraMap
+    it "Variable String " $ do
+      let extraMap = Map.fromList [("Luigui",Id "")]
+      variableDeclarationEval (VariableDeclarationMainString ["Luigui"]) Map.empty `shouldBe` extraMap
+
+
+  describe "Variable Multiple Evaluator" $ do
+    it "Variable Single " $ do
+      let extraMap = Map.fromList [("Mario",Real 1.0)]
+      variableDeclarationPartMultipleEval (VariableDeclarationPartMultipleSingle  (VariableDeclarationMainReal ["Mario"]) ) Map.empty `shouldBe` extraMap
+    it "Variable Multiple " $ do
+      let extraMap = Map.fromList [("Luigui",Id ""), ("Mario",Real 1.0)]
+      variableDeclarationPartMultipleEval (VariableDeclarationPartMultipleMultiple (VariableDeclarationMainString ["Luigui"])  (VariableDeclarationPartMultipleSingle  (VariableDeclarationMainReal ["Mario"]) )) Map.empty  `shouldBe` extraMap
+
+  describe "Variable Part Evaluator" $ do
+    it "Single  Variable" $ do
+      let extraMap = Map.fromList [("whale",Boolean True)]
+      variableDeclarationPartEval (VariableDeclarationPartSingle (VariableDeclarationMainBool ["whale"]) ) Map.empty `shouldBe` extraMap
+    it "Multiples Variables " $ do
+      let extraMap = Map.fromList [("Bowser",Real 1.0),("Mario",Real 1.0),("Peach",Id "")]
+      variableDeclarationPartEval (VariableDeclarationPartMultiple (VariableDeclarationMainReal ["Mario"]) (VariableDeclarationPartMultipleMultiple (VariableDeclarationMainString ["Peach"])  (VariableDeclarationPartMultipleSingle  (VariableDeclarationMainReal ["Bowser"]) ))) Map.empty `shouldBe` extraMap
+
+
+  describe "Block variable Evaluator" $ do
+    it "Block Eval" $ do
+      let extraMap = Map.fromList [("Bowser",Real 1.0),("Mario",Real 1.0),("Peach",Id "")]
+      blockOptionsEval (BlockOptionsVariableDeclarationPart (VariableDeclarationPartMultiple (VariableDeclarationMainReal ["Mario"]) (VariableDeclarationPartMultipleMultiple (VariableDeclarationMainString ["Peach"])  (VariableDeclarationPartMultipleSingle  (VariableDeclarationMainReal ["Bowser"]) ))))`shouldBe` extraMap
+
+
+    describe "Actual Block Evaluator" $ do
+    it "Simple Block" $ do
+      blockEval (BlockCopoundStatement (StatementsMultiple   (((StatementUnlabelledStatement (UnlabelledStatementSimpleStatement (SimpleStatementAssignment (AssignmentStatementMain (Var "Baby") (ExpressionSingle (SingleExpressionTermSingle (TermSingle (  SignedFactorPlus ( FactorUC (UN (UI 35))))) )) ) ))) ))   (StatementsSingle (((StatementUnlabelledStatement (UnlabelledStatementSimpleStatement (SimpleStatementAssignment (AssignmentStatementMain (Var "Baby") (ExpressionSingle (SingleExpressionTermSingle (TermSingle (  SignedFactorPlus ( FactorUC (UN (UI 35))))) )) ) ))) )) ))  ) `shouldBe` ["\"\"","\"\""]
+    it "Multiple Block" $ do
+      blockEval (BlockVariableDeclarationPart (BlockOptionsVariableDeclarationPart (VariableDeclarationPartMultiple (VariableDeclarationMainReal ["Mario"]) (VariableDeclarationPartMultipleMultiple (VariableDeclarationMainString ["Peach"])  (VariableDeclarationPartMultipleSingle  (VariableDeclarationMainReal ["Bowser"]) )))) (StatementsMultiple   (((StatementUnlabelledStatement (UnlabelledStatementSimpleStatement (SimpleStatementAssignment (AssignmentStatementMain (Var "Baby") (ExpressionSingle (SingleExpressionTermSingle (TermSingle (  SignedFactorPlus ( FactorUC (UN (UI 35))))) )) ) ))) ))   (StatementsSingle (((StatementUnlabelledStatement (UnlabelledStatementSimpleStatement (SimpleStatementAssignment (AssignmentStatementMain (Var "Baby") (ExpressionSingle (SingleExpressionTermSingle (TermSingle (  SignedFactorPlus ( FactorUC (UN (UI 35))))) )) ) ))) )) )) ) `shouldBe` ["\"\"","\"\""]
+
+-- blockEval :: Block -> [String]
+-- blockEval (Block_Method p s) = fst(statementsEval s [Map.empty] (procedureAndFunctionDeclarationPartEval p  Map.empty))
+-- blockEval (Block_Variable_Method b p s) = fst(statementsEval s ([blockOptionsEval b]) (procedureAndFunctionDeclarationPartEval p Map.empty))
+
+
+
+  describe "procedure Declaration Evaluator" $ do
+    it "Simple Procedure" $ do
+      procedureDeclarationEvalString (Procedure_no_identifier "Procedure" (BlockCopoundStatement (StatementsMultiple   (((StatementUnlabelledStatement (UnlabelledStatementSimpleStatement (SimpleStatementAssignment (AssignmentStatementMain (Var "Baby") (ExpressionSingle (SingleExpressionTermSingle (TermSingle (  SignedFactorPlus ( FactorUC (UN (UI 35))))) )) ) ))) ))   (StatementsSingle (((StatementUnlabelledStatement (UnlabelledStatementSimpleStatement (SimpleStatementAssignment (AssignmentStatementMain (Var "Baby") (ExpressionSingle (SingleExpressionTermSingle (TermSingle (  SignedFactorPlus ( FactorUC (UN (UI 35))))) )) ) ))) )) ))  )) `shouldBe` "Procedure"
+    -- it "Procedure with Parameter"
+    --   procedureDeclarationEvalString (Procedure_with_identifier "Procedure I" formalParameterList block) = string
 
 
 
@@ -217,6 +284,47 @@ main = hspec $ do
 
 
 
+  describe "Conditional statement List " $ do
+    it "Conditional Statemnt if" $ do
+      let myMap = Map.fromList [("Baby", Integer(35)), ("hello", Real(1)), ("hi", Real(32))]
+      conditionalStatementEval (ConditionalStatementIf (IfState (ExpressionMultipleLT (SingleExpressionTermSingle (TermSingle (  SignedFactorPlus ( FactorUC (UN (UI 45)))))) (ExpressionSingle (SingleExpressionTermSingle (TermSingle (  SignedFactorPlus ( FactorUC (UN (UI 35))))) ))) (((StatementUnlabelledStatement (UnlabelledStatementSimpleStatement (SimpleStatementAssignment (AssignmentStatementMain (Var "Baby") (ExpressionSingle (SingleExpressionTermSingle (TermSingle (  SignedFactorPlus ( FactorUC (UN (UI 35))))) )) ) ))) )))) [myMap] Map.empty `shouldBe`  (Id "",[ myMap])
+    it "Conditional Statemnt case" $ do
+      let myMap = Map.fromList [("Baby", Integer(35)), ("hello", Real(1)), ("hi", Real(32))]
+      conditionalStatementEval (ConditionalStatementCase (Case (ExpressionSingle (SingleExpressionTermSingle (TermSingle (  SignedFactorPlus ( FactorUC (UN (UR 1))))) )) (CaseListElementsSingle (CaseListElementSingle (ConstListSingle (ConstantUN (UR 1))) (((StatementUnlabelledStatement (UnlabelledStatementSimpleStatement (PS (MultiProcedureStatement "writeln" (ParameterListSingle (ActualParameterSingle (ExpressionSingle (SingleExpressionTermSingle (TermSingle (  SignedFactorPlus ( FactorUC (UN (UR 35))))) )) ) ) )))) ))) ))) [myMap] Map.empty `shouldBe`  (Id "\"\\\"35.0#&#!\\\"\"",[ myMap])
+
+  
+
+  describe "Case Statemnt element Evaluator" $ do
+    it "Case Statemnt Single" $ do
+      let myMap = Map.fromList [("Baby", Integer(35)), ("hello", Real(1)), ("hi", Real(32))]
+      caseListElement_eval (CaseListElementSingle (ConstListSingle (ConstantUN (UI 5))) (((StatementUnlabelledStatement (UnlabelledStatementSimpleStatement (SimpleStatementAssignment (AssignmentStatementMain (Var "Baby") (ExpressionSingle (SingleExpressionTermSingle (TermSingle (  SignedFactorPlus ( FactorUC (UN (UI 35))))) )) ) ))) ))) [myMap] Map.empty `shouldBe`  ((Integer 5,Id "\"\""),[myMap])
+
+
+
+  describe "Case Statemnt element Evaluator" $ do
+    it "Case Statemnt Single" $ do
+      let myMap = Map.fromList [("Baby", Integer(35)), ("hello", Real(1)), ("hi", Real(32))]
+      caseListElements_eval (CaseListElementsSingle (CaseListElementSingle (ConstListSingle (ConstantUN (UI 5))) (((StatementUnlabelledStatement (UnlabelledStatementSimpleStatement (SimpleStatementAssignment (AssignmentStatementMain (Var "Baby") (ExpressionSingle (SingleExpressionTermSingle (TermSingle (  SignedFactorPlus ( FactorUC (UN (UI 35))))) )) ) ))) ))) ) [myMap] Map.empty `shouldBe`([(Integer 5,Id "\"\"")],[myMap])
+    it "Case Statement Multiple" $ do
+      let myMap = Map.fromList [("Baby", Integer(35)), ("hello", Real(1)), ("hi", Real(32))]
+      caseListElements_eval (CaseListElementsMultiple (CaseListElementSingle (ConstListSingle (ConstantUN (UI 5))) (((StatementUnlabelledStatement (UnlabelledStatementSimpleStatement (SimpleStatementAssignment (AssignmentStatementMain (Var "Baby") (ExpressionSingle (SingleExpressionTermSingle (TermSingle (  SignedFactorPlus ( FactorUC (UN (UI 35))))) )) ) ))) ))) (CaseListElementsSingle (CaseListElementSingle (ConstListSingle (ConstantUN (UI 5))) (((StatementUnlabelledStatement (UnlabelledStatementSimpleStatement (SimpleStatementAssignment (AssignmentStatementMain (Var "Baby") (ExpressionSingle (SingleExpressionTermSingle (TermSingle (  SignedFactorPlus ( FactorUC (UN (UI 35))))) )) ) ))) ))) ) ) [myMap] Map.empty `shouldBe`([(Integer 5,Id "\"\""),(Integer 5,Id "\"\"")],[myMap])
+
+
+
+
+  describe "Pure Case Statemnt element Evaluator" $ do
+    it "Case Statemnt Single" $ do
+      let myMap = Map.fromList [("Baby", Integer(35)), ("hello", Real(1)), ("hi", Real(32))]
+      caseStatementEval (Case (ExpressionSingle (SingleExpressionTermSingle (TermSingle (  SignedFactorPlus ( FactorUC (UN (UR 1))))) )) (CaseListElementsSingle (CaseListElementSingle (ConstListSingle (ConstantUN (UR 1))) (((StatementUnlabelledStatement (UnlabelledStatementSimpleStatement (PS (MultiProcedureStatement "writeln" (ParameterListSingle (ActualParameterSingle (ExpressionSingle (SingleExpressionTermSingle (TermSingle (  SignedFactorPlus ( FactorUC (UN (UR 35))))) )) ) ) )))) ))) )) [myMap] Map.empty `shouldBe`("\"\\\"35.0#&#!\\\"\"",[myMap])
+      -- caseStatementEval (CaseBreakDown (ExpressionSingle (SingleExpressionTermSingle (TermSingle (  SignedFactorPlus ( FactorUC (UN (UR 1))))) ))  (CaseListElementsSingle (CaseListElementSingle (ConstListSingle (ConstantUN (UR 1))) (((StatementUnlabelledStatement (UnlabelledStatementSimpleStatement (PS (MultiProcedureStatement "writeln" (ParameterListSingle (ActualParameterSingle (ExpressionSingle (SingleExpressionTermSingle (TermSingle (  SignedFactorPlus ( FactorUC (UN (UR 35))))) )) ) ) )))) ))) )) [myMap] Map.empty `shouldBe`("\"\\\"35.0#&#!\\\"\"",[myMap])
+
+
+
+
+  describe "For statement List " $ do
+    it "For Statemnt" $ do
+      let myMap = Map.fromList [("Baby", Integer(35)), ("hello", Real(1)), ("hi", Real(32))]
+      forStatement_eval (ForTo "5" (ExpressionSingle (SingleExpressionTermSingle (TermSingle (  SignedFactorPlus ( FactorUC (UN (UI 15))))) )) (ExpressionSingle (SingleExpressionTermSingle (TermSingle (  SignedFactorPlus ( FactorUC (UN (UI 35))))) ))  (((StatementUnlabelledStatement (UnlabelledStatementSimpleStatement (SimpleStatementAssignment (AssignmentStatementMain (Var "Baby") (ExpressionSingle (SingleExpressionTermSingle (TermSingle (  SignedFactorPlus ( FactorUC (UN (UI 35))))) )) ) ))) ))) [myMap] Map.empty `shouldBe`  ("\"\"\"\"\"\"\"\"\"\"\"\"\"\"\"\"\"\"\"\"\"\"\"\"\"\"\"\"\"\"\"\"\"\"\"\"\"\"\"\"",[ myMap])
 
 
 --myMap = Data.Map.fromList [("hello", Real(1)), ("hi", Real(32))]
