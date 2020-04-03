@@ -1,27 +1,16 @@
-program exLocal;
+program fibonacciTest;
 var
-   a: real; 
-   b: real;
-   c: real;
-procedure display();
-var
-   a: real; 
-   b: real;
-   c: real;
+    a: real;
+
+procedure multiplyByThree(a: real );
 begin
-   a :=10;
-   b :=20;
-   c := a + b;
-   writeln('Winthin the procedure display');
-   writeln('value of a = ', a ,' b =  ',  b,' and c = ', c)
+   writeln(a * 3)
 end;
 begin
-   a:=100;
-   writeln(a);
-   b:=200;
-   writeln(b);
-   c:= a + b;
-   writeln('Winthin the program exlocal');
-   writeln('value of a = ', a ,' b =  ',  b,' and c = ', c);
-   display()
+   writeln('before 3 multiply by three');
+   multiplyByThree(3);
+   writeln('before 5 multiply by three');
+   multiplyByThree(5);
+   writeln('before 8 multiply by three');
+   multiplyByThree(8)
 end.

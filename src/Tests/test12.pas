@@ -2,14 +2,13 @@ program fibonacciTest;
 var
     a: real;
 
-function fibonacci(n: real): real;
+function fibonacci(n: real ) : real;
 begin
-    
 	if n > 1 then
 	begin
-		fibonacci := fibonacci(n - 2) + fibonacci(n - 1);
         
-    break;
+		fibonacci := fibonacci(n - 2) + fibonacci(n - 1)
+        
 	end
 	else
 	begin
@@ -19,17 +18,13 @@ end
 ;
 
 begin
- writeln('hi');
-    a:= fibonacci(8);
-    writeln('fibonacci 8',a);
-        a:= fibonacci(3);
-    writeln('fibonacci3',a);
-        a:= fibonacci(5);
-    writeln('fibonacci5',a);
-        a:= fibonacci(10);
-    writeln('fibonacci10',a);
-        a:= fibonacci(2);
-    writeln('fibonacci2',a);
-        a:= fibonacci(1);
-    writeln('fibonacci1',a)
+ writeln('This is fibonacci of 11');
+    a:= fibonacci(11);
+    writeln(a);
+	writeln('This is fibonacci of 4');
+    a:= fibonacci(4);
+    writeln(a);
+	writeln('This is fibonacci of 7');
+    a:= fibonacci(7);
+    writeln(a)
 end.

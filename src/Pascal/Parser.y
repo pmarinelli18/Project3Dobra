@@ -50,6 +50,7 @@ import Pascal.Lexer
         ';'             { Token _ (TokenK ";") }
         '.'             { Token _ (TokenK ".") }
         'program'       { Token _ (TokenK "program") }
+        'break'         { Token _ (TokenK "break") }
         'procedure'     { Token _ (TokenK "procedure") }
         'function'     { Token _ (TokenK "function") }
         'div'           { Token _ (TokenK "div") }
@@ -108,8 +109,13 @@ ProcedureOrFunctionDeclaration :: {ProcedureOrFunctionDeclaration}
     | FunctionDeclaration {Function_method $1}
 
 FunctionDeclaration :: {FunctionDeclaration}
-    : 'function' Identifier '(' ')' ':' Identifier ';' Block {Function_no_identifier $2 $6 $8}
-    | 'function' Identifier '(' FormalParameterList ')' ':' Identifier ';' Block {Function_identifier $2 $4 $7 $9}
+    : 'function' Identifier '(' ')' ':' Type ';' Block {Function_no_identifier $2 $6 $8}
+    | 'function' Identifier '(' FormalParameterList ')' ':' Type ';' Block {Function_identifier $2 $4 $7 $9}
+
+Type :: {String}
+    : 'real' {"real"}
+    | 'bool' {"bool"}
+    | 'string' {"string"}
 
 ProcedureDeclaration :: {ProcedureDeclaration}
     : 'procedure' Identifier '('   ')'  ';'  Block {Procedure_no_identifier $2 $6}
@@ -126,7 +132,9 @@ FormalParameterSection :: {FormalParameterSection}
 
 
 ParameterGroup :: {ParameterGroup}
-    : IdentifierList ':'Identifier {Parameter_group $1 $3}
+    : IdentifierList ':' 'string' {Parameter_groupString $1}
+    | IdentifierList ':' 'real' {Parameter_groupReal $1}
+    | IdentifierList ':' 'bool' {Parameter_groupBool $1}
 
 
 BlockOptions:: {BlockOptions}
@@ -241,7 +249,7 @@ AssignmentStatement :: {AssignmentStatement}
     :Variable ':=' Expression {AssignmentStatementMain $1 $3}
 
 ProcedureStatement :: {ProcedureStatement}
-    : Identifier {SingleProcedureStatement $1 }
+    : 'break' {SingleProcedureStatement }
     |Identifier '(' ParameterList ')' { MultiProcedureStatement $1 $3 }
 
 ParameterList :: {ParameterList}

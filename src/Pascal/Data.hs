@@ -103,7 +103,9 @@ data FormalParameterSection =
     | Var_parameterGroup ParameterGroup
 
 data ParameterGroup =
-    Parameter_group [String] String
+    Parameter_groupString [String]
+    |Parameter_groupReal [String]
+    |Parameter_groupBool [String]
 
 data UnsignedNumber =
     UI Int
@@ -187,8 +189,10 @@ data ActualParameter =
     | ActualParameterMultiple ActualParameter Expression
 
 data ParameterList =
-    ParameterListSingle ActualParameter
+    ParameterListName   
+    | ParameterListSingle ActualParameter
     | ParameterListMulitiple ParameterList ActualParameter
+    
 
 data SimpleStatement =
     PS ProcedureStatement
@@ -285,7 +289,7 @@ data Statement =
     StatementUnlabelledStatement UnlabelledStatement
 
 data ProcedureStatement =
-    SingleProcedureStatement String
+    SingleProcedureStatement
     | MultiProcedureStatement String ParameterList
 
 data Program = 
