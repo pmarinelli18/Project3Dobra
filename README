@@ -1,0 +1,19 @@
+Project 3: Pascal interpreter in Haskell
+April 2, 2020
+Team: Peyton Marinelli and Jose Quintas
+
+How to run pascal program files:
+    While in the Pascal directory run the following Command:
+        Cabal run Pascal FileLocation
+    To Run the Test Files run the previous command with the test locations
+    There are 22 tests, each can be run by replacing 1 with the test #:
+        Cabal run Pascal src/Tests/test1.pas
+
+How to run Unit tests:
+    Move to the src directory to run the following comand:
+        runhaskell InterpretSpec.hs
+        runhaskell ValSpec.hs
+
+
+        
+
